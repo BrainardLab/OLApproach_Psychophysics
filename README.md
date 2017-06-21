@@ -1,2 +1,2 @@
-# OLPsychophysics
-Code for One Light psychophysics approach.
+# OLApproach_Psychophysics
+Code for Aguirre/Brainard One Light psychophysics approach.

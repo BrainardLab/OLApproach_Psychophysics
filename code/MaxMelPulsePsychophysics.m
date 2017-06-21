@@ -11,7 +11,19 @@ clear; close all;
 %% Set the parameter structure here
 params.approach = 'OLApproach_Psychophysics';
 params.protocol = 'MaxMelPulsePsychophysics';
-%params.calType = ;
+params.experiment = 'MaxMelPulsePsychophysics';
+params.experimentSuffix = 'MaxMelPulsePsychophysics';
+params.calibrationType = 'BoxDRandomizedLongCableAEyePiece2_ND02';
+params.whichReceptorsToMinimize = [];
+params.CALCULATE_SPLATTER = false;
+params.maxPowerDiff = 10^(-1);
+params.photoreceptorClasses = 'LConeTabulatedAbsorbance,MConeTabulatedAbsorbance,SConeTabulatedAbsorbance,Melanopsin';
+params.fieldSizeDegrees = 27.5;
+params.pupilDiameterMm = 8;                 % Assuming dilated pupil
+params.isActive = 1;
+params.useAmbient = 1;
+params.OBSERVER_AGE = 32;
+params.primaryHeadRoom = 0.01;              
 
 %% Make the nominal modulation primaries
 Psychophysics.MakeDirectionNominalPrimaries;

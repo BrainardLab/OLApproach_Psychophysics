@@ -23,6 +23,7 @@ todayDate = datestr(now, 'mmddyy');
 
 % Calibration type
 theCalType = 'BoxDRandomizedLongCableAEyePiece2_ND02';
+params.theApproach = 'OLApproach_Psychophysics';
 params.experiment =  'MaxPulsePsychophysics';
 
 % LMS; Melanopsin; Light Flux

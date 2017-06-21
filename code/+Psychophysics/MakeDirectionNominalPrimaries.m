@@ -17,6 +17,7 @@
 theCalType = 'BoxDRandomizedLongCableAEyePiece2_ND02';
 
 %% Standard parameters
+params.theApproach = 'OLApproach_Psychophysics';
 params.experiment = 'MaxPulsePsychophysics';
 params.experimentSuffix = 'MaxPulsePsychophysics';
 params.calibrationType = theCalType;

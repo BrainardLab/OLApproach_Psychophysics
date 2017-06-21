@@ -42,18 +42,19 @@ end
 % Correct the spectrum
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 tic;
+params.theApproach = 'OLApproach_Psychophysics';
 params.experiment = 'MaxPulsePsychophysics';
 params.simulate = false;
 theCalType = 'BoxDRandomizedLongCableAEyePiece2_ND02';
 spectroRadiometerOBJ = [];
 spectroRadiometerOBJWillShutdownAfterMeasurement = false;
 theDirections = {'MelanopsinDirectedSuperMaxMel' 'LMSDirectedSuperMaxLMS' 'LightFluxMaxPulse' };
-theDirectionsCorrect = [true true true]; % Do not correct the third one (LightFluxMaxPulse)
+theDirectionsCorrect = [true true true]; 
 % CorrectedPrimariesDir is MELA_materials.../DirectionNominalPrimaries
-NominalPrimariesDir =  fullfile(getpref(params.experiment, 'DirectionNominalPrimariesDir'));
+NominalPrimariesDir =  fullfile(getpref(params.theApproach, 'MaterialsPath'),'Experiments',params.theApproach,'DirectionNominalPrimaries');
 % materialsPath, please rename, and send to
 % MELA_materials.../DirectionCorrectedPrimaries
-CorrectedPrimariesDir = fullfile(getpref(params.experiment, 'DirectionCorrectedPrimariesDir'));
+CorrectedPrimariesDir = fullfile(getpref(params.theApproach, 'DataPath'), 'Experiments', params.theApproach, params.experiment, 'DirectionCorrectedPrimaries');
 
 for d = 1:length(theDirections)
     % Print out some information
@@ -85,7 +86,7 @@ for d = 1:length(theDirections)
         'powerLevels', [0 1.0000], ...
         'doCorrection', theDirectionsCorrect(d), ...
         'postreceptoralCombinations', [1 1 1 0 ; 1 -1 0 0 ; 0 0 1 0 ; 0 0 0 1], ...
-        'outDir', CorrectedPrimariesDir, ... %fullfile(CorrectedPrimariesDir, 'MaxPulsePsychophysics', todayDate),
+        'outDir', fullfile(CorrectedPrimariesDir, observerID), ... %fullfile(CorrectedPrimariesDir, 'MaxPulsePsychophysics', todayDate),
         'takeTemperatureMeasurements', takeTemperatureMeasurements, ...
         'useAverageGamma', false, ...
         'zeroPrimariesAwayFromPeak', false, ...
@@ -112,7 +113,7 @@ for d = 1:length(theDirections)
 %         'powerLevels', [0 1.0000], ...
 %         'doCorrection', theDirectionsCorrect(d), ...
 %         'postreceptoralCombinations', [1 1 1 0 ; 1 -1 0 0 ; 0 0 1 0 ; 0 0 0 1], ...
-%         'outDir', fullfile(materialsPath, 'MaxMelPulsePsychophysics', todayDate), ...
+%         'outDir', fullfile(CorrectedPrimariesDir, observerID), ...
 %         'takeTemperatureMeasurements', takeTemperatureMeasurements, ...
 %         'useAverageGamma', true, ...
 %         'zeroPrimariesAwayFromPeak', true);
@@ -123,7 +124,7 @@ for d = 1:length(theDirections)
     olCache = OLCache(CorrectedPrimariesDir,cal);
     params = cacheData.data(observerAgeInYrs).describe.params;
     params.modulationDirection = theDirections{d};
-    params.cacheFile = ['Cache-' params.modulationDirection '_' observerID '_' todayDate '.mat'];
+    params.cacheFile = ['Direction_' params.modulationDirection '_' observerID '_' todayDate '.mat'];
     OLReceptorIsolateSaveCache(cacheData, olCache, params);
     fprintf('done!\n');
 end

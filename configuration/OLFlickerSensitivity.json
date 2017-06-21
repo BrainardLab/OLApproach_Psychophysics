@@ -1,0 +1,67 @@
+[
+	{
+		"flavor": "",
+		"hook": "",
+		"importance": "",
+		"localHookTemplate": "configuration/OLFlickerSensitivityLocalHookTemplate.m",
+		"name": "OLFlickerSensitivity",
+		"pathPlacement": "append",
+		"subfolder": "code",
+		"toolboxRoot": "",
+		"type": "git",
+		"update": "",
+		"url": ""
+	},
+    {
+		"flavor": "",
+		"hook": "",
+		"importance": "",
+		"localHookTemplate": "",
+		"name": "BrainardLabBase",
+		"pathPlacement": "append",
+		"subfolder": "",
+		"toolboxRoot": "",
+		"type": "include",
+		"update": "",
+		"url": ""
+	},
+	{
+		"flavor": "",
+		"hook": "",
+		"importance": "",
+		"localHookTemplate": "",
+		"name": "OneLightDriver",
+		"pathPlacement": "append",
+		"subfolder": "",
+		"toolboxRoot": "",
+		"type": "include",
+		"update": "",
+		"url": ""
+	},
+	{
+		"flavor": "",
+		"hook": "",
+		"importance": "",
+		"localHookTemplate": "",
+		"name": "OneLightToolbox",
+		"pathPlacement": "append",
+		"subfolder": "",
+		"toolboxRoot": "",
+		"type": "include",
+		"update": "",
+		"url": ""
+	},
+	{
+		"flavor": "",
+		"hook": "",
+		"importance": "",
+		"localHookTemplate": "",
+		"name": "PupilAnalysisToolbox",
+		"pathPlacement": "append",
+		"subfolder": "",
+		"toolboxRoot": "",
+		"type": "git",
+		"update": "",
+		"url": "https:\/\/github.com\/gkaguirrelab\/PupilAnalysisToolbox.git"
+	}
+]

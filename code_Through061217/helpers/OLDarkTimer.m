@@ -1,0 +1,13 @@
+OLAllMirrorsOff;
+system('say -r 210 Dark adapt for 20 minutes. Starting now.');
+mglWaitSecs(300);
+system('say -r 210 15 minutes left.');
+mglWaitSecs(300);
+system('say -r 210 10 minutes left.');
+mglWaitSecs(300);
+system('say -r 210 5 minutes left.');
+mglWaitSecs(240);
+system('say -r 210 1 minute left.');
+mglWaitSecs(60);
+system('say -r 210 Dark adaptation complete.');
+fprintf('Done with dark adaptation.');

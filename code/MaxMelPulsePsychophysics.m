@@ -1,4 +1,4 @@
-% MaxPulsePsychophysics
+% MaxMelPulsePsychophysics
 %
 % Description:
 %   Define the parameters for the MaxPulsePsychophysics protocol of the
@@ -10,8 +10,8 @@ clear; close all;
 
 %% Set the parameter structure here
 params.approach = 'OLApproach_Psychophysics';
-params.protocol = 'MaxPulsePsychophysics';
-params.calType = ;
+params.protocol = 'MaxMelPulsePsychophysics';
+%params.calType = ;
 
 %% Make the nominal modulation primaries
 Psychophysics.MakeModulationNominalPrimaries;

@@ -37,7 +37,7 @@ spectroRadiometerOBJWillShutdownAfterMeasurement = false;
 theDirections = {['Cache-MelanopsinDirectedSuperMaxMel_' observerID '_' todayDate '.mat'] ...
     ['Cache-LMSDirectedSuperMaxLMS_' observerID '_' todayDate '.mat']};
 NDirections = length(theDirections);
-cacheDir = getpref('MaxPulsePsychophysics', 'ModulationCorrectedPrimariesDir');
+cacheDir = getpref('MaxPulsePsychophysics', 'DirectionCorrectedPrimariesDir');
 materialsPath = getpref('OneLight', 'materialsPath');
 NMeas = 5;
 

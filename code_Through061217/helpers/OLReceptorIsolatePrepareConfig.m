@@ -16,7 +16,7 @@ function params = OLReceptorIsolatePrepareConfig(configFileName)
 %   OLReceptorIsolatePrepareConfig('OLFlickerSensitivity-Background-OLEyeTrackerLongCableEyePiece1.cfg')
 %
 % See also:
-%   OLReceptorIsolateMakeModulationNominalPrimaries, OLReceptorIsolateSaveCache
+%   OLReceptorIsolateMakeDirectionNominalPrimaries, OLReceptorIsolateSaveCache
 %
 % 4/19/13   dhb, ms     Update for new convention for desired contrasts in routine ReceptorIsolate.
 % 2/25/14   ms          Modularized.

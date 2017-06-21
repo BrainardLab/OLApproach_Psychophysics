@@ -1,4 +1,4 @@
-% MaxPulsePsychophysics_MakeModulationCorrectedPrimaries - Make the corrected primaries from the nominal primaries
+% MaxPulsePsychophysics_MakeDirectionCorrectedPrimaries - Make the corrected primaries from the nominal primaries
 %
 % Description:
 %    The nominal primaries do not exactly have the desired properties,
@@ -11,7 +11,7 @@
 %    the observer who is about to run.
 %
 %    The output is cached in the directory specified by
-%    getpref('MaxPulsePsychophysics','ModulationCorrectedPrimariesDir');
+%    getpref('MaxPulsePsychophysics','DirectionCorrectedPrimariesDir');
 
 % 6/18/17  dhb       Added header comments.  Renamed.
 % 6/19/17  mab, jr   Added saving the cache data to the outDir location specified in OLCorrectCacheFileOOC.m  
@@ -49,11 +49,11 @@ spectroRadiometerOBJ = [];
 spectroRadiometerOBJWillShutdownAfterMeasurement = false;
 theDirections = {'MelanopsinDirectedSuperMaxMel' 'LMSDirectedSuperMaxLMS' 'LightFluxMaxPulse' };
 theDirectionsCorrect = [true true true]; % Do not correct the third one (LightFluxMaxPulse)
-% CorrectedPrimariesDir is MELA_materials.../ModulationNominalPrimaries
-NominalPrimariesDir =  fullfile(getpref(params.experiment, 'ModulationNominalPrimariesDir'));
+% CorrectedPrimariesDir is MELA_materials.../DirectionNominalPrimaries
+NominalPrimariesDir =  fullfile(getpref(params.experiment, 'DirectionNominalPrimariesDir'));
 % materialsPath, please rename, and send to
-% MELA_materials.../ModulationCorrectedPrimaries
-CorrectedPrimariesDir = fullfile(getpref(params.experiment, 'ModulationCorrectedPrimariesDir'));
+% MELA_materials.../DirectionCorrectedPrimaries
+CorrectedPrimariesDir = fullfile(getpref(params.experiment, 'DirectionCorrectedPrimariesDir'));
 
 for d = 1:length(theDirections)
     % Print out some information

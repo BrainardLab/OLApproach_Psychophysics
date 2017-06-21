@@ -37,7 +37,7 @@ for d = 7
     params.whichReceptorsToIgnore = whichReceptorsToIgnore{d};
     params.receptorIsolateMode = receptorIsolateMode{d};
     params.cacheFile = ['Cache-' theDirections{d} '.mat']
-    [cacheData, olCache, params, contrastVector(:, d)] = OLReceptorIsolateMakeModulationNominalPrimaries(params, true);
+    [cacheData, olCache, params, contrastVector(:, d)] = OLReceptorIsolateMakeDirectionNominalPrimaries(params, true);
     OLReceptorIsolateSaveCache(cacheData, olCache, params);
 end
 
@@ -47,7 +47,7 @@ params.whichReceptorsToMinimize = [];
 params.CALCULATE_SPLATTER = true;
 params.maxPowerDiff = 10^(-1.5);
 
-[cacheData, olCache, params] = OLReceptorIsolateMakeModulationNominalPrimaries(params, true);
+[cacheData, olCache, params] = OLReceptorIsolateMakeDirectionNominalPrimaries(params, true);
 OLReceptorIsolateSaveCache(cacheData, olCache, params);
 %%
 cacheDir = '/Users/Shared/Matlab/Experiments/OneLight/OLFlickerSensitivity/code/cache/stimuli';

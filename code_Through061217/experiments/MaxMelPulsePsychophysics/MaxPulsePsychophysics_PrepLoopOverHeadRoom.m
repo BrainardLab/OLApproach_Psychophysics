@@ -57,7 +57,7 @@ for ii = 1:nheadRoomVals
     params.whichReceptorsToMinimize = [];
     params.receptorIsolateMode = 'Standard';
     params.cacheFile = ['Cache-' params.modulationDirection '.mat'];
-    [cacheDataMaxMel, olCacheMaxMel, paramsMaxMel] = OLReceptorIsolateMakeModulationNominalPrimaries(params, true);
+    [cacheDataMaxMel, olCacheMaxMel, paramsMaxMel] = OLReceptorIsolateMakeDirectionNominalPrimaries(params, true);
     allContrasts(:, ii) = cacheDataMaxMel.data(32).describe.contrastSignedPositive;
 end
 subplot(1, 2, 1); plot(headRoomVals, allContrasts(4, :), '-sk'); xlabel('Headroom'); ylabel('Max. contrast'); ylim([0 0.9]); xlim([0 0.21]); pbaspect([1 1 1]);
@@ -97,7 +97,7 @@ for ii = 1:nheadRoomVals
     params.whichReceptorsToMinimize = [];
     params.receptorIsolateMode = 'Standard';
     params.cacheFile = ['Cache-' params.modulationDirection '.mat'];
-    [cacheDataMaxLMS, olCacheMaxLMS, paramsMaxLMS] = OLReceptorIsolateMakeModulationNominalPrimaries(params, true);
+    [cacheDataMaxLMS, olCacheMaxLMS, paramsMaxLMS] = OLReceptorIsolateMakeDirectionNominalPrimaries(params, true);
     % Replace the backgrounds
     for observerAgeInYrs = [20:60]
         cacheDataMaxLMS.data(observerAgeInYrs).backgroundPrimary = cacheDataMaxLMS.data(observerAgeInYrs).modulationPrimarySignedNegative;

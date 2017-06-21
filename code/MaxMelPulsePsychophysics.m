@@ -14,4 +14,4 @@ params.protocol = 'MaxMelPulsePsychophysics';
 %params.calType = ;
 
 %% Make the nominal modulation primaries
-Psychophysics.MakeModulationNominalPrimaries;
+Psychophysics.MakeDirectionNominalPrimaries;

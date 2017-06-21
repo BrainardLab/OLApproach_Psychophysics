@@ -99,7 +99,7 @@ switch optIndex
         params.whichReceptorsToMinimize = [];
         params.receptorIsolateMode = 'Standard';
         params.cacheFile = ['Cache-' params.modulationDirection '.mat'];
-        [cacheData, olCache, params] = OLReceptorIsolateMakeModulationNominalPrimaries(params, true);
+        [cacheData, olCache, params] = OLReceptorIsolateMakeDirectionNominalPrimaries(params, true);
         OLReceptorIsolateSaveCache(cacheData, olCache, params);
         
         % 2° & 10° targeted
@@ -112,7 +112,7 @@ switch optIndex
         params.whichReceptorsToMinimize = [];
         params.receptorIsolateMode = 'Standard';
         params.cacheFile = ['Cache-' params.modulationDirection '.mat'];
-        [cacheData, olCache, params] = OLReceptorIsolateMakeModulationNominalPrimaries(params, true);
+        [cacheData, olCache, params] = OLReceptorIsolateMakeDirectionNominalPrimaries(params, true);
         OLReceptorIsolateSaveCache(cacheData, olCache, params);
         
         % 2° & 10° targeted
@@ -125,7 +125,7 @@ switch optIndex
         params.whichReceptorsToMinimize = [];
         params.receptorIsolateMode = 'Standard';
         params.cacheFile = ['Cache-' params.modulationDirection '.mat'];
-        [cacheData, olCache, params] = OLReceptorIsolateMakeModulationNominalPrimaries(params, true);
+        [cacheData, olCache, params] = OLReceptorIsolateMakeDirectionNominalPrimaries(params, true);
         OLReceptorIsolateSaveCache(cacheData, olCache, params);
         
     case 3

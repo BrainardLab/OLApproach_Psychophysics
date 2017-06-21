@@ -31,7 +31,7 @@ for d = 1:length(theDirections)
     params.whichReceptorsToIgnore = whichReceptorsToIgnore{d};
     params.receptorIsolateMode = receptorIsolateMode{d};
     params.cacheFile = ['Cache-' theDirections{d} '.mat'];
-    [cacheData, olCache, params] = OLReceptorIsolateMakeModulationNominalPrimaries(params, true);
+    [cacheData, olCache, params] = OLReceptorIsolateMakeDirectionNominalPrimaries(params, true);
     OLReceptorIsolateSaveCache(cacheData, olCache, params);
 end
 
@@ -62,7 +62,7 @@ for d = [7 8]
     params.whichReceptorsToIgnore = whichReceptorsToIgnore{d};
     params.receptorIsolateMode = receptorIsolateMode{d};
     params.cacheFile = ['Cache-' theDirections{d} '.mat'];
-    [cacheData, olCache, params] = OLReceptorIsolateMakeModulationNominalPrimaries(params, true);
+    [cacheData, olCache, params] = OLReceptorIsolateMakeDirectionNominalPrimaries(params, true);
     OLReceptorIsolateSaveCache(cacheData, olCache, params);
 end
 
@@ -77,7 +77,7 @@ end
 % params.useAmbient = 1;
 % params.REFERENCE_OBSERVER_AGE = 32;
 % params.primaryHeadRoom = 0.02;
-% [cacheData, olCache, params] = OLReceptorIsolateMakeModulationNominalPrimaries(params, true);
+% [cacheData, olCache, params] = OLReceptorIsolateMakeDirectionNominalPrimaries(params, true);
 % OLReceptorIsolateSaveCache(cacheData, olCache, params);
 
 

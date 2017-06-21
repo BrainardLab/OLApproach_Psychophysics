@@ -1,4 +1,4 @@
-% MaxPulsePsychophycis_MakeModulationNominalPrimaries - Calculate the nominal modulation primaries for the experiment
+% MaxPulsePsychophycis_MakeDirectionNominalPrimaries - Calculate the nominal modulation primaries for the experiment
 %
 % Description:
 %     This script calculations the nominal primaries required for the
@@ -9,7 +9,7 @@
 %     for the full range of observer ages.
 %
 %     The output is cached in the directory specified by
-%     getpref('MaxPulsePsychophysics','ModulationNominalPrimariesDir');
+%     getpref('MaxPulsePsychophysics','DirectionNominalPrimariesDir');
 
 % 6/18/17  dhb  Added header comment.
 
@@ -66,7 +66,7 @@ params.whichReceptorsToIgnore = [];
 params.whichReceptorsToMinimize = [];
 params.receptorIsolateMode = 'Standard';
 params.cacheFile = ['Cache-' params.modulationDirection '.mat'];
-[cacheDataMaxMel, olCacheMaxMel, paramsMaxMel] = OLReceptorIsolateMakeModulationNominalPrimaries(params, true);
+[cacheDataMaxMel, olCacheMaxMel, paramsMaxMel] = OLReceptorIsolateMakeDirectionNominalPrimaries(params, true);
 
 % Replace the backgrounds
 for observerAgeInYrs = [20:60]
@@ -110,7 +110,7 @@ params.whichReceptorsToIgnore = [];
 params.whichReceptorsToMinimize = [];
 params.receptorIsolateMode = 'Standard';
 params.cacheFile = ['Cache-' params.modulationDirection '.mat'];
-[cacheDataMaxLMS, olCacheMaxLMS, paramsMaxLMS] = OLReceptorIsolateMakeModulationNominalPrimaries(params, true);
+[cacheDataMaxLMS, olCacheMaxLMS, paramsMaxLMS] = OLReceptorIsolateMakeDirectionNominalPrimaries(params, true);
 
 % Replace the backgrounds
 for observerAgeInYrs = [20:60]
@@ -136,7 +136,7 @@ OLReceptorIsolateSaveCache(cacheDataMaxLMS, olCacheMaxLMS, paramsMaxLMS);
 
 % Get the cal files
 cal = LoadCalFile(OLCalibrationTypes.(params.calibrationType).CalFileName, [], getpref('OneLight', 'OneLightCalData'));
-cacheDir = fullfile(getpref(params.experiment, 'ModulationNominalPrimariesDir'));
+cacheDir = fullfile(getpref(params.experiment, 'DirectionNominalPrimariesDir'));
 
 % Modulation 
 desiredChromaticity = [0.54 0.38];

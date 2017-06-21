@@ -48,7 +48,7 @@ params.whichReceptorsToIgnore = [5];
 params.whichReceptorsToMinimize = [];
 params.receptorIsolateMode = 'Standard';
 params.cacheFile = ['Cache-' params.modulationDirection '.mat'];
-[cacheDataMaxMel, olCacheMaxMel, paramsMaxMel] = OLReceptorIsolateMakeModulationNominalPrimaries(params, true);
+[cacheDataMaxMel, olCacheMaxMel, paramsMaxMel] = OLReceptorIsolateMakeDirectionNominalPrimaries(params, true);
 OLReceptorIsolateSaveCache(cacheDataMaxMel, olCacheMaxMel, paramsMaxMel);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -62,7 +62,7 @@ params.whichReceptorsToIgnore = [];
 params.whichReceptorsToMinimize = [];
 params.receptorIsolateMode = 'Standard';
 params.cacheFile = ['Cache-' params.modulationDirection '.mat'];
-[cacheDataLMinusM, olCacheLMinusM, paramsLMinusM] = OLReceptorIsolateMakeModulationNominalPrimaries(params, true);
+[cacheDataLMinusM, olCacheLMinusM, paramsLMinusM] = OLReceptorIsolateMakeDirectionNominalPrimaries(params, true);
 
 paramsLMinusM.modulationDirection = 'LMinusMDirectedRodControl';
 paramsLMinusM.cacheFile = ['Cache-' paramsLMinusM.modulationDirection '.mat'];
@@ -115,7 +115,7 @@ params.whichReceptorsToIgnore = [5];
 params.whichReceptorsToMinimize = [];
 params.receptorIsolateMode = 'Standard';
 params.cacheFile = ['Cache-' params.modulationDirection '.mat'];
-[cacheDataMaxMel, olCacheMaxMel, paramsMaxMel] = OLReceptorIsolateMakeModulationNominalPrimaries(params, true);
+[cacheDataMaxMel, olCacheMaxMel, paramsMaxMel] = OLReceptorIsolateMakeDirectionNominalPrimaries(params, true);
 paramsMaxMel.cacheFile = ['Cache-' params.modulationDirection '.mat'];
 OLReceptorIsolateSaveCache(cacheDataMaxMel, olCacheMaxMel, paramsMaxMel);
 
@@ -130,7 +130,7 @@ params.whichReceptorsToIgnore = [];
 params.whichReceptorsToMinimize = [];
 params.receptorIsolateMode = 'Standard';
 params.cacheFile = ['Cache-' params.modulationDirection '.mat'];
-[cacheDataLMinusM, olCacheLMinusM, paramsLMinusM] = OLReceptorIsolateMakeModulationNominalPrimaries(params, true);
+[cacheDataLMinusM, olCacheLMinusM, paramsLMinusM] = OLReceptorIsolateMakeDirectionNominalPrimaries(params, true);
 
 paramsLMinusM.cacheFile = ['Cache-' paramsLMinusM.modulationDirection '.mat'];
 OLReceptorIsolateSaveCache(cacheDataLMinusM, olCacheLMinusM, paramsLMinusM);

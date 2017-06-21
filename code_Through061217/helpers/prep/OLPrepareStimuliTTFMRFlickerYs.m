@@ -21,7 +21,7 @@ params.primaryHeadRoom = 0.02;
 % params.whichReceptorsToIgnore = [5 6 7];
 % params.receptorIsolateMode = 'Standard';
 % params.cacheFile = ['Cache-' params.modulationDirection '.mat'];
-% [cacheData, olCache, params] = OLReceptorIsolateMakeModulationNominalPrimaries(params, true);
+% [cacheData, olCache, params] = OLReceptorIsolateMakeDirectionNominalPrimaries(params, true);
 % OLReceptorIsolateSaveCache(cacheData, olCache, params);
 % 
 % %% SDirected
@@ -31,7 +31,7 @@ params.primaryHeadRoom = 0.02;
 % params.whichReceptorsToIgnore = [5 8];
 % params.receptorIsolateMode = 'Standard';
 % params.cacheFile = ['Cache-' params.modulationDirection '.mat'];
-% [cacheData, olCache, params] = OLReceptorIsolateMakeModulationNominalPrimaries(params, true);
+% [cacheData, olCache, params] = OLReceptorIsolateMakeDirectionNominalPrimaries(params, true);
 % OLReceptorIsolateSaveCache(cacheData, olCache, params);
 % 
 % %% MelanopsinDirected
@@ -41,7 +41,7 @@ params.primaryHeadRoom = 0.02;
 % params.whichReceptorsToIgnore = [5];
 % params.receptorIsolateMode = 'Standard';
 % params.cacheFile = ['Cache-' params.modulationDirection '.mat'];
-% [cacheData, olCache, params] = OLReceptorIsolateMakeModulationNominalPrimaries(params, true);
+% [cacheData, olCache, params] = OLReceptorIsolateMakeDirectionNominalPrimaries(params, true);
 % OLReceptorIsolateSaveCache(cacheData, olCache, params);
 % 
 % %% LMinusMDirected
@@ -51,7 +51,7 @@ params.primaryHeadRoom = 0.02;
 % params.whichReceptorsToIgnore = [5 6 7];
 % params.receptorIsolateMode = 'Standard';
 % params.cacheFile = ['Cache-' params.modulationDirection '.mat'];
-% [cacheData, olCache, params] = OLReceptorIsolateMakeModulationNominalPrimaries(params, true);
+% [cacheData, olCache, params] = OLReceptorIsolateMakeDirectionNominalPrimaries(params, true);
 % OLReceptorIsolateSaveCache(cacheData, olCache, params);
 
 %%% VALIDATIONS

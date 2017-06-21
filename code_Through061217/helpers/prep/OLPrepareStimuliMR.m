@@ -142,7 +142,7 @@ while keepOuterLoop
                     params.whichReceptorsToIgnore = [5 6 7];
                     params.receptorIsolateMode = 'Standard';
                     params.cacheFile = ['Cache-' params.modulationDirection '.mat'];
-                    [cacheData, olCache, params] = OLReceptorIsolateMakeModulationNominalPrimaries(params, true);
+                    [cacheData, olCache, params] = OLReceptorIsolateMakeDirectionNominalPrimaries(params, true);
                     OLReceptorIsolateSaveCache(cacheData, olCache, params);
                     
                     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -153,7 +153,7 @@ while keepOuterLoop
                     params.whichReceptorsToIgnore = [5 6 7 8];
                     params.receptorIsolateMode = 'Standard';
                     params.cacheFile = ['Cache-' params.modulationDirection '.mat'];
-                    [cacheData, olCache, params] = OLReceptorIsolateMakeModulationNominalPrimaries(params, true);
+                    [cacheData, olCache, params] = OLReceptorIsolateMakeDirectionNominalPrimaries(params, true);
                     OLReceptorIsolateSaveCache(cacheData, olCache, params);
                     
 %                     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -164,7 +164,7 @@ while keepOuterLoop
 %                     params.whichReceptorsToIgnore = [];
 %                     params.receptorIsolateMode = 'Standard';
 %                     params.cacheFile = ['Cache-' params.modulationDirection '.mat'];
-%                     [cacheData, olCache, params] = OLReceptorIsolateMakeModulationNominalPrimaries(params, true);
+%                     [cacheData, olCache, params] = OLReceptorIsolateMakeDirectionNominalPrimaries(params, true);
 %                     OLReceptorIsolateSaveCache(cacheData, olCache, params);
 %                     
 %                     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -175,7 +175,7 @@ while keepOuterLoop
 %                     params.whichReceptorsToIgnore = [5 6 7];
 %                     params.receptorIsolateMode = 'Standard';
 %                     params.cacheFile = ['Cache-' params.modulationDirection '.mat'];
-%                     [cacheData, olCache, params] = OLReceptorIsolateMakeModulationNominalPrimaries(params, true);
+%                     [cacheData, olCache, params] = OLReceptorIsolateMakeDirectionNominalPrimaries(params, true);
 %                     OLReceptorIsolateSaveCache(cacheData, olCache, params);
 %                     
 %                     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -186,7 +186,7 @@ while keepOuterLoop
 %                     params.whichReceptorsToIgnore = [5 6 7 8];
 %                     params.receptorIsolateMode = 'Standard';
 %                     params.cacheFile = ['Cache-' params.modulationDirection '.mat'];
-%                     [cacheData, olCache, params] = OLReceptorIsolateMakeModulationNominalPrimaries(params, true);
+%                     [cacheData, olCache, params] = OLReceptorIsolateMakeDirectionNominalPrimaries(params, true);
 %                     OLReceptorIsolateSaveCache(cacheData, olCache, params);
             end
             

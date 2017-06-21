@@ -1,11 +1,12 @@
-function OLFlickerSensitivityLocalHook
-% OLFlickerSensitivityLocalHook - Configure things for working on OneLight projects.
+function OLApproach_PsychophysicsLocalHook
+% OLApproach_PsychophysicsLocalHook - Configure things for working on OneLight projects.
 %
 % For use with the ToolboxToolbox.  If you copy this into your
 % ToolboxToolbox localToolboxHooks directory (by default,
 % ~/localToolboxHooks) and delete "LocalHooksTemplate" from the filename,
-% this will get run when you execute tbUse({'OLFlickerSensitivityConfig'}) to set up for
-% this project.  You then edit your local copy to match your local machine.
+% this will get run when you execute
+%   tbUseProject('OLApproach_PsychophysicsLocalHook')
+% to set up for this project.  You then edit your local copy to match your local machine.
 %
 % The main thing that this does is define Matlab preferences that specify input and output
 % directories.
@@ -14,7 +15,7 @@ function OLFlickerSensitivityLocalHook
 % to match what is true on your computer.
 
 %% Say hello
-fprintf('Running OLFlickerSensitivitylocal hook\n');
+fprintf('Running OLApproach_Psychophysics local hook\n');
 
 %% Set preferences
 

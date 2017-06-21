@@ -4,7 +4,7 @@
 		"hook": "",
 		"importance": "",
 		"localHookTemplate": "configuration/OLFlickerSensitivityLocalHookTemplate.m",
-		"name": "OLFlickerSensitivity",
+		"name": "OLApproach_Psychophysics",
 		"pathPlacement": "append",
 		"subfolder": "code",
 		"toolboxRoot": "",

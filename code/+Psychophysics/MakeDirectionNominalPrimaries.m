@@ -9,7 +9,7 @@
 %     for the full range of observer ages.
 %
 %     The output is cached in the directory specified by
-%     getpref('MaxPulsePsychophysics','DirectionNominalPrimariesDir');
+%     getpref('MaxPulsePsychophysics','DirectionNominalPrimariesPath');
 
 % 6/18/17  dhb  Added header comment.
 
@@ -136,7 +136,7 @@ OLReceptorIsolateSaveCache(cacheDataMaxLMS, olCacheMaxLMS, paramsMaxLMS);
 
 % Get the cal files
 cal = LoadCalFile(OLCalibrationTypes.(params.calibrationType).CalFileName, [], getpref('OneLight', 'OneLightCalData'));
-cacheDir = fullfile(getpref(params.experiment, 'DirectionNominalPrimariesDir'));
+cacheDir = fullfile(getpref(theApproach, 'MaterialsPath'),'Experiments',theApproach,'DirectionNominalPrimaries');
 
 % Modulation 
 desiredChromaticity = [0.54 0.38];

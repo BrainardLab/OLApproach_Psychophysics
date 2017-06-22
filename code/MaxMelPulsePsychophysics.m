@@ -25,6 +25,10 @@ params.useAmbient = 1;
 params.OBSERVER_AGE = 32;
 params.primaryHeadRoom = 0.01;              
 
+params.observerID = GetWithDefault('>> Enter <strong>user name</strong>', 'HERO_xxxx');
+params.observerAgeInYrs = GetWithDefault('>> Enter <strong>observer age</strong>:', 32);
+params.todayDate = datestr(now, 'mmddyy');
+
 %% Make the nominal modulation primaries
 Psychophysics.MakeDirectionNominalPrimaries(params);
 
@@ -32,4 +36,4 @@ Psychophysics.MakeDirectionNominalPrimaries(params);
 %Psychophysics.MakeDirectionCorrectedPrimaries(params);
 
 %% Make the Starts and Stops
-Psychophysics.MakeModulationStartsStops(params)
+%Psychophysics.MakeModulationStartsStops(params)

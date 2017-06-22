@@ -29,7 +29,7 @@ params.experiment =  'MaxPulsePsychophysics';
 % LMS; Melanopsin; Light Flux
 tic;
 customSuffix = ['_' observerID '_' todayDate];
-OLReceptorIsolateMakeModulationStartsStops('Modulation-MaxMelPulsePsychophysics-PulseMaxLMS_3s_MaxContrast3sSegment.cfg', observerAgeInYrs, theCalType, customSuffix, params);
-OLReceptorIsolateMakeModulationStartsStops('Modulation-MaxMelPulsePsychophysics-PulseMaxMel_3s_MaxContrast3sSegment.cfg', observerAgeInYrs, theCalType, customSuffix, params);
-OLReceptorIsolateMakeModulationStartsStops('Modulation-MaxMelPulsePsychophysics-PulseMaxLightFlux_3s_MaxContrast3sSegment.cfg', observerAgeInYrs, theCalType, customSuffix, params);
+OLReceptorIsolateMakeModulationStartsStops('Modulation-MaxMelPulsePsychophysics-PulseMaxLMS_3s_MaxContrast3sSegment.cfg', observerAgeInYrs, theCalType, customSuffix, params, observerID);
+OLReceptorIsolateMakeModulationStartsStops('Modulation-MaxMelPulsePsychophysics-PulseMaxMel_3s_MaxContrast3sSegment.cfg', observerAgeInYrs, theCalType, customSuffix, params, observerID);
+OLReceptorIsolateMakeModulationStartsStops('Modulation-MaxMelPulsePsychophysics-PulseMaxLightFlux_3s_MaxContrast3sSegment.cfg', observerAgeInYrs, theCalType, customSuffix, params, observerID);
 toc;

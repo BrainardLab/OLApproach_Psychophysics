@@ -54,7 +54,10 @@ theDirectionsCorrect = [true true true];
 NominalPrimariesDir =  fullfile(getpref(params.theApproach, 'MaterialsPath'),'Experiments',params.theApproach,'DirectionNominalPrimaries');
 % materialsPath, please rename, and send to
 % MELA_materials.../DirectionCorrectedPrimaries
-CorrectedPrimariesDir = fullfile(getpref(params.theApproach, 'DataPath'), 'Experiments', params.theApproach, params.experiment, 'DirectionCorrectedPrimaries');
+CorrectedPrimariesDir = fullfile(getpref(params.theApproach, 'DataPath'), 'Experiments', params.theApproach, params.experiment, 'DirectionCorrectedPrimaries', observerID);
+if(~exist(CorrectedPrimariesDir))
+    mkdir(CorrectedPrimariesDir)
+end
 
 for d = 1:length(theDirections)
     % Print out some information

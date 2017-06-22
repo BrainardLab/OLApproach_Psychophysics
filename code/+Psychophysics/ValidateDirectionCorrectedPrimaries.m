@@ -31,14 +31,20 @@ if ~exist('observerID', 'var') || ~exist('observerAgeInYrs', 'var') || ~exist('t
 end
 
 % Set up some parameters
-theCalType = 'OLDemoCal';
+params.theApproach = 'OLApproach_Psychophysics';
+params.experiment = 'MaxPulsePsychophysics';
+theCalType = 'BoxDRandomizedLongCableAEyePiece2_ND02';
 spectroRadiometerOBJ = [];
 spectroRadiometerOBJWillShutdownAfterMeasurement = false;
-theDirections = {['Cache-MelanopsinDirectedSuperMaxMel_' observerID '_' todayDate '.mat'] ...
-    ['Cache-LMSDirectedSuperMaxLMS_' observerID '_' todayDate '.mat']};
+theDirections = {['Direction_MelanopsinDirectedSuperMaxMel_' observerID '_' todayDate '.mat'] ...
+    ['Direction_LMSDirectedSuperMaxLMS_' observerID '_' todayDate '.mat']};
 NDirections = length(theDirections);
-cacheDir = getpref('MaxPulsePsychophysics', 'DirectionCorrectedPrimariesDir');
-materialsPath = getpref('OneLight', 'materialsPath');
+cacheDir = fullfile(getpref(params.theApproach, 'DataPath'),'Experiments',params.theApproach, params.experiment, 'DirectionCorrectedPrimaries', observerID);
+outDir = fullfile(getpref(params.theApproach, 'DataPath'),'Experiments',params.theApproach, params.experiment, 'DirectionValidationFiles', observerID);
+if(~exist(outDir))
+    mkdir(outDir)
+end
+dataPath = getpref('OneLight', 'dataPath');
 NMeas = 5;
 
 % Set up a counter
@@ -74,7 +80,7 @@ for ii = 1:NMeas;
             'powerLevels', [0 1.0000], ...
             'pr670sensitivityMode', 'STANDARD', ...
             'postreceptoralCombinations', [1 1 1 0 ; 1 -1 0 0 ; 0 0 1 0 ; 0 0 0 1], ...
-            'outDir', cacheDir, ... %'outDir', fullfile(materialsPath, 'MaxPulsePsychophysics', datestr(now, 'mmddyy')), ...
+            'outDir', outDir, ... %'outDir', fullfile(dataPath, 'MaxPulsePsychophysics', datestr(now, 'mmddyy')), ...
             'takeTemperatureMeasurements', takeTemperatureMeasurements);
         
         % Increment the counter

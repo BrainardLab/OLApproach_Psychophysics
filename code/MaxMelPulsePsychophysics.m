@@ -27,3 +27,9 @@ params.primaryHeadRoom = 0.01;
 
 %% Make the nominal modulation primaries
 Psychophysics.MakeDirectionNominalPrimaries(params);
+
+%% Make the corrected modulation primaries
+%Psychophysics.MakeDirectionCorrectedPrimaries(params);
+
+%% Make the Starts and Stops
+Psychophysics.MakeModulationStartsStops(params)

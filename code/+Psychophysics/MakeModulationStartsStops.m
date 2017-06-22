@@ -14,6 +14,7 @@
 %    getpref('MaxPulsePsychophysics','ModulationStartsStopsDir');
 
 % 6/18/17  dhb  Added descriptive comment.
+% 6/23/17  npc  Dictionarized modulation params
 
 % Ask for the observer ID and age
 commandwindow;

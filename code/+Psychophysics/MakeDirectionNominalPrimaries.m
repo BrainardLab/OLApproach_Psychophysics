@@ -13,7 +13,7 @@ function MakeDirectionNominalPrimaries(baseParams)
 %     getpref('MaxPulsePsychophysics','DirectionNominalPrimariesPath');
 
 % 6/18/17  dhb  Added header comment.
-% 6/22/17  npc  Dictionarized modulation direction params
+% 6/22/17  npc  Dictionarized direction params
 
 % Make dictionary with direction-specific params for all directions
 paramsDictionary = directionNominalParamsDictionary();

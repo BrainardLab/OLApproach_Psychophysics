@@ -39,8 +39,8 @@ switch userID
 end
 
 %% Set prefs for materials and data
-setpref(theApproach,'MaterialsPath',fullfile(materialsBasePath,theApproach));
-setpref(theApproach,'DataPath',fullfile(dataBasePath,theApproach));
+setpref(theApproach,'MaterialsPath',fullfile(materialsBasePath));
+setpref(theApproach,'DataPath',fullfile(dataBasePath));
    
 %% Set pref to point at the code for this approach
 setpref(theApproach, 'CodePath', fullfile(tbLocateProject(theApproach),'code'));

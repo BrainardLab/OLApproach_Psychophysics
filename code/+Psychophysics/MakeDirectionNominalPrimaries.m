@@ -1,4 +1,6 @@
-% MaxPulsePsychophycis_MakeDirectionNominalPrimaries - Calculate the nominal modulation primaries for the experiment
+function params = MakeDirectionNominalPrimaries(params)
+
+% MakeDirectionNominalPrimaries - Calculate the nominal modulation primaries for the experiment
 %
 % Description:
 %     This script calculations the nominal primaries required for the
@@ -12,25 +14,6 @@
 %     getpref('MaxPulsePsychophysics','DirectionNominalPrimariesPath');
 
 % 6/18/17  dhb  Added header comment.
-
-% Calibration file.  
-theCalType = 'BoxDRandomizedLongCableAEyePiece2_ND02';
-
-%% Standard parameters
-params.theApproach = 'OLApproach_Psychophysics';
-params.experiment = 'MaxPulsePsychophysics';
-params.experimentSuffix = 'MaxPulsePsychophysics';
-params.calibrationType = theCalType;
-params.whichReceptorsToMinimize = [];
-params.CALCULATE_SPLATTER = false;
-params.maxPowerDiff = 10^(-1);
-params.photoreceptorClasses = 'LConeTabulatedAbsorbance,MConeTabulatedAbsorbance,SConeTabulatedAbsorbance,Melanopsin';
-params.fieldSizeDegrees = 27.5;
-params.pupilDiameterMm = 8;                 % Assuming dilated pupil
-params.isActive = 1;
-params.useAmbient = 1;
-params.OBSERVER_AGE = 32;
-params.primaryHeadRoom = 0.01;              % Original value 0.01
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Silent substitution
@@ -137,7 +120,7 @@ OLReceptorIsolateSaveCache(cacheDataMaxLMS, olCacheMaxLMS, paramsMaxLMS);
 
 % Get the cal files
 cal = LoadCalFile(OLCalibrationTypes.(params.calibrationType).CalFileName, [], getpref('OneLight', 'OneLightCalData'));
-cacheDir = fullfile(getpref(theApproach, 'MaterialsPath'),'Experiments',theApproach,'DirectionNominalPrimaries');
+cacheDir = fullfile(getpref(params.theApproach, 'MaterialsPath'),params.theApproach, 'Experiments',params.experiment,'DirectionNominalPrimaries');
 
 % Modulation 
 desiredChromaticity = [0.54 0.38];

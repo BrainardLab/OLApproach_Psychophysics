@@ -1,4 +1,5 @@
-%MaxPulsePsychophysics_MakeModulationStartsStops
+function MakeModulationStartsStops(params)
+% MakeModulationStartsStops
 %
 % Description:
 %   This script reads in the primaries for the modulations in the experiment and computes the starts stops.

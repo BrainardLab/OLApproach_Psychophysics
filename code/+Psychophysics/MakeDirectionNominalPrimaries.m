@@ -137,7 +137,7 @@ OLReceptorIsolateSaveCache(cacheDataMaxLMS, olCacheMaxLMS, paramsMaxLMS);
 
 % Get the cal files
 cal = LoadCalFile(OLCalibrationTypes.(params.calibrationType).CalFileName, [], getpref('OneLight', 'OneLightCalData'));
-cacheDir = fullfile(getpref(theApproach, 'MaterialsPath'),'Experiments',theApproach,'DirectionNominalPrimaries');
+cacheDir = fullfile(getpref(params.theApproach, 'MaterialsPath'),'Experiments',params.theApproach,'DirectionNominalPrimaries');
 
 % Modulation 
 desiredChromaticity = [0.54 0.38];

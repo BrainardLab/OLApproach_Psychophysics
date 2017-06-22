@@ -26,4 +26,4 @@ params.OBSERVER_AGE = 32;
 params.primaryHeadRoom = 0.01;              
 
 %% Make the nominal modulation primaries
-Psychophysics.MakeDirectionNominalPrimaries;
+Psychophysics.MakeDirectionNominalPrimaries(params);

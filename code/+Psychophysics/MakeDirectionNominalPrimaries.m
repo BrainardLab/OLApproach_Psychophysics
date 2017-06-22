@@ -1,3 +1,4 @@
+function MakeDirectionNominalPrimaries(baseParams)
 % MaxPulsePsychophycis_MakeDirectionNominalPrimaries - Calculate the nominal modulation primaries for the experiment
 %
 % Description:
@@ -12,62 +13,20 @@
 %     getpref('MaxPulsePsychophysics','DirectionNominalPrimariesPath');
 
 % 6/18/17  dhb  Added header comment.
+% 6/22/17  npc  Dictionarized modulation direction params
 
-% Calibration file.  
-theCalType = 'BoxDRandomizedLongCableAEyePiece2_ND02';
+% Make dictionary with direction-specific params for all directions
+paramsDictionary = directionNominalParamsDictionary();
 
-%% Standard parameters
-params.theApproach = 'OLApproach_Psychophysics';
-params.experiment = 'MaxPulsePsychophysics';
-params.experimentSuffix = 'MaxPulsePsychophysics';
-params.calibrationType = theCalType;
-params.whichReceptorsToMinimize = [];
-params.CALCULATE_SPLATTER = false;
-params.maxPowerDiff = 10^(-1);
-params.photoreceptorClasses = 'LConeTabulatedAbsorbance,MConeTabulatedAbsorbance,SConeTabulatedAbsorbance,Melanopsin';
-params.fieldSizeDegrees = 27.5;
-params.pupilDiameterMm = 8;                 % Assuming dilated pupil
-params.isActive = 1;
-params.useAmbient = 1;
-params.OBSERVER_AGE = 32;
-params.primaryHeadRoom = 0.01;              % Original value 0.01
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Silent substitution
+% Melanopsin-directed
+paramsMelDirected = directionParams(baseParams, paramsDictionary, 'MelanopsinDirected');
+[cacheDataBackground, olCache, paramsMelDirected] = OLReceptorIsolateMakeBackgroundNominalPrimaries(paramsMelDirected, true);
+OLReceptorIsolateSaveCache(cacheDataBackground, olCache, paramsMelDirected);
 
-% MaxMel
-%
-% Note modulation contrast is typically 2/3 for 400% contrast or 66.66%
-% sinusoidal contrast, modulation contrast has been set to 20% for testing
-% purposes
-params.pegBackground = false;
-params.modulationDirection = {'MelanopsinDirected'};
-params.modulationContrast = [4/6];
-params.modulationContrast = [4/6];
-params.whichReceptorsToIsolate = {[4]};
-params.whichReceptorsToIgnore = {[]};
-params.whichReceptorsToMinimize = {[]};
-params.directionsYoked = [0];
-params.directionsYokedAbs = [0];
-params.receptorIsolateMode = 'Standard';
-
-% Generate Mel shifted background
-params.backgroundType = 'BackgroundMaxMel';
-params.cacheFile = ['Cache-' params.backgroundType  '.mat'];
-[cacheDataBackground, olCache, params] = OLReceptorIsolateMakeBackgroundNominalPrimaries(params, true);
-OLReceptorIsolateSaveCache(cacheDataBackground, olCache, params);
-
-% Now, make the modulation
-params.primaryHeadRoom = 0.01;          % Original value: 0.005
-params.backgroundType = 'BackgroundMaxMel';
-params.modulationDirection = 'MelanopsinDirectedSuperMaxMel';
-params.modulationContrast = [4/6];
-params.whichReceptorsToIsolate = [4];
-params.whichReceptorsToIgnore = [];
-params.whichReceptorsToMinimize = [];
-params.receptorIsolateMode = 'Standard';
-params.cacheFile = ['Cache-' params.modulationDirection '.mat'];
-[cacheDataMaxMel, olCacheMaxMel, paramsMaxMel] = OLReceptorIsolateMakeDirectionNominalPrimaries(params, true);
+% MelanopsinDirectedSuperMaxMel
+paramsMaxMel = directionParams(baseParams, paramsDictionary, 'MelanopsinDirectedSuperMaxMel');
+[cacheDataMaxMel, olCacheMaxMel, paramsMaxMel] = OLReceptorIsolateMakeDirectionNominalPrimaries(paramsMaxMel, true);
 
 % Replace the backgrounds
 for observerAgeInYrs = [20:60]
@@ -80,38 +39,17 @@ for observerAgeInYrs = [20:60]
 end
 
 % Save the modulations
-paramsMaxMel.modulationDirection = 'MelanopsinDirectedSuperMaxMel';
 paramsMaxMel.cacheFile = ['Cache-' paramsMaxMel.modulationDirection '.mat'];
 OLReceptorIsolateSaveCache(cacheDataMaxMel, olCacheMaxMel, paramsMaxMel);
 
+
 %% MaxLMS
-params.pegBackground = false;
-params.modulationDirection = {'LMSDirected'};
-params.modulationContrast = {[4/6 4/6 4/6]};
-params.whichReceptorsToIsolate = {[1 2 3]};
-params.whichReceptorsToIgnore = {[]};
-params.whichReceptorsToMinimize = {[]};
-params.directionsYoked = [1];
-params.directionsYokedAbs = [0];
-params.receptorIsolateMode = 'Standard';
+paramsLMSDirected = directionParams(baseParams, paramsDictionary, 'LMSDirected');
+[cacheDataBackground, olCache, paramsLMSDirected] = OLReceptorIsolateMakeBackgroundNominalPrimaries(paramsLMSDirected, true);
+OLReceptorIsolateSaveCache(cacheDataBackground, olCache, paramsLMSDirected);
 
-% LMS shifted background
-params.backgroundType = 'BackgroundMaxLMS';
-params.cacheFile = ['Cache-' params.backgroundType  '.mat'];
-[cacheDataBackground, olCache, params] = OLReceptorIsolateMakeBackgroundNominalPrimaries(params, true);
-OLReceptorIsolateSaveCache(cacheDataBackground, olCache, params);
-
-% Now, make the modulation
-params.primaryHeadRoom = 0.01;              % Original value 0.005
-params.backgroundType = 'BackgroundMaxLMS';
-params.modulationDirection = 'LMSDirectedSuperMaxLMS';
-params.modulationContrast = [4/6 4/6 4/6];
-params.whichReceptorsToIsolate = [1 2 3];
-params.whichReceptorsToIgnore = [];
-params.whichReceptorsToMinimize = [];
-params.receptorIsolateMode = 'Standard';
-params.cacheFile = ['Cache-' params.modulationDirection '.mat'];
-[cacheDataMaxLMS, olCacheMaxLMS, paramsMaxLMS] = OLReceptorIsolateMakeDirectionNominalPrimaries(params, true);
+paramsMaxLMS = directionParams(baseParams, paramsDictionary, 'LMSDirectedSuperMaxLMS');
+[cacheDataMaxLMS, olCacheMaxLMS, paramsMaxLMS] = OLReceptorIsolateMakeDirectionNominalPrimaries(paramsMaxLMS, true);
 
 % Replace the backgrounds
 for observerAgeInYrs = [20:60]
@@ -124,9 +62,9 @@ for observerAgeInYrs = [20:60]
 end
 
 % Save the cache
-paramsMaxLMS.modulationDirection = 'LMSDirectedSuperMaxLMS';
 paramsMaxLMS.cacheFile = ['Cache-' paramsMaxLMS.modulationDirection '.mat'];
 OLReceptorIsolateSaveCache(cacheDataMaxLMS, olCacheMaxLMS, paramsMaxLMS);
+
 
 %% Light flux
 %
@@ -136,8 +74,8 @@ OLReceptorIsolateSaveCache(cacheDataMaxLMS, olCacheMaxLMS, paramsMaxLMS);
 %   x = 0.54, y = 0.38
 
 % Get the cal files
-cal = LoadCalFile(OLCalibrationTypes.(params.calibrationType).CalFileName, [], getpref('OneLight', 'OneLightCalData'));
-cacheDir = fullfile(getpref(params.theApproach, 'MaterialsPath'),'Experiments',params.theApproach,'DirectionNominalPrimaries');
+cal = LoadCalFile(OLCalibrationTypes.(baseParams.calibrationType).CalFileName, [], getpref('OneLight', 'OneLightCalData'));
+cacheDir = fullfile(getpref(baseParams.approach, 'MaterialsPath'),'Experiments',baseParams.approach,'DirectionNominalPrimaries');
 
 % Modulation 
 desiredChromaticity = [0.54 0.38];
@@ -172,3 +110,93 @@ end
 paramsMaxPulseLightFlux.modulationDirection = 'LightFluxMaxPulse';
 paramsMaxPulseLightFlux.cacheFile = ['Cache-' paramsMaxPulseLightFlux.modulationDirection '.mat'];
 OLReceptorIsolateSaveCache(cacheDataMaxPulseLightFlux, olCacheMaxPulseLightFlux, paramsMaxPulseLightFlux);
+end
+
+
+function dParams = directionParams(baseParams, paramsDictionary, directionName)
+    % Check that requested directionName is valid and print available directions if it is not
+    if (~paramsDictionary.isKey(directionName))
+        availableDirections = keys(paramsDictionary);
+        fprintf(2,'Known modulation directions\n');
+        for k = 1:numel(availableDirections)
+            fprintf(2,'[%d] ''%s''\n', k, availableDirections{k});
+        end
+        error('''%s'' is not a valid modulation direction', directionName);
+    end
+    % Get the direction specific params
+    directionSpecificParams = paramsDictionary(directionName);
+    % Update the params
+    dParams = baseParams;
+    for fn = fieldnames(directionSpecificParams)'
+        dParams.(fn{1}) = directionSpecificParams.(fn{1});
+    end
+end
+
+function d = directionNominalParamsDictionary()
+    % Initialize dictionary
+    d = containers.Map();
+    
+    %% MaxMel
+    %
+    % Note modulation contrast is typically 2/3 for 400% contrast or 66.66%
+    % sinusoidal contrast, modulation contrast has been set to 20% for testing purposes
+    directionName = 'MelanopsinDirected';
+    params = struct();
+    params.pegBackground = false;
+    params.modulationDirection = {directionName};
+    params.modulationContrast = [4/6];
+    params.whichReceptorsToIsolate = {[4]};
+    params.whichReceptorsToIgnore = {[]};
+    params.whichReceptorsToMinimize = {[]};
+    params.directionsYoked = [0];
+    params.directionsYokedAbs = [0];
+    params.receptorIsolateMode = 'Standard';
+    params.backgroundType = 'BackgroundMaxMel';
+    params.cacheFile = ['Cache-' params.backgroundType  '.mat'];
+    d(directionName) = params;
+    
+    
+    %% MelanopsinDirectedSuperMaxMel
+    directionName = 'MelanopsinDirectedSuperMaxMel';
+    params = struct();
+    params.primaryHeadRoom = 0.01;          % Original value: 0.005
+    params.backgroundType = 'BackgroundMaxMel';
+    params.modulationDirection = directionName;
+    params.modulationContrast = [4/6];
+    params.whichReceptorsToIsolate = [4];
+    params.whichReceptorsToIgnore = [];
+    params.whichReceptorsToMinimize = [];
+    params.receptorIsolateMode = 'Standard';
+    params.cacheFile = ['Cache-' params.modulationDirection '.mat'];
+    d(directionName) = params;
+    
+    %% LMSdirected
+    directionName = 'LMSDirected';
+    params = struct();
+    params.pegBackground = false;
+    params.modulationDirection = {directionName};
+    params.modulationContrast = {[4/6 4/6 4/6]};
+    params.whichReceptorsToIsolate = {[1 2 3]};
+    params.whichReceptorsToIgnore = {[]};
+    params.whichReceptorsToMinimize = {[]};
+    params.directionsYoked = [1];
+    params.directionsYokedAbs = [0];
+    params.receptorIsolateMode = 'Standard';
+    params.backgroundType = 'BackgroundMaxLMS';
+    params.cacheFile = ['Cache-' params.backgroundType  '.mat'];
+    d(directionName) = params;
+    
+    %% LMSdirectedSuperMaxMex
+    directionName = 'LMSDirectedSuperMaxLMS';
+    params = struct();
+    params.primaryHeadRoom = 0.01;              % Original value 0.005
+    params.backgroundType = 'BackgroundMaxLMS';
+    params.modulationDirection = directionName;
+    params.modulationContrast = [4/6 4/6 4/6];
+    params.whichReceptorsToIsolate = [1 2 3];
+    params.whichReceptorsToIgnore = [];
+    params.whichReceptorsToMinimize = [];
+    params.receptorIsolateMode = 'Standard';
+    params.cacheFile = ['Cache-' params.modulationDirection '.mat'];
+    d(directionName) = params;
+end

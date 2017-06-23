@@ -1,4 +1,4 @@
-function MakeModulationStartsStops(baseParams)
+function MakeModulationStartsStops(params)
 %MaxPulsePsychophysics_MakeModulationStartsStops
 %
 % Description:

@@ -24,7 +24,7 @@ end
 
 % Set up some parameters
 spectroRadiometerOBJ = [];
-theDirections = {['Direction_MelanopsinDirectedSuperMaxMel_' .observerID '_' params.todayDate '.mat'] ...
+theDirections = {['Direction_MelanopsinDirectedSuperMaxMel_' params.observerID '_' params.todayDate '.mat'] ...
     ['Direction_LMSDirectedSuperMaxLMS_' params.observerID '_' params.todayDate '.mat']};
 NDirections = length(theDirections);
 cacheDir = fullfile(getpref(params.theApproach, 'DataPath'),'Experiments',params.theApproach, params.experiment, 'DirectionCorrectedPrimaries', params.observerID);
@@ -32,7 +32,7 @@ outDir = fullfile(getpref(params.theApproach, 'DataPath'),'Experiments',params.t
 if(~exist(outDir))
     mkdir(outDir)
 end
-NMeas = 5;
+NMeas = 1;
 
 % Set up a counter
 c = 1;

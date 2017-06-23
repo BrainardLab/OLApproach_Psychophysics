@@ -30,10 +30,10 @@ params.observerAgeInYrs = GetWithDefault('>> Enter <strong>observer age</strong>
 params.todayDate = datestr(now, 'mmddyy');
 
 %% Make the nominal modulation primaries
-Psychophysics.MakeDirectionNominalPrimaries(params);
+%Psychophysics.MakeDirectionNominalPrimaries(params);
 
 %% Make the corrected modulation primaries
 %Psychophysics.MakeDirectionCorrectedPrimaries(params);
 
 %% Make the Starts and Stops
-%Psychophysics.MakeModulationStartsStops(params)
+Psychophysics.MakeModulationStartsStops(params)

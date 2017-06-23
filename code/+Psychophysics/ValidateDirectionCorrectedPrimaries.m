@@ -16,7 +16,6 @@ function params = ValidateDirectionCorrectedPrimaries(params)
 choiceIndex = 1;
 
 tic;
-commandwindow;
 
 % Prompt the user to state if we're before or after the experiment
 if ~exist('choiceIndex', 'var')

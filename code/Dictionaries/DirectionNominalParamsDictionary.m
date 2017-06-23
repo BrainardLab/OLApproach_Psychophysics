@@ -15,6 +15,7 @@ function d = DirectionNominalParamsDictionary()
     % sinusoidal contrast, modulation contrast has been set to 20% for testing purposes
     directionName = 'MelanopsinDirected';
     params = struct();
+    params.type = 'pulse';
     params.pegBackground = false;
     params.modulationDirection = {directionName};
     params.modulationContrast = [4/6];
@@ -32,6 +33,7 @@ function d = DirectionNominalParamsDictionary()
     %% MelanopsinDirectedSuperMaxMel
     directionName = 'MelanopsinDirectedSuperMaxMel';
     params = struct();
+    params.type = 'pulse';
     params.primaryHeadRoom = 0.01;          % Original value: 0.005
     params.backgroundType = 'BackgroundMaxMel';
     params.modulationDirection = directionName;
@@ -46,6 +48,7 @@ function d = DirectionNominalParamsDictionary()
     %% LMSdirected
     directionName = 'LMSDirected';
     params = struct();
+    params.type = 'pulse';
     params.pegBackground = false;
     params.modulationDirection = {directionName};
     params.modulationContrast = {[4/6 4/6 4/6]};
@@ -62,6 +65,7 @@ function d = DirectionNominalParamsDictionary()
     %% LMSdirectedSuperMaxMex
     directionName = 'LMSDirectedSuperMaxLMS';
     params = struct();
+    params.type = 'pulse';
     params.primaryHeadRoom = 0.01;              % Original value 0.005
     params.backgroundType = 'BackgroundMaxLMS';
     params.modulationDirection = directionName;

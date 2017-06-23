@@ -36,7 +36,7 @@ params.receptorIsolateMode = 'Standard';
 
 % Generate Mel shifted background
 params.backgroundType = 'BackgroundMaxMel';
-params.cacheFile = ['Cache-' params.backgroundType  '.mat'];
+params.cacheFile = ['Direction_' params.backgroundType  '.mat'];
 [cacheDataBackground, olCache, params] = OLReceptorIsolateMakeBackgroundNominalPrimaries(params, true);
 OLReceptorIsolateSaveCache(cacheDataBackground, olCache, params);
 
@@ -49,7 +49,7 @@ params.whichReceptorsToIsolate = [4];
 params.whichReceptorsToIgnore = [];
 params.whichReceptorsToMinimize = [];
 params.receptorIsolateMode = 'Standard';
-params.cacheFile = ['Cache-' params.modulationDirection '.mat'];
+params.cacheFile = ['Direction_' params.modulationDirection '.mat'];
 [cacheDataMaxMel, olCacheMaxMel, paramsMaxMel] = OLReceptorIsolateMakeDirectionNominalPrimaries(params, true);
 
 % Replace the backgrounds
@@ -64,7 +64,7 @@ end
 
 % Save the modulations
 paramsMaxMel.modulationDirection = 'MelanopsinDirectedSuperMaxMel';
-paramsMaxMel.cacheFile = ['Cache-' paramsMaxMel.modulationDirection '.mat'];
+paramsMaxMel.cacheFile = ['Direction_' paramsMaxMel.modulationDirection '.mat'];
 OLReceptorIsolateSaveCache(cacheDataMaxMel, olCacheMaxMel, paramsMaxMel);
 
 %% MaxLMS
@@ -80,7 +80,7 @@ params.receptorIsolateMode = 'Standard';
 
 % LMS shifted background
 params.backgroundType = 'BackgroundMaxLMS';
-params.cacheFile = ['Cache-' params.backgroundType  '.mat'];
+params.cacheFile = ['Direction_' params.backgroundType  '.mat'];
 [cacheDataBackground, olCache, params] = OLReceptorIsolateMakeBackgroundNominalPrimaries(params, true);
 OLReceptorIsolateSaveCache(cacheDataBackground, olCache, params);
 
@@ -93,7 +93,7 @@ params.whichReceptorsToIsolate = [1 2 3];
 params.whichReceptorsToIgnore = [];
 params.whichReceptorsToMinimize = [];
 params.receptorIsolateMode = 'Standard';
-params.cacheFile = ['Cache-' params.modulationDirection '.mat'];
+params.cacheFile = ['Direction_' params.modulationDirection '.mat'];
 [cacheDataMaxLMS, olCacheMaxLMS, paramsMaxLMS] = OLReceptorIsolateMakeDirectionNominalPrimaries(params, true);
 
 % Replace the backgrounds
@@ -108,7 +108,7 @@ end
 
 % Save the cache
 paramsMaxLMS.modulationDirection = 'LMSDirectedSuperMaxLMS';
-paramsMaxLMS.cacheFile = ['Cache-' paramsMaxLMS.modulationDirection '.mat'];
+paramsMaxLMS.cacheFile = ['Direction_' paramsMaxLMS.modulationDirection '.mat'];
 OLReceptorIsolateSaveCache(cacheDataMaxLMS, olCacheMaxLMS, paramsMaxLMS);
 
 %% Light flux
@@ -119,8 +119,8 @@ OLReceptorIsolateSaveCache(cacheDataMaxLMS, olCacheMaxLMS, paramsMaxLMS);
 %   x = 0.54, y = 0.38
 
 % Get the cal files
-cal = LoadCalFile(OLCalibrationTypes.(params.calibrationType).CalFileName, [], getpref('OneLight', 'OneLightCalData'));
-cacheDir = fullfile(getpref(params.theApproach, 'MaterialsPath'),params.theApproach, 'Experiments',params.experiment,'DirectionNominalPrimaries');
+cal = LoadCalFile(OLCalibrationTypes.(params.calibrationType).CalFileName, [], fullfile(getpref(params.theApproach, 'MaterialsPath'), 'Experiments',params.theApproach,'OneLightCalData'));
+cacheDir = fullfile(getpref(params.theApproach, 'MaterialsPath'),'Experiments',params.theApproach,'DirectionNominalPrimaries');
 
 % Modulation 
 desiredChromaticity = [0.54 0.38];
@@ -153,5 +153,5 @@ end
 
 % Save the cache?
 paramsMaxPulseLightFlux.modulationDirection = 'LightFluxMaxPulse';
-paramsMaxPulseLightFlux.cacheFile = ['Cache-' paramsMaxPulseLightFlux.modulationDirection '.mat'];
+paramsMaxPulseLightFlux.cacheFile = ['Direction_' paramsMaxPulseLightFlux.modulationDirection '.mat'];
 OLReceptorIsolateSaveCache(cacheDataMaxPulseLightFlux, olCacheMaxPulseLightFlux, paramsMaxPulseLightFlux);

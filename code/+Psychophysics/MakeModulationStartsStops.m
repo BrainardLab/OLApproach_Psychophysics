@@ -16,21 +16,10 @@ function MakeModulationStartsStops(params)
 
 % 6/18/17  dhb  Added descriptive comment.
 
-% Ask for the observer ID and age
-commandwindow;
-observerID = GetWithDefault('>> Enter <strong>user name</strong>', 'HERO_xxxx');
-observerAgeInYrs = GetWithDefault('>> Enter <strong>observer age</strong>:', 32);
-todayDate = datestr(now, 'mmddyy');
-
-% Calibration type
-theCalType = 'BoxDRandomizedLongCableAEyePiece2_ND02';
-params.theApproach = 'OLApproach_Psychophysics';
-params.experiment =  'MaxPulsePsychophysics';
-
 % LMS; Melanopsin; Light Flux
 tic;
-customSuffix = ['_' observerID '_' todayDate];
-OLReceptorIsolateMakeModulationStartsStops('Modulation-MaxMelPulsePsychophysics-PulseMaxLMS_3s_MaxContrast3sSegment.cfg', observerAgeInYrs, theCalType, customSuffix, params, observerID);
-OLReceptorIsolateMakeModulationStartsStops('Modulation-MaxMelPulsePsychophysics-PulseMaxMel_3s_MaxContrast3sSegment.cfg', observerAgeInYrs, theCalType, customSuffix, params, observerID);
-OLReceptorIsolateMakeModulationStartsStops('Modulation-MaxMelPulsePsychophysics-PulseMaxLightFlux_3s_MaxContrast3sSegment.cfg', observerAgeInYrs, theCalType, customSuffix, params, observerID);
+customSuffix = ['_' params.observerID '_' params.todayDate];
+OLReceptorIsolateMakeModulationStartsStops('Modulation-MaxMelPulsePsychophysics-PulseMaxLMS_3s_MaxContrast3sSegment.cfg', customSuffix, params);
+OLReceptorIsolateMakeModulationStartsStops('Modulation-MaxMelPulsePsychophysics-PulseMaxMel_3s_MaxContrast3sSegment.cfg', customSuffix, params);
+OLReceptorIsolateMakeModulationStartsStops('Modulation-MaxMelPulsePsychophysics-PulseMaxLightFlux_3s_MaxContrast3sSegment.cfg', customSuffix, params);
 toc;

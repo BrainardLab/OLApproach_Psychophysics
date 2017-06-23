@@ -14,7 +14,6 @@ params.protocol = 'MaxMelPulsePsychophysics';
 params.experiment = 'MaxMelPulsePsychophysics';
 params.experimentSuffix = 'MaxMelPulsePsychophysics';
 params.calibrationType = 'BoxDRandomizedLongCableAEyePiece2_ND02';
-params.OBSERVER_AGE = 32;
 params.simulate = false;
 params.whichReceptorsToMinimize = [];
 params.CALCULATE_SPLATTER = false;
@@ -38,4 +37,7 @@ Psychophysics.MakeDirectionNominalPrimaries(params);
 Psychophysics.MakeDirectionCorrectedPrimaries(params);
 
 %% Make the Starts and Stops
-MakeModulationStartsStops(params)
+Psychophysics.MakeModulationStartsStops(params)
+
+%% Validate Direction Corrected Primaries
+Psychophysics.ValidateDirectionCorrectedPrimaries(params)

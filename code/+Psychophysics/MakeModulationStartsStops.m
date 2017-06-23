@@ -1,5 +1,5 @@
 function MakeModulationStartsStops(params)
-%MaxPulsePsychophysics_MakeModulationStartsStops
+% MakeModulationStartsStops
 %
 % Description:
 %   This script reads in the primaries for the modulations in the experiment and computes the starts stops.
@@ -15,8 +15,6 @@ function MakeModulationStartsStops(params)
 %    getpref('MaxPulsePsychophysics','ModulationStartsStopsDir');
 
 % 6/18/17  dhb  Added descriptive comment.
-% 6/23/17  npc  Dictionarized modulation params
-
 
 % LMS; Melanopsin; Light Flux
 tic;

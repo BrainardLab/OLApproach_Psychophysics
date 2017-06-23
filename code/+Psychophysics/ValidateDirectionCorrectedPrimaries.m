@@ -1,4 +1,5 @@
-% MaxPulsePsychophycis_ValidateCorrectedPrimaries - Measure and check the corrected primaries
+function params = ValidateDirectionCorrectedPrimaries(params)
+% ValidateCorrectedPrimaries - Measure and check the corrected primaries
 %
 % Description:
 %     This script uses the radiometer to measure the light coming out of the eyepiece and 
@@ -15,37 +16,23 @@
 choiceIndex = 1;
 
 tic;
-commandwindow;
 
 % Prompt the user to state if we're before or after the experiment
 if ~exist('choiceIndex', 'var')
     choiceIndex = ChoiceMenuFromList({'Before the experiment', 'After the experiment'}, '> Validation before or after the experiment?');
 end
 
-% Ask for variables if they don't exist
-if ~exist('observerID', 'var') || ~exist('observerAgeInYrs', 'var') || ~exist('todayDate', 'var') || ~exist('takeTemperatureMeasurements', 'var')
-    observerID = GetWithDefault('>> Enter <strong>user name</strong>', 'HERO_test');
-    observerAgeInYrs = GetWithDefault('>> Enter <strong>observer age</strong>:', 32);
-    todayDate = GetWithDefault('>> Enter <strong>date of modulations were created</strong>:', 'mmddyy');
-    takeTemperatureMeasurements = true;
-end
-
 % Set up some parameters
-params.theApproach = 'OLApproach_Psychophysics';
-params.experiment = 'MaxPulsePsychophysics';
-theCalType = 'BoxDRandomizedLongCableAEyePiece2_ND02';
 spectroRadiometerOBJ = [];
-spectroRadiometerOBJWillShutdownAfterMeasurement = false;
-theDirections = {['Direction_MelanopsinDirectedSuperMaxMel_' observerID '_' todayDate '.mat'] ...
-    ['Direction_LMSDirectedSuperMaxLMS_' observerID '_' todayDate '.mat']};
+theDirections = {['Direction_MelanopsinDirectedSuperMaxMel_' params.observerID '_' params.todayDate '.mat'] ...
+    ['Direction_LMSDirectedSuperMaxLMS_' params.observerID '_' params.todayDate '.mat']};
 NDirections = length(theDirections);
-cacheDir = fullfile(getpref(params.theApproach, 'DataPath'),'Experiments',params.theApproach, params.experiment, 'DirectionCorrectedPrimaries', observerID);
-outDir = fullfile(getpref(params.theApproach, 'DataPath'),'Experiments',params.theApproach, params.experiment, 'DirectionValidationFiles', observerID);
+cacheDir = fullfile(getpref(params.theApproach, 'DataPath'),'Experiments',params.theApproach, params.experiment, 'DirectionCorrectedPrimaries', params.observerID);
+outDir = fullfile(getpref(params.theApproach, 'DataPath'),'Experiments',params.theApproach, params.experiment, 'DirectionValidationFiles', [params.observerID '_' params.sessionName]);
 if(~exist(outDir))
     mkdir(outDir)
 end
-dataPath = getpref('OneLight', 'dataPath');
-NMeas = 5;
+NMeas = 1;
 
 % Set up a counter
 c = 1;
@@ -69,19 +56,20 @@ for ii = 1:NMeas;
         [~, ~, ~, spectroRadiometerOBJ] = OLValidateCacheFileOOC(...
             fullfile(cacheDir, theDirections{d}), ...
             'jryan@mail.med.upenn.edu', ...
-            'PR-670', spectroRadiometerOBJ, spectroRadiometerOBJWillShutdownAfterMeasurement, ...
+            'PR-670', spectroRadiometerOBJ, params.spectroRadiometerOBJWillShutdownAfterMeasurement, ...
             'FullOnMeas', false, ...
             'CalStateMeas', calStateFlag, ...
             'DarkMeas', false, ...
-            'OBSERVER_AGE', observerAgeInYrs, ...
+            'OBSERVER_AGE', params.observerAgeInYrs, ...
             'ReducedPowerLevels', false, ...
-            'selectedCalType', theCalType, ...
+            'selectedCalType', params.calibrationType, ...
             'CALCULATE_SPLATTER', false, ...
             'powerLevels', [0 1.0000], ...
             'pr670sensitivityMode', 'STANDARD', ...
             'postreceptoralCombinations', [1 1 1 0 ; 1 -1 0 0 ; 0 0 1 0 ; 0 0 0 1], ...
             'outDir', outDir, ... %'outDir', fullfile(dataPath, 'MaxPulsePsychophysics', datestr(now, 'mmddyy')), ...
-            'takeTemperatureMeasurements', takeTemperatureMeasurements);
+            'takeTemperatureMeasurements', params.takeTemperatureMeasurements, ...
+            'theApproach', params.theApproach);
         
         % Increment the counter
         c = c+1;

@@ -30,6 +30,9 @@ params.observerID = GetWithDefault('>> Enter <strong>user name</strong>', 'HERO_
 params.observerAgeInYrs = GetWithDefault('>> Enter <strong>observer age</strong>:', 32);
 params.todayDate = datestr(now, 'mmddyy');
 
+%% Open the session
+[status, params] = Psychophysics.SessionInit(params);
+
 %% Make the nominal modulation primaries
 Psychophysics.MakeDirectionNominalPrimaries(params);
 
@@ -37,7 +40,7 @@ Psychophysics.MakeDirectionNominalPrimaries(params);
 Psychophysics.MakeDirectionCorrectedPrimaries(params);
 
 %% Make the Starts and Stops
-Psychophysics.MakeModulationStartsStops(params)
+Psychophysics.MakeModulationStartsStops(params);
 
 %% Validate Direction Corrected Primaries
-Psychophysics.ValidateDirectionCorrectedPrimaries(params)
+Psychophysics.ValidateDirectionCorrectedPrimaries(params);

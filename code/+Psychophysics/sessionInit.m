@@ -1,4 +1,4 @@
-function [status, params] = sessionInit(params)
+function [status, params] = SessionInit(params)
 
 % sessionInit -- Session Initalization 
 %
@@ -16,7 +16,8 @@ function [status, params] = sessionInit(params)
 %  06/23/17 mab,jar created file and green text.
 
 
-params.sessionNumber = 1;
+sessionNumber = 1; % needs to go into dirs and search for sessions and not be hard-coded to 1.
+params.sessionName =['session_' num2str(sessionNumber)];
 status = 'open';
-fprintf('* <strong> Session Started</strong>: session number %s\n',num2str(params.sessionNumber))
+fprintf('* <strong> Session Started</strong>: %s\n',params.sessionName)
 end

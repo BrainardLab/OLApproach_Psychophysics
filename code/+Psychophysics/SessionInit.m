@@ -1,6 +1,5 @@
-function [status, params] = SessionInit(params,theFunction)
-
-% sessionInit -- Session Initalization
+function [status, params] = SessionInit(params,theStep)
+% SessionInit -- Session Initalization
 %
 %  Description:
 %     This function creates a session specific directory for each subject
@@ -27,19 +26,21 @@ end
 
 filename = [params.observerID '_' params.sessionName '.log'];
 
-switch theFunction
+switch theStep
     case 'SessionInit'
         fileID = fopen(filename,'w');
-        fprintf(fileID,'test of the print\n');
-        fprintf(fileID,'Date: %',params.todayDate);
+        fprintf(fileID,'%s: test of the print.',theStep);
+        fprintf(fileID,' Date: %s\n',params.todayDate);
         fclose(fileID);
-    case 'MakeDirectionNominalPrimaries'
         
     case 'MakeDirectionCorrectedPrimaries'
         
     case 'MakeModulationStartsStops'
         
-    case 'ValidateDirectionCorrectedPrimaries'
+    case 'ValidateDirectionCorrectedPrimariesPre'
+        
+    case 'ValidateDirectionCorrectedPrimariesPost'
+
         
 end
 

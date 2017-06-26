@@ -1,6 +1,6 @@
-function [status, params] = SessionInit(params)
+function [status, params] = SessionInit(params,theFunction)
 
-% sessionInit -- Session Initalization 
+% sessionInit -- Session Initalization
 %
 %  Description:
 %     This function creates a session specific directory for each subject
@@ -9,7 +9,7 @@ function [status, params] = SessionInit(params)
 %     function will output a text file documenting general information
 %     about the session **more info to be added here once specifics have
 %     been decided on**
-%  Output: 
+%  Output:
 %     status - general output to be decided later.
 %     params - updated param struct with session info.
 
@@ -20,4 +20,27 @@ sessionNumber = 1; % needs to go into dirs and search for sessions and not be ha
 params.sessionName =['session_' num2str(sessionNumber)];
 status = 'open';
 fprintf('* <strong> Session Started</strong>: %s\n',params.sessionName)
+outDir = fullfile(getpref(params.theApproach,'SessionRecordsBasePath'),params.observerID,params.todayDate,params.sessionName);
+if ~exist(outDir)
+    mkdir(outDir)
+end
+
+filename = [params.observerID '_' params.sessionName '.log'];
+
+switch theFunction
+    case 'SessionInit'
+        fileID = fopen(filename,'w');
+        fprintf(fileID,'test of the print\n');
+        fprintf(fileID,'Date: %',params.todayDate);
+        fclose(fileID);
+    case 'MakeDirectionNominalPrimaries'
+        
+    case 'MakeDirectionCorrectedPrimaries'
+        
+    case 'MakeModulationStartsStops'
+        
+    case 'ValidateDirectionCorrectedPrimaries'
+        
+end
+
 end

@@ -66,6 +66,9 @@ setpref(theApproach,'ModulationConfigPath',fullfile(tbLocateProject(theApproach)
 % Modulation starts/stops files base path
 setpref(theApproach,'ModulationStartsStopsBasePath',fullfile(getpref(theApproach, 'DataPath'),'Experiments',theApproach,'ModulationStartsStops'));
 
+% Session Record base path
+setpref(theApproach,'SessionRecordsBasePath',fullfile(getpref(theApproach, 'DataPath'),'Experiments',theApproach,'MaxMelPulsePsychophysics','SessionRecords'));
+
 %% Set the default speak rate
 setpref(theApproach, 'SpeakRateDefault', 230);
 

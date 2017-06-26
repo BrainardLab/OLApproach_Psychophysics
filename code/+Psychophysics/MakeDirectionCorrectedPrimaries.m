@@ -36,7 +36,7 @@ spectroRadiometerOBJ=[];
 NominalPrimariesDir =  fullfile(getpref(params.theApproach, 'MaterialsPath'), 'Experiments',params.theApproach,'DirectionNominalPrimaries');
 % materialsPath, please rename, and send to
 % MELA_materials.../DirectionCorrectedPrimaries
-CorrectedPrimariesDir = fullfile(getpref(params.theApproach, 'DataPath'), 'Experiments', params.theApproach, params.experiment, 'DirectionCorrectedPrimaries', params.observerID);
+CorrectedPrimariesDir = fullfile(getpref(params.theApproach, 'DataPath'), 'Experiments', params.theApproach, params.experiment, 'DirectionCorrectedPrimaries', params.observerID, params.todayDate, params.sessionName);
 if(~exist(CorrectedPrimariesDir))
     mkdir(CorrectedPrimariesDir)
 end

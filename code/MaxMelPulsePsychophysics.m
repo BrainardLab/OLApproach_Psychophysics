@@ -31,7 +31,7 @@ params.observerAgeInYrs = GetWithDefault('>> Enter <strong>observer age</strong>
 params.todayDate = datestr(now, 'mmddyy');
 
 %% Open the session
-[status, params] = Psychophysics.SessionInit(params);
+params = Psychophysics.SessionLog(params,'SessionInit');
 
 %% Make the nominal modulation primaries
 Psychophysics.MakeDirectionNominalPrimaries(params);

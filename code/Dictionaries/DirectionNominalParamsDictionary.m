@@ -18,7 +18,7 @@ function d = DirectionNominalParamsDictionary()
     params.primaryHeadRoom = 0.01;
     params.backgroundType = 'BackgroundMaxMel';
     params.cacheFile = ['Cache-' params.backgroundType  '.mat'];
-    d = validateAndAddEntry(d, directionName, params);
+    d = entryValidateAndAppendToDictionary(d, directionName, params);
     
     
     %% MelanopsinDirectedSuperMaxMel
@@ -30,7 +30,7 @@ function d = DirectionNominalParamsDictionary()
     params.whichReceptorsToMinimize = [];
     params.backgroundType = 'BackgroundMaxMel';
     params.cacheFile = ['Cache-' params.modulationDirection '.mat'];
-    d = validateAndAddEntry(d, directionName, params);
+    d = entryValidateAndAppendToDictionary(d, directionName, params);
     
     %% LMSdirected
     directionName = 'LMSDirected';
@@ -43,7 +43,7 @@ function d = DirectionNominalParamsDictionary()
     params.directionsYokedAbs = [0];
     params.backgroundType = 'BackgroundMaxLMS';
     params.cacheFile = ['Cache-' params.backgroundType  '.mat'];
-    d = validateAndAddEntry(d, directionName, params);
+    d = entryValidateAndAppendToDictionary(d, directionName, params);
     
     %% LMSdirectedSuperMaxMex
     directionName = 'LMSDirectedSuperMaxLMS';
@@ -55,11 +55,10 @@ function d = DirectionNominalParamsDictionary()
     params.whichReceptorsToIgnore = [];
     params.whichReceptorsToMinimize = [];
     params.cacheFile = ['Cache-' params.modulationDirection '.mat'];
-    d(directionName) = params;
+    d = entryValidateAndAppendToDictionary(d, directionName, params);
 end
 
-function d = validateAndAddEntry(d, directionName, params)
-
+function d = entryValidateAndAppendToDictionary(d, directionName, params)
     % Update modulationDirection
     params.modulationDirection = directionName;
     
@@ -82,7 +81,6 @@ function d = validateAndAddEntry(d, directionName, params)
 end
 
 function params = defaultParams()
-
     params = struct();
     params.type = 'pulse';
     params.pegBackground = false;           % not sure about default value of this - Nicolas
@@ -97,6 +95,5 @@ function params = defaultParams()
     params.receptorIsolateMode = 'Standard';
     params.backgroundType = '';
     params.cacheFile = '';
-    
 end
 

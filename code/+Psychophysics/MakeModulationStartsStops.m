@@ -19,7 +19,7 @@ function MakeModulationStartsStops(params)
 % LMS; Melanopsin; Light Flux
 tic;
 customSuffix = ['_' params.observerID '_' params.todayDate];
-OLReceptorIsolateMakeModulationStartsStops('Modulation-MaxMelPulsePsychophysics-PulseMaxLMS_3s_MaxContrast3sSegment.cfg', customSuffix, params);
-OLReceptorIsolateMakeModulationStartsStops('Modulation-MaxMelPulsePsychophysics-PulseMaxMel_3s_MaxContrast3sSegment.cfg', customSuffix, params);
-OLReceptorIsolateMakeModulationStartsStops('Modulation-MaxMelPulsePsychophysics-PulseMaxLightFlux_3s_MaxContrast3sSegment.cfg', customSuffix, params);
+OLReceptorIsolateMakeModulationStartsStops('Modulation-PulseMaxLMS_3s_MaxContrast3sSegment.cfg', customSuffix, params);
+OLReceptorIsolateMakeModulationStartsStops('Modulation-PulseMaxMel_3s_MaxContrast3sSegment.cfg', customSuffix, params);
+OLReceptorIsolateMakeModulationStartsStops('Modulation-PulseMaxLightFlux_3s_MaxContrast3sSegment.cfg', customSuffix, params);
 toc;

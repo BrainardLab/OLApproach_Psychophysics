@@ -32,9 +32,9 @@ function MakeDirectionNominalPrimaries(baseParams)
     %   x = 0.54, y = 0.38
 
     % Get the cal files
-    cal = LoadCalFile(OLCalibrationTypes.(baseParams.calibrationType).CalFileName, [], getpref('OneLight', 'OneLightCalData'));
-    cacheDir = fullfile(getpref(baseParams.approach, 'MaterialsPath'),'Experiments',baseParams.approach,'DirectionNominalPrimaries');
-
+    cal = LoadCalFile(OLCalibrationTypes.(baseParams.calibrationType).CalFileName, [], fullfile(getpref(baseParams.theApproach, 'MaterialsPath'), 'Experiments',baseParams.theApproach,'OneLightCalData'));
+    cacheDir = fullfile(getpref(baseParams.theApproach, 'MaterialsPath'),'Experiments',baseParams.theApproach,'DirectionNominalPrimaries');
+    
     % Modulation 
     desiredChromaticity = [0.54 0.38];
     modPrimary = OLInvSolveChrom(cal, desiredChromaticity);

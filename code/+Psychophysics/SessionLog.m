@@ -16,7 +16,7 @@ function [params] = SessionLog(params,theStep)
 %  06/26/17 mab,jar added switch
 
 
-
+%% Swtich
 switch theStep
     case 'SessionInit'
         
@@ -50,26 +50,31 @@ switch theStep
         fprintf('* <strong> Session Started</strong>: %s\n',params.sessionName)
         fileID = fopen(params.fullFileName,'w');
         fprintf(fileID,'Experiment Started: %s.\n',params.experiment);
-        fprintf(fileID,'Session Number: %s\n',num2str(currentSessionNumber));
-        fprintf(fileID,'observerID: %s\n',params.observerID);
-        fprintf(fileID,'todayDate: %s\n',datestr(now,'mm-dd-yyyy'));
-        fprintf(fileID,'Session Start Time: %s\n',datestr(now,'HH:MM:SS'));
+        fprintf(fileID,'Observer ID: %s.\n',params.observerID);
+        fprintf(fileID,'Session Number: %s.\n',num2str(currentSessionNumber));
+        fprintf(fileID,'Session Date: %s\n',datestr(now,'mm-dd-yyyy'));
+        fprintf(fileID,'Session Start Time: %s.\n',datestr(now,'HH:MM:SS'));
         fclose(fileID);
         
     case 'MakeDirectionCorrectedPrimaries'
         fileID = fopen(params.fullFileName,'a');
+        fprintf(fileID,'\n\n%s Started @ %s.\n',theStep,datestr(now,'HH:MM:SS'));
         fclose(fileID);
     case 'MakeModulationStartsStops'
         fileID = fopen(params.fullFileName,'a');
+        fprintf(fileID,'\n\n%s Started @ %s.\n',theStep,datestr(now,'HH:MM:SS'));
         fclose(fileID);
     case 'ValidateDirectionCorrectedPrimariesPre'
         fileID = fopen(params.fullFileName,'a');
+        fprintf(fileID,'\n\n%s Started @ %s.\n',theStep,datestr(now,'HH:MM:SS'));
         fclose(fileID);
     case 'Demo'
         fileID = fopen(params.fullFileName,'a');
+        fprintf(fileID,'\n\n%s Started @ %s.\n',theStep,datestr(now,'HH:MM:SS'));
         fclose(fileID);
     case 'ValidateDirectionCorrectedPrimariesPost'
         fileID = fopen(params.fullFileName,'a');
+        fprintf(fileID,'\n\n%s Started @ %s.\n',theStep,datestr(now,'HH:MM:SS'));
         fclose(fileID);
     otherwise
         warning('%s unkown as a step.',theStep)

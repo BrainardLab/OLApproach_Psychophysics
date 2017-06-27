@@ -20,12 +20,14 @@ function [params] = SessionLog(params,theStep)
 switch theStep
     case 'SessionInit'
         
-        % Check for prior sessions
+        %% Check for prior sessions
         sessionDir = fullfile(getpref(params.theApproach,'SessionRecordsBasePath'),params.observerID,params.todayDate);
-        dirString = ls(sessionDir);
+        dirStatus = dir(sessionDir);
+        dirStatus=dirStatus(~ismember({dirStatus.name},{'.','..','.DS_Store'}));
         
-        if ~isempty(dirString)
-            priorSessionNumber = str2double(regexp(dirString, '(?<=session_[^0-9]*)[0-9]*\.?[0-9]+', 'match'))
+        if exist(sessionDir) && ~isempty(dirStatus)
+            dirString = ls(sessionDir);
+            priorSessionNumber = str2double(regexp(dirString, '(?<=session_[^0-9]*)[0-9]*\.?[0-9]+', 'match'));
             currentSessionNumber = max(priorSessionNumber) + 1;
             params.sessionName =['session_' num2str(currentSessionNumber)];
             params.sessionLogOutDir = fullfile(getpref(params.theApproach,'SessionRecordsBasePath'),params.observerID,params.todayDate,params.sessionName);
@@ -41,11 +43,12 @@ switch theStep
             end
         end
         
+        %% Start Log File
         fileName = [params.observerID '_' params.sessionName '.log'];
-        fullFileName = fullfile(params.sessionLogOutDir,fileName)
+        params.fullFileName = fullfile(params.sessionLogOutDir,fileName);
 
         fprintf('* <strong> Session Started</strong>: %s\n',params.sessionName)
-        fileID = fopen(fullFileName,'a');
+        fileID = fopen(params.fullFileName,'w');
         fprintf(fileID,'Experiment Started: %s.\n',params.experiment);
         fprintf(fileID,'Session Number: %s\n',num2str(currentSessionNumber));
         fprintf(fileID,'observerID: %s\n',params.observerID);
@@ -54,19 +57,19 @@ switch theStep
         fclose(fileID);
         
     case 'MakeDirectionCorrectedPrimaries'
-        fileID = fopen(fullFileName,'a');
+        fileID = fopen(params.fullFileName,'a');
         fclose(fileID);
     case 'MakeModulationStartsStops'
-        fileID = fopen(fullFileName,'a');
+        fileID = fopen(params.fullFileName,'a');
         fclose(fileID);
     case 'ValidateDirectionCorrectedPrimariesPre'
-        fileID = fopen(fullFileName,'a');
+        fileID = fopen(params.fullFileName,'a');
         fclose(fileID);
     case 'Demo'
-        fileID = fopen(fullFileName,'a');
+        fileID = fopen(params.fullFileName,'a');
         fclose(fileID);
     case 'ValidateDirectionCorrectedPrimariesPost'
-        fileID = fopen(fullFileName,'a');
+        fileID = fopen(params.fullFileName,'a');
         fclose(fileID);
     otherwise
         warning('%s unkown as a step.',theStep)

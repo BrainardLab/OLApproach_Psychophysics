@@ -1,11 +1,17 @@
-%% Rating task
-function MaxPulsePsychophysics_Experiment
-% MaxPulsePsychophysics_Experiment
+function Experiment
+% Experiment
 %
-% Simple program to run a rating task on MaxMel/MaxLMS pulses
-%
+% Description
+%   Simple program to run a rating psychophysical task with OneLight
+%   pulses.
+
 % 7/7/16    ms      Wrote it.
-% 11/17/2016 jr Added additional perceptual dimensions and Light
+% 11/17/2016 jr     Added additional perceptual dimensions and light
+
+
+% ALL OF THE PARAMETERS NEED TO COME OUT OF HERE.
+% SHOULD THE ol OBJECT BE OPENED OR PASSED?  PASSED
+% I WOULD THINK.
 
 % Flux to the stimulus labels.
 SpeakRateDefault = getpref('OneLight', 'SpeakRateDefault');

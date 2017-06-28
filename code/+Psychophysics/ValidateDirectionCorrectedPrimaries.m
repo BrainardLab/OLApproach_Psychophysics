@@ -27,8 +27,8 @@ spectroRadiometerOBJ = [];
 theDirections = {['Direction_MelanopsinDirectedSuperMaxMel_' params.observerID '_' params.todayDate '.mat'] ...
     ['Direction_LMSDirectedSuperMaxLMS_' params.observerID '_' params.todayDate '.mat']};
 NDirections = length(theDirections);
-cacheDir = fullfile(getpref(params.approach, 'DataPath'),'Experiments',params.approach, params.experiment, 'DirectionCorrectedPrimaries', params.observerID, params.todayDate, params.sessionName);
-outDir = fullfile(getpref(params.approach, 'DataPath'),'Experiments',params.approach, params.experiment, 'DirectionValidationFiles', params.observerID, params.todayDate, params.sessionName);
+cacheDir = fullfile(getpref(params.approach, 'DataPath'),'Experiments',params.approach, params.protocol, 'DirectionCorrectedPrimaries', params.observerID, params.todayDate, params.sessionName);
+outDir = fullfile(getpref(params.approach, 'DataPath'),'Experiments',params.approach, params.protocol, 'DirectionValidationFiles', params.observerID, params.todayDate, params.sessionName);
 if(~exist(outDir))
     mkdir(outDir)
 end

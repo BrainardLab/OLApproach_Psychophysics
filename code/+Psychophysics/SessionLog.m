@@ -62,7 +62,7 @@ switch theStep
 
         fprintf('* <strong> Session Started</strong>: %s\n',params.sessionName)
         fileID = fopen(params.fullFileName,'w');
-        fprintf(fileID,'Experiment Started: %s.\n',params.experiment);
+        fprintf(fileID,'Experiment Started: %s.\n',params.protocol);
         fprintf(fileID,'Observer ID: %s.\n',params.observerID);
         fprintf(fileID,'Session Number: %s.\n',num2str(currentSessionNumber));
         fprintf(fileID,'Session Date: %s\n',datestr(now,'mm-dd-yyyy'));

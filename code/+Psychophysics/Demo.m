@@ -1,9 +1,14 @@
-function MaxPulsePsychophysics_Demo
-% MaxPulsePsychophysics_Demo
+function Demo
+% Demo
 %
-% Simple program for demo of MaxMel/MaxLMS pulses
+% Description:
+%   Simple program for demo of MaxMel/MaxLMS pulses
 %
 % 7/7/16    ms      Wrote it.
+
+% ALL OF THE PARAMETERS NEED TO COME OUT OF HERE.
+% SHOULD THE ol OBJECT BE OPENED OR PASSED?  PASSED
+% I WOULD THINK.
 
 % Setup and prompt user for info
 SpeakRateDefault = getpref('OneLight', 'SpeakRateDefault');
@@ -13,7 +18,7 @@ observerAgeInYrs = GetWithDefault('>> Enter <strong>observer age</strong>:', 32)
 todayDate = datestr(now, 'mmddyy');
 
 % Parameters
-params.experiment =  'MaxPulsePsychophysics';
+params.protocol =  'MaxPulsePsychophysics';
 params.simulate = false; % Option to run in simulate mode (true if not plugged into to a onelight box)
 params.adaptTimeSecs = 3.333334; % 1 minute
 params.frameDurationSecs = 1/64;
@@ -23,7 +28,7 @@ params.NRepeatsPerStimulus = 3;
 params.NStimuli = 3;
 
 % Assemble the modulations
-modulationDir = fullfile(getpref(params.experiment, 'ModulationStartsStopsDir'));
+modulationDir = fullfile(getpref(params.protocol, 'ModulationStartsStopsDir'));
 pathToModFileLMS = ['Modulation-MaxMelPulsePsychophysics-PulseMaxLMS_3s_MaxContrast3sSegment-' num2str(params.observerAgeInYrs) '_' observerID '_' todayDate '.mat'];
 pathToModFileMel = ['Modulation-MaxMelPulsePsychophysics-PulseMaxMel_3s_MaxContrast3sSegment-' num2str(params.observerAgeInYrs) '_' observerID '_' todayDate '.mat'];
 pathToModFileLightFlux = ['Modulation-MaxMelPulsePsychophysics-PulseMaxLightFlux_3s_MaxContrast3sSegment-' num2str(params.observerAgeInYrs) '_' observerID '_' todayDate '.mat'];

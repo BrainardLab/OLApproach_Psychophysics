@@ -16,50 +16,50 @@ clear; close all;
 % This controls the operation of this protocol.
 %
 % Who we are
-protocoalParams.approach = 'OLApproach_Psychophysics';
-protocoalParams.protocol = 'MaxMelPulsePsychophysics';
-protocoalParams.protocolType = 'PulseRating';
+protocolParams.approach = 'OLApproach_Psychophysics';
+protocolParams.protocol = 'MaxMelPulsePsychophysics';
+protocolParams.protocolType = 'PulseRating';
 
 % Simulate?
-protocoalParams.simulate = false;
+protocolParams.simulate = false;
 
 % Photoreceptor parameters, assume a dialated pupil
-protocoalParams.fieldSizeDegrees = 27.5;
-protocoalParams.pupilDiameterMm = 8; 
+protocolParams.fieldSizeDegrees = 27.5;
+protocolParams.pupilDiameterMm = 8; 
 
 % WHAT DO THESE DO?
-protocoalParams.CALCULATE_SPLATTER = false;
-protocoalParams.maxPowerDiff = 10^(-1);
+protocolParams.CALCULATE_SPLATTER = false;
+protocolParams.maxPowerDiff = 10^(-1);
 
 % WHAT DOES THIS DO?
-protocoalParams.isActive = 1;
+protocolParams.isActive = 1;
         
 % OneLight parameters
-protocoalParams.calibrationType = 'BoxDRandomizedLongCableAEyePiece2_ND02';
-protocoalParams.takeTemperatureMeasurements = false;
-protocoalParams.spectroRadiometerOBJWillShutdownAfterMeasurement = false;
+protocolParams.calibrationType = 'BoxDRandomizedLongCableAEyePiece2_ND02';
+protocolParams.takeTemperatureMeasurements = false;
+protocolParams.spectroRadiometerOBJWillShutdownAfterMeasurement = false;
 
 % Information we prompt for and related
-protocoalParams.observerID = GetWithDefault('>> Enter <strong>user name</strong>', 'HERO_xxxx');
-protocoalParams.observerAgeInYrs = GetWithDefault('>> Enter <strong>observer age</strong>:', 32);
-protocoalParams.todayDate = datestr(now, 'mmddyy');
+protocolParams.observerID = GetWithDefault('>> Enter <strong>user name</strong>', 'HERO_xxxx');
+protocolParams.observerAgeInYrs = GetWithDefault('>> Enter <strong>observer age</strong>:', 32);
+protocolParams.todayDate = datestr(now, 'mmddyy');
 
 %% Initialize the one light
 % 
 % HOW DOES ol GET TO THE ROUTINES BELOW?  WHO CLOSES OL?
-ol = OneLight('simulate',protocoalParams.simulate);
+ol = OneLight('simulate',protocolParams.simulate);
 
 %% Open the session
-protocoalParams = Psychophysics.SessionLog(protocoalParams,'SessionInit');
+protocolParams = Psychophysics.SessionLog(protocolParams,'SessionInit');
 
 %% Make the nominal modulation primaries
-Psychophysics.MakeDirectionNominalPrimaries(protocoalParams);
+Psychophysics.MakeDirectionNominalPrimaries(protocolParams);
 
 %% Make the corrected modulation primaries
-Psychophysics.MakeDirectionCorrectedPrimaries(protocoalParams);
+Psychophysics.MakeDirectionCorrectedPrimaries(protocolParams);
 
 %% Make the Starts and Stops
-Psychophysics.MakeModulationStartsStops(protocoalParams);
+Psychophysics.MakeModulationStartsStops(protocolParams);
 
 %% Validate Direction Corrected Primaries
-Psychophysics.ValidateDirectionCorrectedPrimaries(protocoalParams);
+Psychophysics.ValidateDirectionCorrectedPrimaries(protocolParams);

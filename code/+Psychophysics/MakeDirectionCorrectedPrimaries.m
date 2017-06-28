@@ -51,7 +51,6 @@ for d = 1:length(theDirections)
     fprintf(' * Starting spectrum-seeking loop...\n');
 
     % THIS IS OUR ATTEMPT TO DO IT THE OLD WAY WITH THE NEW CODE.
-    
     [cacheData, olCache, spectroRadiometerOBJ, cal] = OLCorrectCacheFileOOC(...
         fullfile(NominalPrimariesDir, ['Direction_' theDirections{d} '.mat']), ...
         'jryan@mail.med.upenn.edu', ...
@@ -109,7 +108,7 @@ for d = 1:length(theDirections)
     % Save the cache
     fprintf(' * Saving cache ...');
     olCache = OLCache(CorrectedPrimariesDir,cal);
-    params = cacheData.data(params.observerAgeInYrs).describe.params;
+    %params = cacheData.data(params.observerAgeInYrs).describe.params;
     params.modulationDirection = theDirections{d};
     params.cacheFile = ['Direction_' params.modulationDirection '_' params.observerID '_' params.todayDate '.mat'];
     OLReceptorIsolateSaveCache(cacheData, olCache, params);

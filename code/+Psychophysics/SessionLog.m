@@ -1,40 +1,27 @@
-function [params] = SessionLog(params,theStep,varagin)
-% SessionLog -- Start and update the session log file.
+function [params] = SessionLog(params,theStep,StartEnd)
+% SessionLog -- Session Record Keeping
 %
 %  Description:
 %     This function creates a session specific directory for each subject
 %     within an experiment. This will also check for the existance of prior
 %     session with the option to append or create new session. This
 %     function will output a text file documenting general information
-%     about the session.
-%
-%      MORE INFO TO BE ADDED HERE ONCE WE FINALIZE THIS ROUTINE.
-%
-%  Input:
-%      WHAT ARE THE INPUTS, WHAT FORMAT, ETC. - DHB
-%
+%     about the session **more info to be added here once specifics have
+%     been decided on**
 %  Output:
 %     status - general output to be decided later.
 %     params - updated param struct with session info.
-%
-% Optional key/value pairs
-%     None
 
 %  06/23/17 mab,jar created file and green text.
 %  06/26/17 mab,jar added switch
-%
 
-% ADD INPUT PARSER HERE - DHB
-%
-% It will do input checking as well as allow us to easily pass key/value
-% pairs in the future.
 
-%% Handle each step of the seesion in its desired fashion.
+%% Swtich
 switch theStep
     case 'SessionInit'
         
         %% Check for prior sessions
-        sessionDir = fullfile(getpref(params.approach,'SessionRecordsBasePath'),params.observerID,params.todayDate);
+        sessionDir = fullfile(getpref(params.theApproach,'SessionRecordsBasePath'),params.observerID,params.todayDate);
         dirStatus = dir(sessionDir);
         dirStatus=dirStatus(~ismember({dirStatus.name},{'.','..','.DS_Store'}));
         
@@ -43,14 +30,14 @@ switch theStep
             priorSessionNumber = str2double(regexp(dirString, '(?<=session_[^0-9]*)[0-9]*\.?[0-9]+', 'match'));
             currentSessionNumber = max(priorSessionNumber) + 1;
             params.sessionName =['session_' num2str(currentSessionNumber)];
-            params.sessionLogOutDir = fullfile(getpref(params.approach,'SessionRecordsBasePath'),params.observerID,params.todayDate,params.sessionName);
+            params.sessionLogOutDir = fullfile(getpref(params.theApproach,'SessionRecordsBasePath'),params.observerID,params.todayDate,params.sessionName);
             if ~exist(params.sessionLogOutDir)
                 mkdir(params.sessionLogOutDir)
             end
         else
             currentSessionNumber = 1;
             params.sessionName =['session_' num2str(currentSessionNumber)];
-            params.sessionLogOutDir = fullfile(getpref(params.approach,'SessionRecordsBasePath'),params.observerID,params.todayDate,params.sessionName);
+            params.sessionLogOutDir = fullfile(getpref(params.theApproach,'SessionRecordsBasePath'),params.observerID,params.todayDate,params.sessionName);
             if ~exist(params.sessionLogOutDir)
                 mkdir(params.sessionLogOutDir)
             end
@@ -62,7 +49,7 @@ switch theStep
 
         fprintf('* <strong> Session Started</strong>: %s\n',params.sessionName)
         fileID = fopen(params.fullFileName,'w');
-        fprintf(fileID,'Experiment Started: %s.\n',params.protocol);
+        fprintf(fileID,'Experiment Started: %s.\n',params.experiment);
         fprintf(fileID,'Observer ID: %s.\n',params.observerID);
         fprintf(fileID,'Session Number: %s.\n',num2str(currentSessionNumber));
         fprintf(fileID,'Session Date: %s\n',datestr(now,'mm-dd-yyyy'));
@@ -71,7 +58,12 @@ switch theStep
         
     case 'MakeDirectionCorrectedPrimaries'
         fileID = fopen(params.fullFileName,'a');
-        fprintf(fileID,'\n\n%s Started @ %s.\n',theStep,datestr(now,'HH:MM:SS'));
+        switch StartEnd
+            case 'start'
+                fprintf(fileID,'\n\n%s Started @ %s.\n',theStep,datestr(now,'HH:MM:SS'));
+            case 'end'
+                fprintf(fileID,'%s Finished @ %s.\n',theStep,datestr(now,'HH:MM:SS'));
+        end
         fclose(fileID);
     case 'MakeModulationStartsStops'
         fileID = fopen(params.fullFileName,'a');

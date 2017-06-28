@@ -10,6 +10,9 @@ function Demo
 % SHOULD THE ol OBJECT BE OPENED OR PASSED?  PASSED
 % I WOULD THINK.
 
+% SHOULD BE A switch on params.protocolType, so different protocols within
+% Psychophysics approach can do different sorts of things.
+
 % Setup and prompt user for info
 SpeakRateDefault = getpref('OneLight', 'SpeakRateDefault');
 commandwindow;

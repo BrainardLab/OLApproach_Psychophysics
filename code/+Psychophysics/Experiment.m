@@ -112,7 +112,7 @@ for ii = 1:params.NStimuli
         counter = 1;
         while keepGoing
             fprintf('* Showing stimulus...')
-            modulationFlickerStartsStops(ol, stimStarts{is}, stimStops{is}, params.frameDurationSecs, 1);
+            OLFlicker(ol, stimStarts{is}, stimStops{is}, params.frameDurationSecs, 1);
             fprintf('Done.\n')
             counter =  counter+1;
             if counter == 2

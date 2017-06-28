@@ -89,7 +89,7 @@ for is = 1:params.NStimuli
         WaitForKeyPress;
         
         fprintf('* Showing stimulus...')
-        modulationFlickerStartsStops(ol, stimStarts{is}, stimStops{is}, params.frameDurationSecs, 1);
+        OLFlicker(ol, stimStarts{is}, stimStops{is}, params.frameDurationSecs, 1);
         fprintf('Done.\n')
     end
 end

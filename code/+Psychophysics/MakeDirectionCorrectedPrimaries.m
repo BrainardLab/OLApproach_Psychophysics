@@ -33,10 +33,10 @@ theDirections = {'MelanopsinDirectedSuperMaxMel' 'LMSDirectedSuperMaxLMS' 'Light
 theDirectionsCorrect = [true true true]; 
 spectroRadiometerOBJ=[];
 % CorrectedPrimariesDir is MELA_materials.../DirectionNominalPrimaries
-NominalPrimariesDir =  fullfile(getpref(params.theApproach, 'MaterialsPath'), 'Experiments',params.theApproach,'DirectionNominalPrimaries');
+NominalPrimariesDir =  fullfile(getpref(params.approach, 'MaterialsPath'), 'Experiments',params.approach,'DirectionNominalPrimaries');
 % materialsPath, please rename, and send to
 % MELA_materials.../DirectionCorrectedPrimaries
-CorrectedPrimariesDir = fullfile(getpref(params.theApproach, 'DataPath'), 'Experiments', params.theApproach, params.experiment, 'DirectionCorrectedPrimaries', params.observerID, params.todayDate, params.sessionName);
+CorrectedPrimariesDir = fullfile(getpref(params.approach, 'DataPath'), 'Experiments', params.approach, params.experiment, 'DirectionCorrectedPrimaries', params.observerID, params.todayDate, params.sessionName);
 if(~exist(CorrectedPrimariesDir))
     mkdir(CorrectedPrimariesDir)
 end
@@ -77,7 +77,7 @@ for d = 1:length(theDirections)
         'useAverageGamma', false, ...
         'zeroPrimariesAwayFromPeak', false, ...
         'simulate', params.simulate, ...
-        'theApproach', params.theApproach);
+        'theApproach', params.approach);
 
 % THIS IS SET UP TO DO IT THE NEW WAY
 %        [cacheData olCache spectroRadiometerOBJ] = OLCorrectCacheFileOOC(...

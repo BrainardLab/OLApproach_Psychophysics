@@ -27,8 +27,8 @@ spectroRadiometerOBJ = [];
 theDirections = {['Direction_MelanopsinDirectedSuperMaxMel_' params.observerID '_' params.todayDate '.mat'] ...
     ['Direction_LMSDirectedSuperMaxLMS_' params.observerID '_' params.todayDate '.mat']};
 NDirections = length(theDirections);
-cacheDir = fullfile(getpref(params.theApproach, 'DataPath'),'Experiments',params.theApproach, params.experiment, 'DirectionCorrectedPrimaries', params.observerID, params.todayDate, params.sessionName);
-outDir = fullfile(getpref(params.theApproach, 'DataPath'),'Experiments',params.theApproach, params.experiment, 'DirectionValidationFiles', params.observerID, params.todayDate, params.sessionName);
+cacheDir = fullfile(getpref(params.approach, 'DataPath'),'Experiments',params.approach, params.experiment, 'DirectionCorrectedPrimaries', params.observerID, params.todayDate, params.sessionName);
+outDir = fullfile(getpref(params.approach, 'DataPath'),'Experiments',params.approach, params.experiment, 'DirectionValidationFiles', params.observerID, params.todayDate, params.sessionName);
 if(~exist(outDir))
     mkdir(outDir)
 end
@@ -69,7 +69,7 @@ for ii = 1:NMeas;
             'postreceptoralCombinations', [1 1 1 0 ; 1 -1 0 0 ; 0 0 1 0 ; 0 0 0 1], ...
             'outDir', outDir, ... %'outDir', fullfile(dataPath, 'MaxPulsePsychophysics', datestr(now, 'mmddyy')), ...
             'takeTemperatureMeasurements', params.takeTemperatureMeasurements, ...
-            'theApproach', params.theApproach);
+            'theApproach', params.approach);
         
         % Increment the counter
         c = c+1;

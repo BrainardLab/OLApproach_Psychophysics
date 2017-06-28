@@ -34,7 +34,7 @@ switch theStep
     case 'SessionInit'
         
         %% Check for prior sessions
-        sessionDir = fullfile(getpref(params.theApproach,'SessionRecordsBasePath'),params.observerID,params.todayDate);
+        sessionDir = fullfile(getpref(params.approach,'SessionRecordsBasePath'),params.observerID,params.todayDate);
         dirStatus = dir(sessionDir);
         dirStatus=dirStatus(~ismember({dirStatus.name},{'.','..','.DS_Store'}));
         
@@ -43,14 +43,14 @@ switch theStep
             priorSessionNumber = str2double(regexp(dirString, '(?<=session_[^0-9]*)[0-9]*\.?[0-9]+', 'match'));
             currentSessionNumber = max(priorSessionNumber) + 1;
             params.sessionName =['session_' num2str(currentSessionNumber)];
-            params.sessionLogOutDir = fullfile(getpref(params.theApproach,'SessionRecordsBasePath'),params.observerID,params.todayDate,params.sessionName);
+            params.sessionLogOutDir = fullfile(getpref(params.approach,'SessionRecordsBasePath'),params.observerID,params.todayDate,params.sessionName);
             if ~exist(params.sessionLogOutDir)
                 mkdir(params.sessionLogOutDir)
             end
         else
             currentSessionNumber = 1;
             params.sessionName =['session_' num2str(currentSessionNumber)];
-            params.sessionLogOutDir = fullfile(getpref(params.theApproach,'SessionRecordsBasePath'),params.observerID,params.todayDate,params.sessionName);
+            params.sessionLogOutDir = fullfile(getpref(params.approach,'SessionRecordsBasePath'),params.observerID,params.todayDate,params.sessionName);
             if ~exist(params.sessionLogOutDir)
                 mkdir(params.sessionLogOutDir)
             end

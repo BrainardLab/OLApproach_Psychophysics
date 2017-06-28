@@ -1,22 +1,35 @@
-function [params] = SessionLog(params,theStep)
-% SessionLog -- Session Record Keeping
+function [params] = SessionLog(params,theStep,varagin)
+% SessionLog -- Start and update the session log file.
 %
 %  Description:
 %     This function creates a session specific directory for each subject
 %     within an experiment. This will also check for the existance of prior
 %     session with the option to append or create new session. This
 %     function will output a text file documenting general information
-%     about the session **more info to be added here once specifics have
-%     been decided on**
+%     about the session.
+%
+%      MORE INFO TO BE ADDED HERE ONCE WE FINALIZE THIS ROUTINE.
+%
+%  Input:
+%      WHAT ARE THE INPUTS, WHAT FORMAT, ETC. - DHB
+%
 %  Output:
 %     status - general output to be decided later.
 %     params - updated param struct with session info.
+%
+% Optional key/value pairs
+%     None
 
 %  06/23/17 mab,jar created file and green text.
 %  06/26/17 mab,jar added switch
+%
 
+% ADD INPUT PARSER HERE - DHB
+%
+% It will do input checking as well as allow us to easily pass key/value
+% pairs in the future.
 
-%% Swtich
+%% Handle each step of the seesion in its desired fashion.
 switch theStep
     case 'SessionInit'
         

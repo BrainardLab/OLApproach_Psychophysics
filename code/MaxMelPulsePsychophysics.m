@@ -11,27 +11,35 @@
 clear; close all;
 
 %% Set the parameter structure here
+% This controls the operation of this protocol.
 %
 % Who we are
 params.approach = 'OLApproach_Psychophysics';
 params.protocol = 'MaxMelPulsePsychophysics';
+params.protocolType = 'PulseRating';
 
 % Simulate?
 params.simulate = false;
 
-
-params.CALCULATE_SPLATTER = false;
-params.maxPowerDiff = 10^(-1);
+% Photoreceptor parameters
+%   Assume a dialated pupil
 params.photoreceptorClasses = 'LConeTabulatedAbsorbance,MConeTabulatedAbsorbance,SConeTabulatedAbsorbance,Melanopsin';
 params.fieldSizeDegrees = 27.5;
-params.pupilDiameterMm = 8;                
+params.pupilDiameterMm = 8; 
+
+% WHAT DO THESE DO?
+params.CALCULATE_SPLATTER = false;
+params.maxPowerDiff = 10^(-1);
+               
 params.isActive = 1;
-params.useAmbient = 1;            
+params.useAmbient = 1;  
+          
+% OneLight parameters
+params.calibrationType = 'BoxDRandomizedLongCableAEyePiece2_ND02';
 params.takeTemperatureMeasurements = false;
 params.spectroRadiometerOBJWillShutdownAfterMeasurement = false;
 
 % Information we prompt for and related
-params.calibrationType = 'BoxDRandomizedLongCableAEyePiece2_ND02';
 params.observerID = GetWithDefault('>> Enter <strong>user name</strong>', 'HERO_xxxx');
 params.observerAgeInYrs = GetWithDefault('>> Enter <strong>observer age</strong>:', 32);
 params.todayDate = datestr(now, 'mmddyy');

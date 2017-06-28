@@ -21,7 +21,7 @@ switch theStep
     case 'SessionInit'
         
         %% Check for prior sessions
-        sessionDir = fullfile(getpref(params.theApproach,'SessionRecordsBasePath'),params.observerID,params.todayDate);
+        sessionDir = fullfile(getpref(params.approach,'SessionRecordsBasePath'),params.observerID,params.todayDate);
         dirStatus = dir(sessionDir);
         dirStatus=dirStatus(~ismember({dirStatus.name},{'.','..','.DS_Store'}));
         
@@ -30,14 +30,14 @@ switch theStep
             priorSessionNumber = str2double(regexp(dirString, '(?<=session_[^0-9]*)[0-9]*\.?[0-9]+', 'match'));
             currentSessionNumber = max(priorSessionNumber) + 1;
             params.sessionName =['session_' num2str(currentSessionNumber)];
-            params.sessionLogOutDir = fullfile(getpref(params.theApproach,'SessionRecordsBasePath'),params.observerID,params.todayDate,params.sessionName);
+            params.sessionLogOutDir = fullfile(getpref(params.approach,'SessionRecordsBasePath'),params.observerID,params.todayDate,params.sessionName);
             if ~exist(params.sessionLogOutDir)
                 mkdir(params.sessionLogOutDir)
             end
         else
             currentSessionNumber = 1;
             params.sessionName =['session_' num2str(currentSessionNumber)];
-            params.sessionLogOutDir = fullfile(getpref(params.theApproach,'SessionRecordsBasePath'),params.observerID,params.todayDate,params.sessionName);
+            params.sessionLogOutDir = fullfile(getpref(params.approach,'SessionRecordsBasePath'),params.observerID,params.todayDate,params.sessionName);
             if ~exist(params.sessionLogOutDir)
                 mkdir(params.sessionLogOutDir)
             end
@@ -49,7 +49,7 @@ switch theStep
 
         fprintf('* <strong> Session Started</strong>: %s\n',params.sessionName)
         fileID = fopen(params.fullFileName,'w');
-        fprintf(fileID,'Experiment Started: %s.\n',params.experiment);
+        fprintf(fileID,'Experiment Started: %s.\n',params.protocol);
         fprintf(fileID,'Observer ID: %s.\n',params.observerID);
         fprintf(fileID,'Session Number: %s.\n',num2str(currentSessionNumber));
         fprintf(fileID,'Session Date: %s\n',datestr(now,'mm-dd-yyyy'));

@@ -16,50 +16,50 @@ clear; close all;
 % This controls the operation of this protocol.
 %
 % Who we are
-params.approach = 'OLApproach_Psychophysics';
-params.protocol = 'MaxMelPulsePsychophysics';
-params.protocolType = 'PulseRating';
+protocoalParams.approach = 'OLApproach_Psychophysics';
+protocoalParams.protocol = 'MaxMelPulsePsychophysics';
+protocoalParams.protocolType = 'PulseRating';
 
 % Simulate?
-params.simulate = false;
+protocoalParams.simulate = false;
 
 % Photoreceptor parameters, assume a dialated pupil
-params.fieldSizeDegrees = 27.5;
-params.pupilDiameterMm = 8; 
+protocoalParams.fieldSizeDegrees = 27.5;
+protocoalParams.pupilDiameterMm = 8; 
 
 % WHAT DO THESE DO?
-params.CALCULATE_SPLATTER = false;
-params.maxPowerDiff = 10^(-1);
-               
-params.isActive = 1;
- 
-          
+protocoalParams.CALCULATE_SPLATTER = false;
+protocoalParams.maxPowerDiff = 10^(-1);
+
+% WHAT DOES THIS DO?
+protocoalParams.isActive = 1;
+        
 % OneLight parameters
-params.calibrationType = 'BoxDRandomizedLongCableAEyePiece2_ND02';
-params.takeTemperatureMeasurements = false;
-params.spectroRadiometerOBJWillShutdownAfterMeasurement = false;
+protocoalParams.calibrationType = 'BoxDRandomizedLongCableAEyePiece2_ND02';
+protocoalParams.takeTemperatureMeasurements = false;
+protocoalParams.spectroRadiometerOBJWillShutdownAfterMeasurement = false;
 
 % Information we prompt for and related
-params.observerID = GetWithDefault('>> Enter <strong>user name</strong>', 'HERO_xxxx');
-params.observerAgeInYrs = GetWithDefault('>> Enter <strong>observer age</strong>:', 32);
-params.todayDate = datestr(now, 'mmddyy');
+protocoalParams.observerID = GetWithDefault('>> Enter <strong>user name</strong>', 'HERO_xxxx');
+protocoalParams.observerAgeInYrs = GetWithDefault('>> Enter <strong>observer age</strong>:', 32);
+protocoalParams.todayDate = datestr(now, 'mmddyy');
 
 %% Initialize the one light
 % 
 % HOW DOES ol GET TO THE ROUTINES BELOW?  WHO CLOSES OL?
-ol = OneLight('simulate',params.simulate);
+ol = OneLight('simulate',protocoalParams.simulate);
 
 %% Open the session
-params = Psychophysics.SessionLog(params,'SessionInit');
+protocoalParams = Psychophysics.SessionLog(protocoalParams,'SessionInit');
 
 %% Make the nominal modulation primaries
-Psychophysics.MakeDirectionNominalPrimaries(params);
+Psychophysics.MakeDirectionNominalPrimaries(protocoalParams);
 
 %% Make the corrected modulation primaries
-Psychophysics.MakeDirectionCorrectedPrimaries(params);
+Psychophysics.MakeDirectionCorrectedPrimaries(protocoalParams);
 
 %% Make the Starts and Stops
-Psychophysics.MakeModulationStartsStops(params);
+Psychophysics.MakeModulationStartsStops(protocoalParams);
 
 %% Validate Direction Corrected Primaries
-Psychophysics.ValidateDirectionCorrectedPrimaries(params);
+Psychophysics.ValidateDirectionCorrectedPrimaries(protocoalParams);

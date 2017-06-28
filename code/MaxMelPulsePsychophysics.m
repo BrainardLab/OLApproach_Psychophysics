@@ -6,6 +6,8 @@
 %   steps required to set up and run a session of the experiment.
 
 % 6/28/17  dhb  Added first history comment.
+%          dhb  Move params.photoreceptorClasses into the dictionaries.
+%          dhb  Move params.useAmbient into the dictionaries.
 
 %% Clear
 clear; close all;
@@ -21,9 +23,7 @@ params.protocolType = 'PulseRating';
 % Simulate?
 params.simulate = false;
 
-% Photoreceptor parameters
-%   Assume a dialated pupil
-params.photoreceptorClasses = 'LConeTabulatedAbsorbance,MConeTabulatedAbsorbance,SConeTabulatedAbsorbance,Melanopsin';
+% Photoreceptor parameters, assume a dialated pupil
 params.fieldSizeDegrees = 27.5;
 params.pupilDiameterMm = 8; 
 
@@ -32,7 +32,7 @@ params.CALCULATE_SPLATTER = false;
 params.maxPowerDiff = 10^(-1);
                
 params.isActive = 1;
-params.useAmbient = 1;  
+ 
           
 % OneLight parameters
 params.calibrationType = 'BoxDRandomizedLongCableAEyePiece2_ND02';

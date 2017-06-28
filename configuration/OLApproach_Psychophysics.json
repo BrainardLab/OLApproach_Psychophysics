@@ -3,7 +3,7 @@
 		"flavor": "",
 		"hook": "",
 		"importance": "",
-		"localHookTemplate": "configuration/OLFlickerSensitivityLocalHookTemplate.m",
+		"localHookTemplate": "configuration/OLApproach_PsychophysicsLocalHookTemplate.m",
 		"name": "OLApproach_Psychophysics",
 		"pathPlacement": "append",
 		"subfolder": "code",

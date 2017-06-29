@@ -1,4 +1,4 @@
-function Demo
+function Demo(protocolParams)
 % Demo
 %
 % Description:
@@ -21,20 +21,18 @@ observerAgeInYrs = GetWithDefault('>> Enter <strong>observer age</strong>:', 32)
 todayDate = datestr(now, 'mmddyy');
 
 % Parameters
-params.protocol =  'MaxPulsePsychophysics';
-params.simulate = false; % Option to run in simulate mode (true if not plugged into to a onelight box)
-params.adaptTimeSecs = 3.333334; % 1 minute
-params.frameDurationSecs = 1/64;
-params.observerAgeInYrs = observerAgeInYrs;
-params.ISISecs = 5;
-params.NRepeatsPerStimulus = 3;
-params.NStimuli = 3;
+
+protocolParams.adaptTimeSecs = 3.333334; % 1 minute
+protocolParams.frameDurationSecs = 1/64;
+protocolParams.ISISecs = 5;
+protocolParams.NRepeatsPerStimulus = 3;
+protocolParams.NStimuli = 3;
 
 % Assemble the modulations
-modulationDir = fullfile(getpref(params.protocol, 'ModulationStartsStopsDir'));
-pathToModFileLMS = ['Modulation-MaxMelPulsePsychophysics-PulseMaxLMS_3s_MaxContrast3sSegment-' num2str(params.observerAgeInYrs) '_' observerID '_' todayDate '.mat'];
-pathToModFileMel = ['Modulation-MaxMelPulsePsychophysics-PulseMaxMel_3s_MaxContrast3sSegment-' num2str(params.observerAgeInYrs) '_' observerID '_' todayDate '.mat'];
-pathToModFileLightFlux = ['Modulation-MaxMelPulsePsychophysics-PulseMaxLightFlux_3s_MaxContrast3sSegment-' num2str(params.observerAgeInYrs) '_' observerID '_' todayDate '.mat'];
+modulationDir = fullfile(getpref(protocolParams.approach, 'ModulationStartsStopsBasePath'), protocolParams.observerID,protocolParams.todayDate,protocolParams.sessionName);
+pathToModFileLMS = ['Modulation-PulsePsychophysics-PulseMaxLMS_3s_MaxContrast3sSegment-' num2str(protocolParams.observerAgeInYrs) '_' protocolParams.observerID '_' protocolParams.todayDate '.mat'];
+pathToModFileMel = ['Modulation-PulsePsychophysics-PulseMaxMel_3s_MaxContrast3sSegment-' num2str(protocolParams.observerAgeInYrs) '_' protocolParams.observerID '_' protocolParams.todayDate '.mat'];
+pathToModFileLightFlux = ['Modulation-PulsePsychophysics-PulseMaxLightFlux_3s_MaxContrast3sSegment-' num2str(protocolParams.observerAgeInYrs) '_' protocolParams.observerID '_' protocolParams.todayDate '.mat'];
 
 % Load in the files
 modFileLMS = load(fullfile(modulationDir, pathToModFileLMS));
@@ -65,31 +63,31 @@ WaitForKeyPress;
 fprintf('* <strong>Experiment started</strong>\n');
 
 % Open the OneLight
-ol = OneLight('simulate',params.simulate);
+ol = OneLight('simulate',protocolParams.simulate);
 
-for is = 1:params.NStimuli
+for is = 1:protocolParams.NStimuli
     % Set to background
     ol.setMirrors(stimStartsBG{is}', stimStopsBG{is}');
     
     % Adapt to background for 1 minute
-    Speak(sprintf('Adapt to background for %g seconds. Press key to start adaptation', params.adaptTimeSecs), [], SpeakRateDefault);
+    Speak(sprintf('Adapt to background for %g seconds. Press key to start adaptation', protocolParams.adaptTimeSecs), [], SpeakRateDefault);
     WaitForKeyPress;
     fprintf('\tAdaptation started.');
     Speak('Adaptation started', [], SpeakRateDefault);
     tic;
-    mglWaitSecs(params.adaptTimeSecs);
+    mglWaitSecs(protocolParams.adaptTimeSecs);
     Speak('Adaptation complete', [], SpeakRateDefault);
     fprintf('\n\tAdaptation completed.\n\t');
     toc;
     
-    for js = 1:params.NRepeatsPerStimulus
+    for js = 1:protocolParams.NRepeatsPerStimulus
         fprintf('\t- Stimulus: <strong>%s</strong>\n', stimLabels{is});
         fprintf('\t- Repeat: <strong>%g</strong>\n', js);
         Speak(['Press key to start.'], [], 200);
         WaitForKeyPress;
         
         fprintf('* Showing stimulus...')
-        OLFlicker(ol, stimStarts{is}, stimStops{is}, params.frameDurationSecs, 1);
+        OLFlicker(ol, stimStarts{is}, stimStops{is}, protocolParams.frameDurationSecs, 1);
         fprintf('Done.\n')
     end
 end

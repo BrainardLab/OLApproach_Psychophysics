@@ -67,7 +67,7 @@ setpref(theApproach,'DirectionCorrectedPrimariesBasePath',fullfile(getpref(theAp
 setpref(theApproach,'ModulationConfigPath',fullfile(tbLocateProject(theApproach),'modulationconfig'));
 
 % Modulation starts/stops files base path
-setpref(theApproach,'ModulationStartsStopsBasePath',fullfile(getpref(theApproach, 'DataPath'),'Experiments',theApproach,'ModulationStartsStops'));
+setpref(theApproach,'ModulationStartsStopsBasePath',fullfile(getpref(theApproach, 'DataPath'),'Experiments',theApproach,'MaxMelPulsePsychophysics','ModulationsStartsStops'));
 
 % Session Record base path
 setpref(theApproach,'SessionRecordsBasePath',fullfile(getpref(theApproach, 'DataPath'),'Experiments',theApproach,'MaxMelPulsePsychophysics','SessionRecords'));

@@ -61,5 +61,10 @@ Psychophysics.MakeDirectionCorrectedPrimaries(protocolParams);
 %% Make the Starts and Stops
 Psychophysics.MakeModulationStartsStops(protocolParams);
 
-%% Validate Direction Corrected Primaries
-Psychophysics.ValidateDirectionCorrectedPrimaries(protocolParams);
+%% Validate Direction Corrected Primaries Prior to Experiemnt
+Psychophysics.ValidateDirectionCorrectedPrimaries(protocolParams,'Pre');
+
+%% Run Demo Code
+
+%% Validate Direction Corrected Primaries Post Experiment
+Psychophysics.ValidateDirectionCorrectedPrimaries(protocolParams,'Post');

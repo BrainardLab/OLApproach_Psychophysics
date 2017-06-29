@@ -1,4 +1,4 @@
-function [params] = SessionLog(params,theStep,StartEnd)
+function [protocolParams] = SessionLog(protocolParams,theStep,varargin)
 % SessionLog -- Session Record Keeping
 %
 %  Description:
@@ -16,12 +16,19 @@ function [params] = SessionLog(params,theStep,StartEnd)
 %  06/26/17 mab,jar added switch
 
 
+% set up vars
+p = inputParser;
+p.addParameter('StartEnd',[],@isstr);
+p.addParameter('PrePost',[],@isstr);
+p.parse(varargin{:});
+p = p.Results;
+
 %% Swtich
 switch theStep
     case 'SessionInit'
         
         %% Check for prior sessions
-        sessionDir = fullfile(getpref(params.approach,'SessionRecordsBasePath'),params.observerID,params.todayDate);
+        sessionDir = fullfile(getpref(protocolParams.approach,'SessionRecordsBasePath'),protocolParams.observerID,protocolParams.todayDate);
         dirStatus = dir(sessionDir);
         dirStatus=dirStatus(~ismember({dirStatus.name},{'.','..','.DS_Store'}));
         
@@ -29,56 +36,61 @@ switch theStep
             dirString = ls(sessionDir);
             priorSessionNumber = str2double(regexp(dirString, '(?<=session_[^0-9]*)[0-9]*\.?[0-9]+', 'match'));
             currentSessionNumber = max(priorSessionNumber) + 1;
-            params.sessionName =['session_' num2str(currentSessionNumber)];
-            params.sessionLogOutDir = fullfile(getpref(params.approach,'SessionRecordsBasePath'),params.observerID,params.todayDate,params.sessionName);
-            if ~exist(params.sessionLogOutDir)
-                mkdir(params.sessionLogOutDir)
+            protocolParams.sessionName =['session_' num2str(currentSessionNumber)];
+            protocolParams.sessionLogOutDir = fullfile(getpref(protocolParams.approach,'SessionRecordsBasePath'),protocolParams.observerID,protocolParams.todayDate,protocolParams.sessionName);
+            if ~exist(protocolParams.sessionLogOutDir)
+                mkdir(protocolParams.sessionLogOutDir)
             end
         else
             currentSessionNumber = 1;
-            params.sessionName =['session_' num2str(currentSessionNumber)];
-            params.sessionLogOutDir = fullfile(getpref(params.approach,'SessionRecordsBasePath'),params.observerID,params.todayDate,params.sessionName);
-            if ~exist(params.sessionLogOutDir)
-                mkdir(params.sessionLogOutDir)
+            protocolParams.sessionName =['session_' num2str(currentSessionNumber)];
+            protocolParams.sessionLogOutDir = fullfile(getpref(protocolParams.approach,'SessionRecordsBasePath'),protocolParams.observerID,protocolParams.todayDate,protocolParams.sessionName);
+            if ~exist(protocolParams.sessionLogOutDir)
+                mkdir(protocolParams.sessionLogOutDir)
             end
         end
         
         %% Start Log File
-        fileName = [params.observerID '_' params.sessionName '.log'];
-        params.fullFileName = fullfile(params.sessionLogOutDir,fileName);
-
-        fprintf('* <strong> Session Started</strong>: %s\n',params.sessionName)
-        fileID = fopen(params.fullFileName,'w');
-        fprintf(fileID,'Experiment Started: %s.\n',params.protocol);
-        fprintf(fileID,'Observer ID: %s.\n',params.observerID);
+        fileName = [protocolParams.observerID '_' protocolParams.sessionName '.log'];
+        protocolParams.fullFileName = fullfile(protocolParams.sessionLogOutDir,fileName);
+        
+        fprintf('* <strong> Session Started</strong>: %s\n',protocolParams.sessionName)
+        fileID = fopen(protocolParams.fullFileName,'w');
+        fprintf(fileID,'Experiment Started: %s.\n',protocolParams.protocol);
+        fprintf(fileID,'Observer ID: %s.\n',protocolParams.observerID);
         fprintf(fileID,'Session Number: %s.\n',num2str(currentSessionNumber));
         fprintf(fileID,'Session Date: %s\n',datestr(now,'mm-dd-yyyy'));
         fprintf(fileID,'Session Start Time: %s.\n',datestr(now,'HH:MM:SS'));
         fclose(fileID);
         
     case 'MakeDirectionCorrectedPrimaries'
-        fileID = fopen(params.fullFileName,'a');
-        switch StartEnd
+        fileID = fopen(protocolParams.fullFileName,'a');
+        switch p.StartEnd
             case 'start'
-                fprintf(fileID,'\n\n%s Started @ %s.\n',theStep,datestr(now,'HH:MM:SS'));
+                fprintf(fileID,'\n%s Started @ %s.\n',theStep,datestr(now,'HH:MM:SS'));
             case 'end'
                 fprintf(fileID,'%s Finished @ %s.\n',theStep,datestr(now,'HH:MM:SS'));
         end
         fclose(fileID);
     case 'MakeModulationStartsStops'
-        fileID = fopen(params.fullFileName,'a');
-        fprintf(fileID,'\n\n%s Started @ %s.\n',theStep,datestr(now,'HH:MM:SS'));
+        fileID = fopen(protocolParams.fullFileName,'a');
+        switch p.StartEnd
+            case 'start'
+                fprintf(fileID,'\n%s Started @ %s.\n',theStep,datestr(now,'HH:MM:SS'));
+            case 'end'
+                fprintf(fileID,'%s Finished @ %s.\n',theStep,datestr(now,'HH:MM:SS'));
+        end
         fclose(fileID);
-    case 'ValidateDirectionCorrectedPrimariesPre'
-        fileID = fopen(params.fullFileName,'a');
-        fprintf(fileID,'\n\n%s Started @ %s.\n',theStep,datestr(now,'HH:MM:SS'));
-        fclose(fileID);
+    case 'ValidateDirectionCorrectedPrimaries'
+        fileID = fopen(protocolParams.fullFileName,'a');
+        switch p.StartEnd
+            case 'start'
+                fprintf(fileID,'\n%s%s: Started @ %s.\n',p.PrePost,theStep,datestr(now,'HH:MM:SS'));
+            case 'end'
+                fprintf(fileID,'%s%s: Finished @ %s.\n',p.PrePost, theStep,datestr(now,'HH:MM:SS'));
+        end
     case 'Demo'
-        fileID = fopen(params.fullFileName,'a');
-        fprintf(fileID,'\n\n%s Started @ %s.\n',theStep,datestr(now,'HH:MM:SS'));
-        fclose(fileID);
-    case 'ValidateDirectionCorrectedPrimariesPost'
-        fileID = fopen(params.fullFileName,'a');
+        fileID = fopen(protocolParams.fullFileName,'a');
         fprintf(fileID,'\n\n%s Started @ %s.\n',theStep,datestr(now,'HH:MM:SS'));
         fclose(fileID);
     otherwise

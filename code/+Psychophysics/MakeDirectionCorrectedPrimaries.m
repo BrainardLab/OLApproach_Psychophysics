@@ -1,4 +1,4 @@
-function params = MakeDirectionCorrectedPrimaries(params)
+function protocolParams = MakeDirectionCorrectedPrimaries(protocolParams)
 
 % MakeDirectionCorrectedPrimaries - Make the corrected primaries from the nominal primaries
 %
@@ -29,14 +29,17 @@ function params = MakeDirectionCorrectedPrimaries(params)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 tic;
 
+%% Update Session Log File
+protocolParams = Psychophysics.SessionLog(protocolParams,'MakeDirectionCorrectedPrimaries','start');
+
 theDirections = {'MelanopsinDirectedSuperMaxMel' 'LMSDirectedSuperMaxLMS' 'LightFluxMaxPulse' };
 theDirectionsCorrect = [true true true]; 
 spectroRadiometerOBJ=[];
 % CorrectedPrimariesDir is MELA_materials.../DirectionNominalPrimaries
-NominalPrimariesDir =  fullfile(getpref(params.approach, 'MaterialsPath'), 'Experiments',params.approach,'DirectionNominalPrimaries');
+NominalPrimariesDir =  fullfile(getpref(protocolParams.approach, 'MaterialsPath'), 'Experiments',protocolParams.approach,'DirectionNominalPrimaries');
 % materialsPath, please rename, and send to
 % MELA_materials.../DirectionCorrectedPrimaries
-CorrectedPrimariesDir = fullfile(getpref(params.approach, 'DataPath'), 'Experiments', params.approach, params.protocol, 'DirectionCorrectedPrimaries', params.observerID, params.todayDate, params.sessionName);
+CorrectedPrimariesDir = fullfile(getpref(protocolParams.approach, 'DataPath'), 'Experiments', protocolParams.approach, protocolParams.protocol, 'DirectionCorrectedPrimaries', protocolParams.observerID, protocolParams.todayDate, protocolParams.sessionName);
 if(~exist(CorrectedPrimariesDir))
     mkdir(CorrectedPrimariesDir)
 end
@@ -44,8 +47,8 @@ end
 for d = 1:length(theDirections)
     % Print out some information
     fprintf(' * Direction:\t<strong>%s</strong>\n', theDirections{d});
-    fprintf(' * Observer:\t<strong>%s</strong>\n', params.observerID);
-    fprintf(' * Date:\t<strong>%s</strong>\n', params.todayDate);
+    fprintf(' * Observer:\t<strong>%s</strong>\n', protocolParams.observerID);
+    fprintf(' * Date:\t<strong>%s</strong>\n', protocolParams.todayDate);
     
     % Correct the cache
     fprintf(' * Starting spectrum-seeking loop...\n');
@@ -54,13 +57,13 @@ for d = 1:length(theDirections)
     [cacheData, olCache, spectroRadiometerOBJ, cal] = OLCorrectCacheFileOOC(...
         fullfile(NominalPrimariesDir, ['Direction_' theDirections{d} '.mat']), ...
         'jryan@mail.med.upenn.edu', ...
-        'PR-670', spectroRadiometerOBJ, params.spectroRadiometerOBJWillShutdownAfterMeasurement, ...
+        'PR-670', spectroRadiometerOBJ, protocolParams.spectroRadiometerOBJWillShutdownAfterMeasurement, ...
         'FullOnMeas', false, ...
         'CalStateMeas', false, ...
         'DarkMeas', false, ...
-        'OBSERVER_AGE', params.observerAgeInYrs, ...
+        'OBSERVER_AGE', protocolParams.observerAgeInYrs, ...
         'ReducedPowerLevels', false, ...
-        'selectedCalType', params.calibrationType, ...
+        'selectedCalType', protocolParams.calibrationType, ...
         'CALCULATE_SPLATTER', false, ...
         'learningRate', 0.8, ...
         'learningRateDecrease', false, ...
@@ -71,12 +74,12 @@ for d = 1:length(theDirections)
         'powerLevels', [0 1.0000], ...
         'doCorrection', theDirectionsCorrect(d), ...
         'postreceptoralCombinations', [1 1 1 0 ; 1 -1 0 0 ; 0 0 1 0 ; 0 0 0 1], ...
-        'outDir', fullfile(CorrectedPrimariesDir, params.observerID), ... %fullfile(CorrectedPrimariesDir, 'MaxPulsePsychophysics', params.todayDate),
-        'takeTemperatureMeasurements', params.takeTemperatureMeasurements, ...
+        'outDir', fullfile(CorrectedPrimariesDir, protocolParams.observerID), ... %fullfile(CorrectedPrimariesDir, 'MaxPulsePsychophysics', params.todayDate),
+        'takeTemperatureMeasurements', protocolParams.takeTemperatureMeasurements, ...
         'useAverageGamma', false, ...
         'zeroPrimariesAwayFromPeak', false, ...
-        'simulate', params.simulate, ...
-        'approach', params.approach);
+        'simulate', protocolParams.simulate, ...
+        'approach', protocolParams.approach);
 
 % THIS IS SET UP TO DO IT THE NEW WAY
 %        [cacheData olCache spectroRadiometerOBJ] = OLCorrectCacheFileOOC(...
@@ -108,10 +111,10 @@ for d = 1:length(theDirections)
     % Save the cache
     fprintf(' * Saving cache ...');
     olCache = OLCache(CorrectedPrimariesDir,cal);
-    %params = cacheData.data(params.observerAgeInYrs).describe.params;
-    params.modulationDirection = theDirections{d};
-    params.cacheFile = ['Direction_' params.modulationDirection '_' params.observerID '_' params.todayDate '.mat'];
-    OLReceptorIsolateSaveCache(cacheData, olCache, params);
+    %zparams = cacheData.data(zparams.observerAgeInYrs).describe.zparams;
+    protocolParams.modulationDirection = theDirections{d};
+    protocolParams.cacheFile = ['Direction_' protocolParams.modulationDirection '_' protocolParams.observerID '_' protocolParams.todayDate '.mat'];
+    OLReceptorIsolateSaveCache(cacheData, olCache, protocolParams);
     fprintf('done!\n');
 end
 
@@ -119,4 +122,6 @@ if (~isempty(spectroRadiometerOBJ))
     spectroRadiometerOBJ.shutDown();
     spectroRadiometerOBJ = [];
 end
+
+protocolParams = Psychophysics.SessionLog(protocolParams,'MakeDirectionCorrectedPrimaries','end');
 toc;

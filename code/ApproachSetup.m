@@ -12,9 +12,21 @@
 % Who we are
 approachParams.approach = 'OLApproach_Psychophysics';
 
-% Backgrounds
-approachParams.backgrounds = {'MelanopsinDirected', 'LMSDirected', 'LightFlux'};
+% List of all calibrations used in this approach
+approachParams.calibrationTypes = {'BoxDRandomizedLongCableAEyePiece2_ND02'};
 
-% Directions
+% List of all backgrounds used in this approach
+approachParams.backgroundNames = {'MelanopsinDirected_275_80_667', 'LMSDirected_275_80_667', 'LightFlux_540_380_50'};
+
+% List of all directions used in this approach
 approachParams.directions = {'MelanopsinDirectedSuperMaxMel', 'LMSDirectedSuperMaxLMS', 'LightFlux'};
+
+%%  Make the backgrounds
+for cc = 1:length(approachParams.calibrationTypes)
+    tempApproachParams= approachParams;
+    tempApproachParams.calibrationType = approachParams.calibrationTypes{cc};  
+    Psychophysics.MakeBackgroundNominalPrimaries(tempApproachParams);
+end
+
+
 

@@ -19,7 +19,7 @@ function protocolParams = MakeModulationStartsStops(protocolParams)
 % LMS; Melanopsin; Light Flux
 tic;
 % Update session log file
-protocolParams = Psychophysics.SessionLog(protocolParams,mfilename,'start');
+protocolParams = Psychophysics.SessionLog(protocolParams,mfilename,'StartEnd','start');
 
 customSuffix = ['_' protocolParams.observerID '_' protocolParams.todayDate];
 OLReceptorIsolateMakeModulationStartsStops('Modulation-PulseMaxLMS_3s_MaxContrast3sSegment', customSuffix, protocolParams);
@@ -27,5 +27,5 @@ OLReceptorIsolateMakeModulationStartsStops('Modulation-PulseMaxMel_3s_MaxContras
 OLReceptorIsolateMakeModulationStartsStops('Modulation-PulseMaxLightFlux_3s_MaxContrast3sSegment', customSuffix, protocolParams);
 
 % Update session log file
-protocolParams = Psychophysics.SessionLog(protocolParams,mfilename,'end');
+protocolParams = Psychophysics.SessionLog(protocolParams,mfilename,'StartEnd','end');
 toc;

@@ -91,8 +91,20 @@ switch theStep
         end
     case 'Demo'
         fileID = fopen(protocolParams.fullFileName,'a');
-        fprintf(fileID,'\n\n%s Started @ %s.\n',theStep,datestr(now,'HH:MM:SS'));
-        fclose(fileID);
+        switch p.StartEnd
+            case 'start'
+                fprintf(fileID,'\n%s: Started @ %s.\n',theStep,datestr(now,'HH:MM:SS'));
+            case 'end'
+                fprintf(fileID,'%s: Finished @ %s.\n',theStep,datestr(now,'HH:MM:SS'));
+        end
+    case 'Experiment'
+        fileID = fopen(protocolParams.fullFileName,'a');
+        switch p.StartEnd
+            case 'start'
+                fprintf(fileID,'\n%s%s: Started @ %s.\n',p.PrePost,theStep,datestr(now,'HH:MM:SS'));
+            case 'end'
+                fprintf(fileID,'%s%s: Finished @ %s.\n',p.PrePost, theStep,datestr(now,'HH:MM:SS'));
+        end
     otherwise
         warning('%s unkown as a step.',theStep)
 end

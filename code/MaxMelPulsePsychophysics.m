@@ -15,6 +15,9 @@ clear; close all;
 %% Set the parameter structure here
 % This controls the operation of this protocol.
 %
+
+d = ModulationParamsDictionary();
+protocolParams = d('Modulation-PulseMaxLMS_3s_MaxContrast3sSegment');
 % Who we are
 protocolParams.approach = 'OLApproach_Psychophysics';
 protocolParams.protocol = 'MaxMelPulsePsychophysics';
@@ -52,19 +55,17 @@ ol = OneLight('simulate',protocolParams.simulate);
 %% Open the session
 protocolParams = Psychophysics.SessionLog(protocolParams,'SessionInit');
 
-%% Make the nominal modulation primaries
-Psychophysics.MakeDirectionNominalPrimaries(protocolParams);
-
 %% Make the corrected modulation primaries
-Psychophysics.MakeDirectionCorrectedPrimaries(protocolParams);
+protocolParams = Psychophysics.MakeDirectionCorrectedPrimaries(protocolParams);
 
 %% Make the Starts and Stops
-Psychophysics.MakeModulationStartsStops(protocolParams);
+protocolParams = Psychophysics.MakeModulationStartsStops(protocolParams);
 
 %% Validate Direction Corrected Primaries Prior to Experiemnt
-Psychophysics.ValidateDirectionCorrectedPrimaries(protocolParams,'Pre');
+protocolParams = Psychophysics.ValidateDirectionCorrectedPrimaries(protocolParams,'Pre');
 
 %% Run Demo Code
+protocolParams = Psychophysics.Demo(protocolParams);
 
 %% Validate Direction Corrected Primaries Post Experiment
-Psychophysics.ValidateDirectionCorrectedPrimaries(protocolParams,'Post');
+protocolParams = Psychophysics.ValidateDirectionCorrectedPrimaries(protocolParams,'Post');

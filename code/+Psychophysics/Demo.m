@@ -1,4 +1,4 @@
-function Demo(protocolParams)
+function protocolParams = Demo(protocolParams)
 % Demo
 %
 % Description:
@@ -12,27 +12,26 @@ function Demo(protocolParams)
 
 % SHOULD BE A switch on params.protocol, so different protocols within
 % Psychophysics approach can do different sorts of things.
+% Update Session Log file
+protocolParams = Psychophysics.SessionLog(protocolParams,mfilename,'StartEnd','start');
+
 
 % Setup and prompt user for info
 SpeakRateDefault = getpref('OneLight', 'SpeakRateDefault');
-commandwindow;
-observerID = GetWithDefault('>> Enter <strong>user name</strong>', 'MELA_xxxx');
-observerAgeInYrs = GetWithDefault('>> Enter <strong>observer age</strong>:', 32);
-todayDate = datestr(now, 'mmddyy');
 
 % Parameters
 
-protocolParams.adaptTimeSecs = 3.333334; % 1 minute
+protocolParams.adaptTimeSecs = 0.9999999; % 1 minute
 protocolParams.frameDurationSecs = 1/64;
-protocolParams.ISISecs = 5;
+protocolParams.ISISecs = 1;
 protocolParams.NRepeatsPerStimulus = 3;
 protocolParams.NStimuli = 3;
 
 % Assemble the modulations
 modulationDir = fullfile(getpref(protocolParams.approach, 'ModulationStartsStopsBasePath'), protocolParams.observerID,protocolParams.todayDate,protocolParams.sessionName);
-pathToModFileLMS = ['Modulation-PulsePsychophysics-PulseMaxLMS_3s_MaxContrast3sSegment-' num2str(protocolParams.observerAgeInYrs) '_' protocolParams.observerID '_' protocolParams.todayDate '.mat'];
-pathToModFileMel = ['Modulation-PulsePsychophysics-PulseMaxMel_3s_MaxContrast3sSegment-' num2str(protocolParams.observerAgeInYrs) '_' protocolParams.observerID '_' protocolParams.todayDate '.mat'];
-pathToModFileLightFlux = ['Modulation-PulsePsychophysics-PulseMaxLightFlux_3s_MaxContrast3sSegment-' num2str(protocolParams.observerAgeInYrs) '_' protocolParams.observerID '_' protocolParams.todayDate '.mat'];
+pathToModFileLMS = ['Modulation-PulseMaxLMS_3s_MaxContrast3sSegment-' num2str(protocolParams.observerAgeInYrs) '_' protocolParams.observerID '_' protocolParams.todayDate '.mat'];
+pathToModFileMel = ['Modulation-PulseMaxMel_3s_MaxContrast3sSegment-' num2str(protocolParams.observerAgeInYrs) '_' protocolParams.observerID '_' protocolParams.todayDate '.mat'];
+pathToModFileLightFlux = ['Modulation-PulseMaxLightFlux_3s_MaxContrast3sSegment-' num2str(protocolParams.observerAgeInYrs) '_' protocolParams.observerID '_' protocolParams.todayDate '.mat'];
 
 % Load in the files
 modFileLMS = load(fullfile(modulationDir, pathToModFileLMS));
@@ -59,7 +58,8 @@ stimStopsBG = {modFileLightFlux.modulationObj.modulation.background.stops modFil
 
 % Wait for button press
 Speak('Press key to start demo', [], SpeakRateDefault);
-WaitForKeyPress;
+%WaitForKeyPress;
+
 fprintf('* <strong>Experiment started</strong>\n');
 
 % Open the OneLight
@@ -71,7 +71,7 @@ for is = 1:protocolParams.NStimuli
     
     % Adapt to background for 1 minute
     Speak(sprintf('Adapt to background for %g seconds. Press key to start adaptation', protocolParams.adaptTimeSecs), [], SpeakRateDefault);
-    WaitForKeyPress;
+   % WaitForKeyPress;
     fprintf('\tAdaptation started.');
     Speak('Adaptation started', [], SpeakRateDefault);
     tic;
@@ -81,16 +81,18 @@ for is = 1:protocolParams.NStimuli
     toc;
     
     for js = 1:protocolParams.NRepeatsPerStimulus
+        ol.setMirrors(stimStartsBG{is}', stimStopsBG{is}');
         fprintf('\t- Stimulus: <strong>%s</strong>\n', stimLabels{is});
         fprintf('\t- Repeat: <strong>%g</strong>\n', js);
         Speak(['Press key to start.'], [], 200);
         WaitForKeyPress;
         
         fprintf('* Showing stimulus...')
-        OLFlicker(ol, stimStarts{is}, stimStops{is}, protocolParams.frameDurationSecs, 1);
+        OLFlicker(ol, stimStarts{is}', stimStops{is}', protocolParams.frameDurationSecs, 1);
         fprintf('Done.\n')
     end
 end
 
 % Inform user
 Speak('End of demo.', [], SpeakRateDefault);
+protocolParams = Psychophysics.SessionLog(protocolParams,mfilename,'StartEnd','end');

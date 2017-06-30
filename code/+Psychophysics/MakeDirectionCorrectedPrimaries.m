@@ -30,7 +30,7 @@ function protocolParams = MakeDirectionCorrectedPrimaries(protocolParams)
 tic;
 
 %% Update Session Log File
-protocolParams = Psychophysics.SessionLog(protocolParams,'MakeDirectionCorrectedPrimaries','start');
+protocolParams = Psychophysics.SessionLog(protocolParams,mfilename,'StartEnd','start');
 
 theDirections = {'MelanopsinDirectedSuperMaxMel' 'LMSDirectedSuperMaxLMS' 'LightFluxMaxPulse' };
 theDirectionsCorrect = [true true true]; 
@@ -123,5 +123,5 @@ if (~isempty(spectroRadiometerOBJ))
     spectroRadiometerOBJ = [];
 end
 
-protocolParams = Psychophysics.SessionLog(protocolParams,'MakeDirectionCorrectedPrimaries','end');
+protocolParams = Psychophysics.SessionLog(protocolParams,mfilename,'StartEnd','end');
 toc;

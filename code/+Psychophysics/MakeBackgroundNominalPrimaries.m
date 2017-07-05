@@ -23,11 +23,16 @@ end
 function generateAndSaveBackgroundPrimaries(approachParams, paramsDictionary, backgroundName)
     % Get background primaries
     backgroundParams = MergeBaseParamsWithParamsFromDictionaryEntry(approachParams, paramsDictionary, backgroundName);
-    [cacheDataBackground, olCacheBackground] = OLReceptorIsolateMakeBackgroundNominalPrimaries(approachParams.approach,backgroundParams, true);
+    
+    % The called routine checks whether the cacheFile exists, and if so and
+    % it isnt' stale, just returns the data.
+    [cacheDataBackground, olCacheBackground, wasRecomputed] = OLReceptorIsolateMakeBackgroundNominalPrimaries(approachParams.approach,backgroundParams, false);
 
-    % Save the background primaries in a cache file
-    OLReceptorIsolateSaveCache(cacheDataBackground, olCacheBackground, backgroundParams);
-  
+    % Save the background primaries in a cache file, if it was recomputed.
+    if (wasRecomputed)
+        [~, cacheFileName] = fileparts(backgroundParams.cacheFile);
+        olCacheBackground.save(cacheFileName, cacheDataBackground);
+    end
 end
 
 

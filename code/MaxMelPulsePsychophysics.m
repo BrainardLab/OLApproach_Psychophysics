@@ -67,5 +67,8 @@ protocolParams = Psychophysics.ValidateDirectionCorrectedPrimaries(protocolParam
 %% Run Demo Code
 protocolParams = Psychophysics.Demo(protocolParams);
 
+%% Run Experiment
+protocolParams = Psychophysics.Experiment(protocolParams);
+
 %% Validate Direction Corrected Primaries Post Experiment
 protocolParams = Psychophysics.ValidateDirectionCorrectedPrimaries(protocolParams,'Post');

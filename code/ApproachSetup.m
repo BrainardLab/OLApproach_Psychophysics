@@ -19,7 +19,7 @@ approachParams.calibrationTypes = {'BoxDRandomizedLongCableAEyePiece2_ND02'};
 approachParams.backgroundNames = {'MelanopsinDirected_275_80_667', 'LMSDirected_275_80_667', 'LightFlux_540_380_50'};
 
 % List of all directions used in this approach
-approachParams.directions = {'MelanopsinDirectedSuperMaxMel', 'LMSDirectedSuperMaxLMS', 'LightFlux'};
+approachParams.directionNames = {'MaxMel', 'MaxLMS'}; %{'MaxMel', 'MaxLMS', 'LightFlux'};
 
 %%  Make the backgrounds
 for cc = 1:length(approachParams.calibrationTypes)
@@ -28,5 +28,10 @@ for cc = 1:length(approachParams.calibrationTypes)
     Psychophysics.MakeBackgroundNominalPrimaries(tempApproachParams);
 end
 
-
+%%  Make the directions
+for cc = 1:length(approachParams.calibrationTypes)
+    tempApproachParams= approachParams;
+    tempApproachParams.calibrationType = approachParams.calibrationTypes{cc};  
+    Psychophysics.MakeDirectionNominalPrimaries(tempApproachParams);
+end
 

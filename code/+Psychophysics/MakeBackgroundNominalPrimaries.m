@@ -2,11 +2,17 @@ function MakeBackgroundNominalPrimaries(approachParams)
 % MakeBackgroundNominalPrimaries - Calculate the background nominal primaries
 %
 % Description:
-%     This script calculations background nominal primaries and saves them in
+%     This function calculations background nominal primaries and saves them in
 %     cache files.  Typically, these are then incorporated into calculation
 %     of nominal direction primaries.
 %
-%     The primaries depend on the calibration file. 
+%     The primaries depend on the calibration file and on parameters of
+%     field size and pupil size, and also observer age.  The whole range of
+%     ages is computed inside a cache file, with the cache file name giving
+%     field size and pupil size info.
+%
+%     The output is cached in the directory specified by
+%     getpref(approachParams.approach,'BackgroundNominalPrimariesPath');
 
 % 6/18/17  dhb  Added header comment.
 % 6/22/17  npc  Dictionarized direction params, cleaned up.

@@ -1,4 +1,4 @@
-function MakeDirectionNominalPrimaries(baseParams)
+function MakeDirectionNominalPrimaries(approachParams)
 % MakeDirectionNominalPrimaries - Calculate the nominal direction primaries for the experiment
 %
 % Description:

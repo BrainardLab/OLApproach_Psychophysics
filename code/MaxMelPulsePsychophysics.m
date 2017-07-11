@@ -24,7 +24,7 @@ protocolParams.protocol = 'MaxMelPulsePsychophysics';
 protocolParams.protocolType = 'PulseRating';
 
 % Simulate?
-protocolParams.simulate = false;
+protocolParams.simulate = true;
 
 % Photoreceptor parameters, assume a dialated pupil
 protocolParams.fieldSizeDegrees = 27.5;
@@ -46,6 +46,8 @@ protocolParams.spectroRadiometerOBJWillShutdownAfterMeasurement = false;
 protocolParams.observerID = GetWithDefault('>> Enter <strong>user name</strong>', 'HERO_xxxx');
 protocolParams.observerAgeInYrs = GetWithDefault('>> Enter <strong>observer age</strong>:', 32);
 protocolParams.todayDate = datestr(now, 'mmddyy');
+protocolParams.todayDate = '070517';
+
 
 %% Initialize the one light
 % 

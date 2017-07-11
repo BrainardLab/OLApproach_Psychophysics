@@ -16,10 +16,10 @@ approachParams.approach = 'OLApproach_Psychophysics';
 approachParams.calibrationTypes = {'BoxDRandomizedLongCableAEyePiece2_ND02'};
 
 % List of all backgrounds used in this approach
-approachParams.backgroundNames = {'MelanopsinDirected_275_80_667', 'LMSDirected_275_80_667', 'LightFlux_540_380_50'};
+approachParams.backgroundNames = {'MelanopsinDirected_275_80_667', 'LMSDirected_275_80_667', 'MelanopsinDirected_275_60_667', 'LMSDirected_275_60_667', 'LightFlux_540_380_50'};
 
 % List of all directions used in this approach
-approachParams.directionNames = {'MaxMel_275_80_667', 'MaxLMS_275_80_667'}; %{'MaxMel', 'MaxLMS', 'LightFlux'};
+approachParams.directionNames = {'MaxMel_275_80_667', 'MaxLMS_275_80_667' 'MaxMel_275_60_667', 'MaxLMS_275_60_667'}; %{'MaxMel', 'MaxLMS', 'LightFlux'};
 
 %%  Make the backgrounds
 for cc = 1:length(approachParams.calibrationTypes)

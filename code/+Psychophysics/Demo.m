@@ -17,7 +17,7 @@ protocolParams = Psychophysics.SessionLog(protocolParams,mfilename,'StartEnd','s
 
 
 % Setup and prompt user for info
-SpeakRateDefault = getpref('OneLight', 'SpeakRateDefault');
+SpeakRateDefault = getpref(protocolParams.approach, 'SpeakRateDefault');
 
 % Parameters
 
@@ -67,7 +67,7 @@ ol = OneLight('simulate',protocolParams.simulate);
 
 for is = 1:protocolParams.NStimuli
     % Set to background
-    ol.setMirrors(stimStartsBG{is}', stimStopsBG{is}');
+    ol.setMirrors(stimStartsBG{is}, stimStopsBG{is});
     
     % Adapt to background for 1 minute
     Speak(sprintf('Adapt to background for %g seconds. Press key to start adaptation', protocolParams.adaptTimeSecs), [], SpeakRateDefault);
@@ -85,10 +85,10 @@ for is = 1:protocolParams.NStimuli
         fprintf('\t- Stimulus: <strong>%s</strong>\n', stimLabels{is});
         fprintf('\t- Repeat: <strong>%g</strong>\n', js);
         Speak(['Press key to start.'], [], 200);
-        WaitForKeyPress;
+        %WaitForKeyPress;
         
         fprintf('* Showing stimulus...')
-        OLFlicker(ol, stimStarts{is}', stimStops{is}', protocolParams.frameDurationSecs, 1);
+        OLFlicker(ol, stimStarts{is}, stimStops{is}, protocolParams.frameDurationSecs, 1);
         fprintf('Done.\n')
     end
 end

@@ -25,13 +25,13 @@ approachParams.directionNames = {'MaxMel_275_80_667', 'MaxLMS_275_80_667' 'MaxMe
 for cc = 1:length(approachParams.calibrationTypes)
     tempApproachParams= approachParams;
     tempApproachParams.calibrationType = approachParams.calibrationTypes{cc};  
-    Psychophysics.MakeBackgroundNominalPrimaries(tempApproachParams);
+    OLMakeBackgroundNominalPrimaries(tempApproachParams);
 end
 
 %%  Make the directions
 for cc = 1:length(approachParams.calibrationTypes)
     tempApproachParams = approachParams;
     tempApproachParams.calibrationType = approachParams.calibrationTypes{cc};  
-    Psychophysics.MakeDirectionNominalPrimaries(tempApproachParams);
+    OLMakeDirectionNominalPrimaries(tempApproachParams);
 end
 

@@ -33,6 +33,9 @@ should be by type.
 * MICHAEL: Create an OLApproach_TrialSequenceMR repository and start populating it.  Or at least think about
   how the current "driver" works and what we'll need to do to make it work in the new regime.
 
+* US: Make sure field names match between the nominal and corrected versions for directions, so that the
+  make modulations code can take either version transparently. 
+
 * DAVID: * Need to get light flux modulations working in new code.
 
 NOTES:

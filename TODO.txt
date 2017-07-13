@@ -1,30 +1,58 @@
-* Add OL to the names of routines copied over from +Psychophysics.
-    Need to change call, and header comments to match.
-    I deleted the +Psychophysics versions already.
-
-* I think that files that get written into MELA_data do not use cache files. These
-get run per session and we have a scheme that keeps them apart.  This would apply
-to the corrected primaries and validations, for example, as well as the Modulations.
-
-* Take off subject/date/session from files stored in subject/date/session directory trees.
+* NICOLAS, JACK, MICHAEL: We took off some subject/date/session from files stored in subject/date/session directory trees, but
+   this needs to be done consistently throughout.
     - For example, corrected direction primaries, modulations, etc.
 
-* We should review the prefs we set up in OLApproach_Psyhchophysics.  I think we may
+* NICOLAS, JACK, MICHAEL: We should review the prefs we set up in OLApproach_Psyhchophysics.  I think we may
 not need all of them.
 
-* MakeModulationStartsStops - This routine has modulations hard coded in it, but these
-should be passed in from the calling protocol file.  And it should be called
-OLMakeModulationStartsStops.
+* NICOLAS, MICHAEL, JACK: Deal with all the broken calls where adding "OL" broke it.
 
-* OLReceptorIsolateMakeModulationStartsStops - This is in desparate need of documentation
-and cleaning.
+* NICOLAS, MICHAEL, JACK.  Work together to debug all the changes made in the code that makes the modulations.
+  This may involve some changes where the modulations are used, as we streamlined the return structure.  But,
+  we didn't change any of the actual data returned, we don't think.
 
-* Dictionaries.  Each "thing" should have a type as its first field, and the defaults and checking
+% NICOLAS, MICHAEL, JACK.  Work together to integrate the the style we developed for the modulations code into
+  the i/o for the correct and validate code.
+
+* NICOLAS: Dictionaries.  Each "thing" should have a type as its first field, and the defaults and checking
 should be by type.
   - Let's add comments to each default routine that says what each field is about.
 
-* Routines that cache backgrounds and directions should do a parameter field check on read, and
-  call the cache stale if parameters have changed.
+* NICOLAS: Routines that cache backgrounds and directions should do a parameter field check on read, and
+  call the cache stale if parameters have changed.  See comments we added together in 
+  OLReceptorIsolateMakeBackgroundNominalPrimaries.
+
+* NICOLAS: In the modulation dictionary, both a name and a file are given, but these should be isomorphic.
+  Let's eliminate file and just keep the name.
+    + Let's just use cell arrays direction in the dictionaries (background, direction, modulation) and get
+      rid of calls to allwords, which just convert long comma separated strings into the corresponding cell
+      array.  Why have the middleman?
+
+* NICOLAS: Add "OL" to the "Merge ..." routines in OLDictionaries and the dictionary routines as well.
+
+* MICHAEL: Create an OLApproach_TrialSequenceMR repository and start populating it.  Or at least think about
+  how the current "driver" works and what we'll need to do to make it work in the new regime.
+
+* DAVID: * Need to get light flux modulations working in new code.
+
+NOTES:
+
+* It used to be the case that blank trials were handled by a special case in make modulation starts stops
+  that forced the modulations to be zero, and did a check on the direction primary cache file name to
+  decide when to do this.  No No No! Going forward, this will be handled by explicitly created a zero
+  contrast direction file.
+
+FOR THE FUTURE
+
+* I think that files that get written into MELA_data do not use cache files. These
+  get run per session and we have a scheme that keeps them apart.  This would apply
+  to the corrected primaries and validations, for example, as well as the Modulations.
+
+* OneLightToolbox. We need good comments in OLCalculateStartsStopsModulation.  Understanding this would then
+  allow us to do a better job of commenting OLReceptorIsolateMakeModulationStartsStops.
+
+* OLReceptorIsolateMakeModulationStartsStops - This is in desparate need of documentation
+and cleaning.
 
 * SilentSubstitutionToolbox.  The routine GetHumanPhotoreceptorSS was updated
 in a way that is not backwards compatible with 'Hemo' types, and this breaks
@@ -41,7 +69,6 @@ comments updated to match what it does.
   - Deep question, in ReceptorIsolate should we be smoothing primaries or spectra?  We
     currently do the latter.
 
-* Need to get light flux modulations working in new code.
 
 * There is old splatter code that we pulled out.  Probably want a way to run splatter analyses
 easily, based on direction/validation files.  This should be modular.

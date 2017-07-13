@@ -1,16 +1,53 @@
 Jack/Michael
-    A) Add OL to the names of routines copied over from +Psychophysics.
+    * Add OL to the names of routines copied over from +Psychophysics.
         Need to change call, and header comments to match.
-    I deleted the +Psychophysics versions already.
+        I deleted the +Psychophysics versions already.
+
+General
+
     
-    B) I think that files that get written into data do not use cache files. These
-    get run per session and we have a scheme that keeps them apart.
-    
-    C) Certain routines are not respecting our preferences.  For example,
-    OLReceptorIsolateMakeModulationStartsStops is ignoring the detailed pref.
-        a) Probably don't want to pass file suffix either, since we can construct it
-        there.
-        
+    * I think that files that get written into MELA_data do not use cache files. These
+    get run per session and we have a scheme that keeps them apart.  This would apply
+    to the corrected primaries and validations, for example, as well as the Modulations.
+
+    * We should review the prefs we set up in OLApproach_Psyhchophysics.  I think we may
+    not need all of them.
+
+    * MakeModulationStartsStops - This routine has modulations hard coded in it, but these
+    should be passed in from the calling protocol file.  And it should be called
+    OLMakeModulationStartsStops.
+
+    * OLReceptorIsolateMakeModulationStartsStops - This is in desparate need of documentation
+    and cleaning.
+
+    * Dictionaries.  Each "thing" should have a type as its first field, and the defaults and checking
+    should be by type.
+      - Let's add comments to each default routine that says what each field is about.
+
+    * Routines that cache backgrounds and directions should do a parameter field check on read, and
+      call the cache stale if parameters have changed.
+
+    * SilentSubstitutionToolbox.  The routine GetHumanPhotoreceptorSS was updated
+    in a way that is not backwards compatible with 'Hemo' types, and this breaks
+    the routine OLEstimateConePhotopigmentFractionRoutine.  The latter routine is
+    in the OneLightToolbox, but should probably renamed and moved into the SilentSubstitutionToolbox.
+      - The header comments of GetHumanPhotoreceptorSS are stale.
+
+    * SilentSubstitutionToolbox.  Routine ReceptorIsolateOptimBackgroundMulti needs its
+    comments updated to match what it does.
+      - It is possible that we should make RecetporIsolate call through this, as in some
+        sense it is a generalization.  But write some good unit tests first.
+
+    * Need to get light flux modulations working in new code.
+
+    * There is old splatter code that we pulled out.  Probably want a way to run splatter analyses
+    easily, based on direction/validation files.  This should be modular.
+
+    * Spectral correction.  There are lot of parameters for the spectrum seeking.  Should set
+      these in a box specific dictionary, so we can customize seeking for each box. 
+      - Might want to handle calibrations across boxes in this way too, having dictionary 
+        entries that describe the calibration parameters for each box.
+
         
         
     

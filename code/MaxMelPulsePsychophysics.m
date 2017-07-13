@@ -13,15 +13,16 @@
 clear; close all;
 
 %% Set the parameter structure here
-% This controls the operation of this protocol.
-%
 
-d = ModulationParamsDictionary();
-protocolParams = d('Modulation-PulseMaxLMS_3s_MaxContrast3sSegment');
 % Who we are
 protocolParams.approach = 'OLApproach_Psychophysics';
 protocolParams.protocol = 'MaxMelPulsePsychophysics';
 protocolParams.protocolType = 'PulseRating';
+
+% Modulations used in this experiment
+% NEED TO PUT IN LIGHT FLUX WHEN IT EXISTS
+protocolParams.modulationNames = {'Modulation-PulseMaxLMS_3s_MaxContrast3sSegment', ...
+                                  'Modulation-PulseMaxMel_3s_MaxContrast3sSegment'};
 
 % Simulate?
 protocolParams.simulate = true;
@@ -48,23 +49,22 @@ protocolParams.observerAgeInYrs = GetWithDefault('>> Enter <strong>observer age<
 protocolParams.todayDate = datestr(now, 'mmddyy');
 protocolParams.todayDate = '070517';
 
-
 %% Initialize the one light
 % 
 % HOW DOES ol GET TO THE ROUTINES BELOW?  WHO CLOSES OL?
 ol = OneLight('simulate',protocolParams.simulate);
 
 %% Open the session
-protocolParams = Psychophysics.SessionLog(protocolParams,'SessionInit');
+protocolParams = OLSessionLog(protocolParams,'SessionInit');
 
 %% Make the corrected modulation primaries
-protocolParams = Psychophysics.MakeDirectionCorrectedPrimaries(protocolParams);
+protocolParams = OLMakeDirectionCorrectedPrimaries(protocolParams);
 
 %% Make the Starts and Stops
-protocolParams = Psychophysics.MakeModulationStartsStops(protocolParams);
+OLMakeModulationStartsStops(protocolParams.modulationNames, protocolParams);
 
 %% Validate Direction Corrected Primaries Prior to Experiemnt
-protocolParams = Psychophysics.ValidateDirectionCorrectedPrimaries(protocolParams,'Pre');
+protocolParams = OLValidateDirectionCorrectedPrimaries(protocolParams,'Pre');
 
 %% Run Demo Code
 protocolParams = Psychophysics.Demo(protocolParams);
@@ -73,4 +73,4 @@ protocolParams = Psychophysics.Demo(protocolParams);
 protocolParams = Psychophysics.Experiment(protocolParams);
 
 %% Validate Direction Corrected Primaries Post Experiment
-protocolParams = Psychophysics.ValidateDirectionCorrectedPrimaries(protocolParams,'Post');
+protocolParams = OLValidateDirectionCorrectedPrimaries(protocolParams,'Post');

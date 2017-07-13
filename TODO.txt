@@ -6,6 +6,9 @@
 get run per session and we have a scheme that keeps them apart.  This would apply
 to the corrected primaries and validations, for example, as well as the Modulations.
 
+* Take off subject/date/session from files stored in subject/date/session directory trees.
+    - For example, corrected direction primaries, modulations, etc.
+
 * We should review the prefs we set up in OLApproach_Psyhchophysics.  I think we may
 not need all of them.
 

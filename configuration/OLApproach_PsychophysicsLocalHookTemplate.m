@@ -61,7 +61,7 @@ setpref(theApproach,'DirectionNominalPrimariesPath',fullfile(getpref(theApproach
 setpref(theApproach,'DirectionCorrectedPrimariesBasePath',fullfile(getpref(theApproach, 'DataPath'),'Experiments',theApproach,'DirectionCorrectedPrimaries'));
 
 % Set the validation base path
-setpref(theApproach,'DirectionCorrectedPrimariesBasePath',fullfile(getpref(theApproach, 'DataPath'),'Experiments',theApproach,'DirectionValidationFiles'));
+setpref(theApproach,'DirectionCorrectedValidationBasePath',fullfile(getpref(theApproach, 'DataPath'),'Experiments',theApproach,'DirectionValidationFiles'));
 
 % Modulation configuration files path
 setpref(theApproach,'ModulationConfigPath',fullfile(tbLocateProject(theApproach),'modulationconfig'));

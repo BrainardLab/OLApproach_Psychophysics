@@ -58,10 +58,10 @@ setpref(theApproach,'BackgroundNominalPrimariesPath',fullfile(getpref(theApproac
 setpref(theApproach,'DirectionNominalPrimariesPath',fullfile(getpref(theApproach, 'MaterialsPath'),'Experiments',theApproach,'DirectionNominalPrimaries'));
 
 % Set the spectrum sought primaries base path
-setpref(theApproach,'DirectionCorrectedPrimariesBasePath',fullfile(getpref(theApproach, 'DataPath'),'Experiments',theApproach,'DirectionCorrectedPrimaries'));
+setpref(theApproach,'DirectionCorrectedPrimariesBasePath',fullfile(getpref(theApproach, 'DataPath'),'Experiments',theApproach,'MaxMelPulsePsychophysics','DirectionCorrectedPrimaries'));
 
 % Set the validation base path
-setpref(theApproach,'DirectionCorrectedValidationBasePath',fullfile(getpref(theApproach, 'DataPath'),'Experiments',theApproach,'DirectionValidationFiles'));
+setpref(theApproach,'DirectionCorrectedValidationBasePath',fullfile(getpref(theApproach, 'DataPath'),'Experiments',theApproach,'MaxMelPulsePsychophysics','DirectionValidationFiles'));
 
 % Modulation configuration files path
 setpref(theApproach,'ModulationConfigPath',fullfile(tbLocateProject(theApproach),'modulationconfig'));

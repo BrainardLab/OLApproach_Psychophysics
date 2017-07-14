@@ -25,7 +25,7 @@ protocolParams.modulationNames = {'Modulation-PulseMaxLMS_3s_MaxContrast3sSegmen
                                   'Modulation-PulseMaxMel_3s_MaxContrast3sSegment'};
 
 % Simulate?
-protocolParams.simulate = true;
+protocolParams.simulate = false;
 
 % Photoreceptor parameters, assume a dialated pupil
 protocolParams.fieldSizeDegrees = 27.5;
@@ -47,7 +47,6 @@ protocolParams.spectroRadiometerOBJWillShutdownAfterMeasurement = false;
 protocolParams.observerID = GetWithDefault('>> Enter <strong>user name</strong>', 'HERO_xxxx');
 protocolParams.observerAgeInYrs = GetWithDefault('>> Enter <strong>observer age</strong>:', 32);
 protocolParams.todayDate = datestr(now, 'mmddyy');
-protocolParams.todayDate = '070517';
 
 %% Initialize the one light
 % 
@@ -55,7 +54,7 @@ protocolParams.todayDate = '070517';
 ol = OneLight('simulate',protocolParams.simulate);
 
 %% Open the session
-protocolParams = OLSessionLog(protocolParams,'SessionInit');
+protocolParams = OLSessionLog(protocolParams,'OLSessionInit');
 
 %% Make the corrected modulation primaries
 protocolParams = OLMakeDirectionCorrectedPrimaries(protocolParams);

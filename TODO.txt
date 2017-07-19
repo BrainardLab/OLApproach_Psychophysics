@@ -36,7 +36,24 @@ should be by type.
 * US: Make sure field names match between the nominal and corrected versions for directions, so that the
   make modulations code can take either version transparently. 
 
-* DAVID: * Need to get light flux modulations working in new code.
+* US: Worry about how to make cal file related routines in OneLightToolbox read/write from the right cal
+  directory.  Currently the core routines respect a 'OneLightToolbox' preference, which is a good default.
+  But we need some sort of wrappers available within approaches so we get to the right place.
+
+* US: Should our code that makes modulations take direction names as a second argument, and then marry the
+  passed direction with the modulation, rather than have the direction be part of the modulation dictionary
+  definition. I tend to think so.  This will be more powerful and reduce the number of dictionary entries
+  we need to write and maintain.
+
+* US: Spectral correction.  There are lot of parameters for the spectrum seeking.  Should set
+  these in a box specific dictionary, so we can customize seeking for each box. 
+  - Might want to handle calibrations across boxes in this way too, having dictionary 
+    entries that describe the calibration parameters for each box.
+
+* DAVID: Need to get light flux modulations working in new code.
+
+* DAVID or NICOLAS: Need to consolidate the various pieces of code that compute fraction pigment bleached
+  into a single routine that is called from everywhere else.
 
 NOTES:
 
@@ -55,7 +72,7 @@ FOR THE FUTURE
   allow us to do a better job of commenting OLReceptorIsolateMakeModulationStartsStops.
 
 * OLReceptorIsolateMakeModulationStartsStops - This is in desparate need of documentation
-and cleaning.
+  and cleaning.
 
 * SilentSubstitutionToolbox.  The routine GetHumanPhotoreceptorSS was updated
 in a way that is not backwards compatible with 'Hemo' types, and this breaks
@@ -72,14 +89,8 @@ comments updated to match what it does.
   - Deep question, in ReceptorIsolate should we be smoothing primaries or spectra?  We
     currently do the latter.
 
-
 * There is old splatter code that we pulled out.  Probably want a way to run splatter analyses
 easily, based on direction/validation files.  This should be modular.
-
-* Spectral correction.  There are lot of parameters for the spectrum seeking.  Should set
-  these in a box specific dictionary, so we can customize seeking for each box. 
-  - Might want to handle calibrations across boxes in this way too, having dictionary 
-    entries that describe the calibration parameters for each box.
 
 * Organize saving and analysis of state measurements.  We make these when we calibrate, as
   we warm up the device, when we spectrum seek, and when we validate.  We should make it 

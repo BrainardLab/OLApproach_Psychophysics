@@ -50,6 +50,7 @@ setpref(theApproach, 'CodePath', fullfile(tbLocateProject(theApproach),'code'));
 
 %% Set the calibration file path
 setpref(theApproach, 'OneLightCalDataPath', fullfile(getpref(theApproach, 'MaterialsPath'), 'OneLightCalData'));
+setpref('OneLightToolbox','OneLightCalData',getpref(theApproach,'OneLightCalDataPath'));
 
 %% Set the background nominal primaries path
 setpref(theApproach,'BackgroundNominalPrimariesPath',fullfile(getpref(theApproach, 'MaterialsPath'),'Experiments',theApproach,'BackgroundNominalPrimaries'));

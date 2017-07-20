@@ -20,22 +20,26 @@ protocolParams.protocol = 'MaxMelPulsePsychophysics';
 protocolParams.protocolType = 'PulseRating';
 
 % Modulations used in this experiment
-% NEED TO PUT IN LIGHT FLUX WHEN IT EXISTS
-protocolParams.modulationNames = {'Modulation-PulseMaxLMS_3s_MaxContrast3sSegment', ...
-                                  'Modulation-PulseMaxMel_3s_MaxContrast3sSegment'};
-
-                               
-% Simulate?
-protocolParams.simulate = false;
-
+% 
+% These two cell arrays should have teh same length - the modulations get paired 
+% with the directions in a one-to-one way.
+protocolParams.modulationNames = {'Modulation_MaxContrast3sSegment', ...
+                                  'Modulation_MaxContrast3sSegment'};
 protocolParams.directionNames = {...
     'MaxLMS' ...
     'MaxMel' ...
     };
+if (length(protocolParams.modulationNames) ~= protocolParams.directionNames)
+    error('Modulation and direction names cell arrays must have same length');
+end
+                               
+% Simulate?
+protocolParams.simulate = false;
 
 % Photoreceptor parameters, assume a dialated pupil
 protocolParams.fieldSizeDegrees = 27.5;
 protocolParams.pupilDiameterMm = 8; 
+protocolParams.directionModulationContrast = 4/6;
 
 % WHAT DO THESE DO?
 protocolParams.CALCULATE_SPLATTER = false;
@@ -54,6 +58,11 @@ protocolParams.observerID = GetWithDefault('>> Enter <strong>user name</strong>'
 protocolParams.observerAgeInYrs = GetWithDefault('>> Enter <strong>observer age</strong>:', 32);
 protocolParams.todayDate = datestr(now, 'mmddyy');
 
+%% Check that prefs are as expected
+if (~strcmp(getpref('OneLightToolbox','OneLightCalData'),getpref(theApproach,'OneLightCalDataPath')))
+    error('Calibration file prefs not set up as expected for an approach');
+end
+
 %% Initialize the one light
 % 
 % HOW DOES ol GET TO THE ROUTINES BELOW?  WHO CLOSES OL?
@@ -66,7 +75,7 @@ protocolParams = OLSessionLog(protocolParams,'OLSessionInit');
 protocolParams = OLMakeDirectionCorrectedPrimaries(protocolParams);
 
 %% Make the Starts and Stops
-OLMakeModulationStartsStops(protocolParams.modulationNames, protocolParams);
+OLMakeModulationStartsStops(protocolParams.modulationNames,protocolParams.directionNames, protocolParams);
 
 %% Validate Direction Corrected Primaries Prior to Experiemnt
 protocolParams = OLValidateDirectionCorrectedPrimaries(protocolParams,'Pre');

@@ -1,21 +1,21 @@
 * NICOLAS, JACK, MICHAEL: We took off some subject/date/session from files stored in subject/date/session directory trees, but
    this needs to be done consistently throughout.
-    - For example, corrected direction primaries, modulations, etc.
+    - For example, corrected direction primaries, modulations, etc. - DONE
 
 * NICOLAS, JACK, MICHAEL: We should review the prefs we set up in OLApproach_Psyhchophysics.  I think we may
 not need all of them.
 
-* NICOLAS, MICHAEL, JACK: Deal with all the broken calls where adding "OL" broke it.
+* NICOLAS, MICHAEL, JACK: Deal with all the broken calls where adding "OL" broke it. - DONE
 
 * NICOLAS, MICHAEL, JACK.  Work together to debug all the changes made in the code that makes the modulations.
   This may involve some changes where the modulations are used, as we streamlined the return structure.  But,
-  we didn't change any of the actual data returned, we don't think.
+  we didn't change any of the actual data returned, we don't think. - DONE
 
 % NICOLAS, MICHAEL, JACK.  Work together to integrate the the style we developed for the modulations code into
-  the i/o for the correct and validate code.
+  the i/o for the correct and validate code. - DONE
 
 * NICOLAS: Dictionaries.  Each "thing" should have a type as its first field, and the defaults and checking
-should be by type.
+should be by type. - DONE?
   - Let's add comments to each default routine that says what each field is about.
 
 * NICOLAS: Routines that cache backgrounds and directions should do a parameter field check on read, and

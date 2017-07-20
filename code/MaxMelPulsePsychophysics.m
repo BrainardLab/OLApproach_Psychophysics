@@ -24,8 +24,14 @@ protocolParams.protocolType = 'PulseRating';
 protocolParams.modulationNames = {'Modulation-PulseMaxLMS_3s_MaxContrast3sSegment', ...
                                   'Modulation-PulseMaxMel_3s_MaxContrast3sSegment'};
 
+                               
 % Simulate?
 protocolParams.simulate = false;
+
+protocolParams.directionNames = {...
+    'MaxLMS' ...
+    'MaxMel' ...
+    };
 
 % Photoreceptor parameters, assume a dialated pupil
 protocolParams.fieldSizeDegrees = 27.5;
@@ -39,7 +45,7 @@ protocolParams.maxPowerDiff = 10^(-1);
 protocolParams.isActive = 1;
         
 % OneLight parameters
-protocolParams.calibrationType = 'BoxDRandomizedLongCableAEyePiece2_ND02';
+protocolParams.calibrationType = 'BoxBRandomizedLongCableBEyePiece1_ND03';
 protocolParams.takeTemperatureMeasurements = false;
 protocolParams.spectroRadiometerOBJWillShutdownAfterMeasurement = false;
 

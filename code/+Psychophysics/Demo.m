@@ -13,7 +13,7 @@ function protocolParams = Demo(protocolParams)
 % SHOULD BE A switch on params.protocol, so different protocols within
 % Psychophysics approach can do different sorts of things.
 % Update Session Log file
-protocolParams = Psychophysics.SessionLog(protocolParams,mfilename,'StartEnd','start');
+protocolParams = OLSessionLog(protocolParams,mfilename,'StartEnd','start');
 
 
 % Setup and prompt user for info
@@ -25,36 +25,45 @@ protocolParams.adaptTimeSecs = 0.9999999; % 1 minute
 protocolParams.frameDurationSecs = 1/64;
 protocolParams.ISISecs = 1;
 protocolParams.NRepeatsPerStimulus = 3;
-protocolParams.NStimuli = 3;
+protocolParams.NStimuli = 2;
 
 % Assemble the modulations
-modulationDir = fullfile(getpref(protocolParams.approach, 'ModulationStartsStopsBasePath'), protocolParams.observerID,protocolParams.todayDate,protocolParams.sessionName);
-pathToModFileLMS = ['Modulation-PulseMaxLMS_3s_MaxContrast3sSegment-' num2str(protocolParams.observerAgeInYrs) '_' protocolParams.observerID '_' protocolParams.todayDate '.mat'];
-pathToModFileMel = ['Modulation-PulseMaxMel_3s_MaxContrast3sSegment-' num2str(protocolParams.observerAgeInYrs) '_' protocolParams.observerID '_' protocolParams.todayDate '.mat'];
-pathToModFileLightFlux = ['Modulation-PulseMaxLightFlux_3s_MaxContrast3sSegment-' num2str(protocolParams.observerAgeInYrs) '_' protocolParams.observerID '_' protocolParams.todayDate '.mat'];
+modulationDir =  fullfile(getpref(protocolParams.approach, 'ModulationStartsStopsBasePath'), protocolParams.observerID,protocolParams.todayDate,protocolParams.sessionName);
+
+d = ModulationParamsDictionary(protocolParams);
+modulationParams = d('Modulation-PulseMaxLMS_3s_MaxContrast3sSegment');
+startsStopsCacheFileNames{1} = modulationParams.direction;
+
+modulationParams = d('Modulation-PulseMaxMel_3s_MaxContrast3sSegment');
+startsStopsCacheFileNames{2} = modulationParams.direction;
+
+
+pathToModFileLMS = sprintf('%s.mat', startsStopsCacheFileNames{1});  %  ['Direction_' num2str(protocolParams.observerAgeInYrs) '_' protocolParams.observerID '_' protocolParams.todayDate '.mat'];
+pathToModFileMel = sprintf('%s.mat', startsStopsCacheFileNames{2});  % ['Direction_' num2str(protocolParams.observerAgeInYrs) '_' protocolParams.observerID '_' protocolParams.todayDate '.mat'];
+%pathToModFileLightFlux = ['Direction_' num2str(protocolParams.observerAgeInYrs) '_' protocolParams.observerID '_' protocolParams.todayDate '.mat'];
 
 % Load in the files
 modFileLMS = load(fullfile(modulationDir, pathToModFileLMS));
 modFileMel = load(fullfile(modulationDir, pathToModFileMel));
-modFileLightFlux = load(fullfile(modulationDir, pathToModFileLightFlux));
+%modFileLightFlux = load(fullfile(modulationDir, pathToModFileLightFlux));
 
-startsLMS = modFileLMS.modulationObj.modulation.starts;
-stopsLMS = modFileLMS.modulationObj.modulation.stops;
-startsMel = modFileMel.modulationObj.modulation.starts;
-stopsMel = modFileMel.modulationObj.modulation.stops;
-startsLightFlux = modFileLightFlux.modulationObj.modulation.starts;
-stopsLightFlux = modFileLightFlux.modulationObj.modulation.stops;
+startsLMS = modFileLMS.modulationData.modulation.starts;
+stopsLMS = modFileLMS.modulationData.modulation.stops;
+startsMel = modFileMel.modulationData.modulation.starts;
+stopsMel = modFileMel.modulationData.modulation.stops;
+%startsLightFlux = modFileLightFlux.modulationData.modulation.starts;
+%stopsLightFlux = modFileLightFlux.modulationData.modulation.stops;
 
-stimLabels = {'LightFlux', 'MaxLMS', 'MaxMel'};
-%stimLabels = {'MaxLMS', 'MaxMel'};
-stimStarts = {startsLightFlux startsLMS startsMel};
-%stimStarts = {startsLMS startsMel};
-stimStops = {stopsLightFlux stopsLMS stopsMel};
-%stimStops = {stopsLMS stopsMel};
-stimStartsBG = {modFileLightFlux.modulationObj.modulation.background.starts modFileLMS.modulationObj.modulation.background.starts modFileMel.modulationObj.modulation.background.starts};
-%stimStartsBG = {modFileLMS.modulationObj.modulation.background.starts modFileMel.modulationObj.modulation.background.starts};
-stimStopsBG = {modFileLightFlux.modulationObj.modulation.background.stops modFileLMS.modulationObj.modulation.background.stops modFileMel.modulationObj.modulation.background.stops};
-%stimStopsBG = { modFileLMS.modulationObj.modulation.background.stops modFileMel.modulationObj.modulation.background.stops};
+%stimLabels = {'LightFlux', 'MaxLMS', 'MaxMel'};
+stimLabels = {'MaxLMS', 'MaxMel'};
+%stimStarts = {startsLightFlux startsLMS startsMel};
+stimStarts = {startsLMS startsMel};
+%stimStops = {stopsLightFlux stopsLMS stopsMel};
+stimStops = {stopsLMS stopsMel};
+%stimStartsBG = {modFileLightFlux.modulationData.modulation.background.starts modFileLMS.modulationData.modulation.background.starts modFileMel.modulationData.modulation.background.starts};
+stimStartsBG = {modFileLMS.modulationData.modulation.background.starts modFileMel.modulationData.modulation.background.starts};
+%stimStopsBG = {modFileLightFlux.modulationData.modulation.background.stops modFileLMS.modulationData.modulation.background.stops modFileMel.modulationData.modulation.background.stops};
+stimStopsBG = { modFileLMS.modulationData.modulation.background.stops modFileMel.modulationData.modulation.background.stops};
 
 % Wait for button press
 Speak('Press key to start demo', [], SpeakRateDefault);
@@ -95,4 +104,4 @@ end
 
 % Inform user
 Speak('End of demo.', [], SpeakRateDefault);
-protocolParams = Psychophysics.SessionLog(protocolParams,mfilename,'StartEnd','end');
+protocolParams = OLSessionLog(protocolParams,mfilename,'StartEnd','end');

@@ -44,6 +44,8 @@ find and review all instances.  Our plan is to respect the specific preferences 
 * DAVID or NICOLAS: Need to consolidate the various pieces of code that compute fraction pigment bleached
   into a single routine that is called from everywhere else.
 
+* DAVID: Clean up OneLightDriver config file so that it only includes needed subdirectories.
+
 DONE:
 
 * NICOLAS, JACK, MICHAEL: We took off some subject/date/session from files stored in subject/date/session directory trees, but

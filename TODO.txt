@@ -50,6 +50,9 @@ should be by type.
   - Might want to handle calibrations across boxes in this way too, having dictionary 
     entries that describe the calibration parameters for each box.
 
+* DAVID: Add gitHub version info to the tbUseProject config files for the OneLight stuff, so we can keep
+  machine configs straight.
+
 * DAVID: Need to get light flux modulations working in new code.
 
 * DAVID or NICOLAS: Need to consolidate the various pieces of code that compute fraction pigment bleached

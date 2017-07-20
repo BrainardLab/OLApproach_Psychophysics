@@ -39,15 +39,10 @@ protocolParams.simulate = false;
 % Photoreceptor parameters, assume a dialated pupil
 protocolParams.fieldSizeDegrees = 27.5;
 protocolParams.pupilDiameterMm = 8; 
-protocolParams.directionModulationContrast = 4/6;
-
-% WHAT DO THESE DO?
-protocolParams.CALCULATE_SPLATTER = false;
+protocolParams.baseModulationContrast = 4/6;
 protocolParams.maxPowerDiff = 10^(-1);
-
-% WHAT DOES THIS DO?
-protocolParams.isActive = 1;
-        
+protocolParams.primaryHeadroom = 0.01;
+      
 % OneLight parameters
 protocolParams.calibrationType = 'BoxBRandomizedLongCableBEyePiece1_ND03';
 protocolParams.takeTemperatureMeasurements = false;

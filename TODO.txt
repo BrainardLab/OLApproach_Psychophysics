@@ -34,10 +34,7 @@ find and review all instances.  Our plan is to respect the specific preferences 
   how the current "driver" works and what we'll need to do to make it work in the new regime.
 
 * US: Make sure field names match between the nominal and corrected versions for directions, so that the
-  make modulations code can take either version transparently. 
-
-* DAVID: Add gitHub version info to the tbUseProject config files for the OneLight stuff, so we can keep
-  machine configs straight. - DONE.
+  make modulations code can take either version transparently.
 
 * DAVID: Need to get light flux modulations working in new code.
 
@@ -45,6 +42,8 @@ find and review all instances.  Our plan is to respect the specific preferences 
   into a single routine that is called from everywhere else.
 
 * DAVID: Clean up OneLightDriver config file so that it only includes needed subdirectories.
+
+% DAVID: Add comments to: OLAnalyzeValidationReceptorIsolate.
 
 DONE:
 
@@ -65,6 +64,9 @@ DONE:
 should be by type. - DONE?
 
 * NICOLAS: Add "OL" to the "Merge ..." routines in OLDictionaries and the dictionary routines as well. - DONE.
+
+* DAVID: Add gitHub version info to the tbUseProject config files for the OneLight stuff, so we can keep
+  machine configs straight. - DONE.
 
 NOTES:
 

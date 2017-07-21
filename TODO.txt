@@ -38,12 +38,37 @@ find and review all instances.  Our plan is to respect the specific preferences 
 
 * DAVID: Need to get light flux modulations working in new code.
 
-* DAVID or NICOLAS: Need to consolidate the various pieces of code that compute fraction pigment bleached
+* DAVID: Need to consolidate the various pieces of code that compute fraction pigment bleached
   into a single routine that is called from everywhere else.
 
-* DAVID: Clean up OneLightDriver config file so that it only includes needed subdirectories.
+* DAVID: SilentSubstitutionToolbox.  The routine GetHumanPhotoreceptorSS was updated
+in a way that is not backwards compatible with 'Hemo' types, and this breaks
+the routine OLEstimateConePhotopigmentFraction routine.  The latter routine is
+in the OneLightToolbox, but should probably renamed and moved into the SilentSubstitutionToolbox.
+  - The "Hemo" code in OLEstimateConePhotopigmentFraction is currently commented out.
+    Lines 58, 80-81, 88.
 
-% DAVID: Add comments to: OLAnalyzeValidationReceptorIsolate.
+* US: It used to be the case that blank trials were handled by a special case in make modulation starts stops
+  that forced the modulations to be zero, and did a check on the direction primary cache file name to
+  decide when to do this.  No No No! Going forward, this will be handled by explicitly created a zero
+  contrast modulation file.
+
+COMMENTING WHERE WE NEED MANUEL TO HELP:
+
+* DAVID, MANUEL: Add comments to: OLAnalyzeValidationReceptorIsolate and SST/ComputeAndReportContrastsFromSpds.
+
+* DAVID, MANUEL: We need good comments in OLCalculateStartsStopsModulation.  Understanding this would then
+  allow us to do a better job of commenting OLReceptorIsolateMakeModulationStartsStops, which also needs 
+  commenting and cleaning.
+
+* DAVID, MANUEL: Review header comments in SST/GetHumanPhotoreceptorSS.
+
+* MANUEL: SilentSubstitutionToolbox.  Routine ReceptorIsolateOptimBackgroundMulti needs its
+comments updated to match what it does.
+  - It is possible that we should make RecetporIsolate call through this, as in some
+    sense it is a generalization.  But write some good unit tests first.
+  - Deep question, in ReceptorIsolate should we be smoothing primaries or spectra?  We
+    currently do the latter.
 
 DONE:
 
@@ -61,46 +86,20 @@ DONE:
   we didn't change any of the actual data returned, we don't think. - DONE
 
 * NICOLAS: Dictionaries.  Each "thing" should have a type as its first field, and the defaults and checking
-should be by type. - DONE?
+should be by type. - DONE.
 
 * NICOLAS: Add "OL" to the "Merge ..." routines in OLDictionaries and the dictionary routines as well. - DONE.
 
 * DAVID: Add gitHub version info to the tbUseProject config files for the OneLight stuff, so we can keep
   machine configs straight. - DONE.
 
-NOTES:
+* DAVID: Clean up OneLightDriver config file so that it only includes needed subdirectories. - DONE.
 
-* It used to be the case that blank trials were handled by a special case in make modulation starts stops
-  that forced the modulations to be zero, and did a check on the direction primary cache file name to
-  decide when to do this.  No No No! Going forward, this will be handled by explicitly created a zero
-  contrast direction file.
+FOR THE FUTURE:
 
-FOR THE FUTURE
-
-* I think that files that get written into MELA_data do not use cache files. These
+* I think that files that get written into MELA_data should not use cache files. These
   get run per session and we have a scheme that keeps them apart.  This would apply
   to the corrected primaries and validations, for example, as well as the Modulations.
-
-* OneLightToolbox. We need good comments in OLCalculateStartsStopsModulation.  Understanding this would then
-  allow us to do a better job of commenting OLReceptorIsolateMakeModulationStartsStops.
-
-* OLReceptorIsolateMakeModulationStartsStops - This is in desparate need of documentation
-  and cleaning.
-
-* SilentSubstitutionToolbox.  The routine GetHumanPhotoreceptorSS was updated
-in a way that is not backwards compatible with 'Hemo' types, and this breaks
-the routine OLEstimateConePhotopigmentFraction routine.  The latter routine is
-in the OneLightToolbox, but should probably renamed and moved into the SilentSubstitutionToolbox.
-  - The header comments of GetHumanPhotoreceptorSS are stale.
-  - The "Hemo" code in OLEstimateConePhotopigmentFraction is currently commented out.
-    Lines 58, 80-81, 88.
-
-* SilentSubstitutionToolbox.  Routine ReceptorIsolateOptimBackgroundMulti needs its
-comments updated to match what it does.
-  - It is possible that we should make RecetporIsolate call through this, as in some
-    sense it is a generalization.  But write some good unit tests first.
-  - Deep question, in ReceptorIsolate should we be smoothing primaries or spectra?  We
-    currently do the latter.
 
 * There is old splatter code that we pulled out.  Probably want a way to run splatter analyses
 easily, based on direction/validation files.  This should be modular.

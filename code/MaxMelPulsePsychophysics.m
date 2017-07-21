@@ -23,13 +23,18 @@ protocolParams.protocolType = 'PulseRating';
 % 
 % These two cell arrays should have teh same length - the modulations get paired 
 % with the directions in a one-to-one way.
-protocolParams.modulationNames = {'Modulation_MaxContrast3sSegment', ...
-                                  'Modulation_MaxContrast3sSegment'};
+protocolParams.modulationNames = {'MaxContrast3sSegment', ...
+                                  'MaxContrast3sSegment'};
 protocolParams.directionNames = {...
     'MaxLMS' ...
     'MaxMel' ...
     };
-if (length(protocolParams.modulationNames) ~= protocolParams.directionNames)
+protocolParams.directionTypes = {...
+    'pulse' ...
+    'pulse' ...
+    };
+
+if (length(protocolParams.modulationNames) ~= length(protocolParams.directionNames))
     error('Modulation and direction names cell arrays must have same length');
 end
                                
@@ -54,7 +59,10 @@ protocolParams.observerAgeInYrs = GetWithDefault('>> Enter <strong>observer age<
 protocolParams.todayDate = datestr(now, 'mmddyy');
 
 %% Check that prefs are as expected
-if (~strcmp(getpref('OneLightToolbox','OneLightCalData'),getpref(theApproach,'OneLightCalDataPath')))
+% THE FOLLOWING DOES NOT WORK
+% getpref('OneLightToolbox','OneLightCalData')           gives: /Users/melanopsin/Documents/MATLAB/toolboxes/OneLightToolbox/OLDemoCal
+% getpref(protocolParams.approach,'OneLightCalDataPath') gives: /Users/melanopsin/Dropbox (Aguirre-Brainard Lab)/MELA_materials/OneLightCalData
+if (~strcmp(getpref('OneLightToolbox','OneLightCalData'),getpref(protocolParams.approach,'OneLightCalDataPath')))
     error('Calibration file prefs not set up as expected for an approach');
 end
 

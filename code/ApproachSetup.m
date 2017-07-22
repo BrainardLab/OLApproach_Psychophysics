@@ -32,6 +32,6 @@ end
 for cc = 1:length(approachParams.calibrationTypes)
     tempApproachParams = approachParams;
     tempApproachParams.calibrationType = approachParams.calibrationTypes{cc};  
-    OLMakeDirectionNominalPrimaries(tempApproachParams);
+    OLMakeDirectionNominalPrimaries(tempApproachParams,'verbose',false);
 end
 

@@ -36,8 +36,8 @@ end
 
 % Assemble the modulations
 modulationDir = fullfile(getpref(protocolParams.approach, 'ModulationStartsStopsBasePath'), protocolParams.observerID,protocolParams.todayDate,protocolParams.sessionName);
-pathToModFileLMS = ['Modulation-PulseMaxLMS_3s_MaxContrast3sSegment-' num2str(protocolParams.observerAgeInYrs) '_' protocolParams.observerID '_' protocolParams.todayDate '.mat'];
-pathToModFileMel = ['Modulation-PulseMaxMel_3s_MaxContrast3sSegment-' num2str(protocolParams.observerAgeInYrs) '_' protocolParams.observerID '_' protocolParams.todayDate '.mat'];
+pathToModFileLMS = ['ModulationStartsStops_MaxContrast3sSegment_MaxLMS' num2str(protocolParams.observerAgeInYrs) '_' protocolParams.observerID '_' protocolParams.todayDate '.mat'];
+pathToModFileMel = ['ModulationStartsStops_MaxContrast3sSegment_MaxMel' num2str(protocolParams.observerAgeInYrs) '_' protocolParams.observerID '_' protocolParams.todayDate '.mat'];
 pathToModFileLightFlux = ['Modulation-PulseMaxLightFlux_3s_MaxContrast3sSegment-' num2str(protocolParams.observerAgeInYrs) '_' protocolParams.observerID '_' protocolParams.todayDate '.mat'];
 
 % Load in the files
@@ -139,4 +139,4 @@ end
 % Save the data as in the end
 save(fullfile(savePath, saveFileMAT), 'data', 'protocolParams');
 fprintf('* Data saved.\n');
-protocolParams = Psychophysics.SessionLog(protocolParams,mfilename,'StartEnd','end');
+protocolParams = OLSessionLog(protocolParams,mfilename,'StartEnd','end');

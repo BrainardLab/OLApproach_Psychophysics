@@ -16,10 +16,10 @@ function protocolParams = Experiment(protocolParams)
 % SHOULD BE A switch on params.protocol, so different protocols within
 % Psychophysics approach can do different sorts of things.
 % Update Session Log file
-protocolParams = Psychophysics.SessionLog(protocolParams,mfilename,'StartEnd','start')
+protocolParams = OLSessionLog(protocolParams,mfilename,'StartEnd','start');
 
 % Flux to the stimulus labels.
-SpeakRateDefault = getpref('OneLight', 'SpeakRateDefault');
+SpeakRateDefault = getpref('protocolParams.approach', 'SpeakRateDefault');
 
 % Parameters
 

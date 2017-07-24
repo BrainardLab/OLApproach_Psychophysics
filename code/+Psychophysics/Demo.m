@@ -30,12 +30,8 @@ protocolParams.NStimuli = 2;
 % Assemble the modulations
 modulationDir =  fullfile(getpref(protocolParams.approach, 'ModulationStartsStopsBasePath'), protocolParams.observerID,protocolParams.todayDate,protocolParams.sessionName);
 
-d = ModulationParamsDictionary(protocolParams);
-modulationParams = d('Modulation-PulseMaxLMS_3s_MaxContrast3sSegment');
-startsStopsCacheFileNames{1} = modulationParams.direction;
-
-modulationParams = d('Modulation-PulseMaxMel_3s_MaxContrast3sSegment');
-startsStopsCacheFileNames{2} = modulationParams.direction;
+startsStopsCacheFileNames{1} = 'ModulationStartsStops_MaxContrast3sSegment_MaxLMS_275_80_667';
+startsStopsCacheFileNames{2} = 'ModulationStartsStops_MaxContrast3sSegment_MaxMel_275_80_667';
 
 
 pathToModFileLMS = sprintf('%s.mat', startsStopsCacheFileNames{1});  %  ['Direction_' num2str(protocolParams.observerAgeInYrs) '_' protocolParams.observerID '_' protocolParams.todayDate '.mat'];

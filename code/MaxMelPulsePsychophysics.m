@@ -49,6 +49,10 @@ protocolParams.maxPowerDiff = 10^(-1);
 protocolParams.primaryHeadroom = 0.01;
       
 % OneLight parameters
+protocolParams.boxName = 'BoxA';  
+% **** NOTE from Nicolas. Specifying 'BoxB' above (with params taken from lines 93- in OLMakeDirectionCorrectedPrimaries.m),
+% results in a crash in OLMakeModulationStartsStops. Error: Logic error in how we allocate mirrors across primaries (mismatchin number on)
+
 protocolParams.calibrationType = 'BoxBRandomizedLongCableBEyePiece1_ND03';
 protocolParams.takeTemperatureMeasurements = false;
 protocolParams.spectroRadiometerOBJWillShutdownAfterMeasurement = false;

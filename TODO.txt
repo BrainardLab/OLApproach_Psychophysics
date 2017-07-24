@@ -5,12 +5,6 @@ locations for directions, modulations, etc.  But in the code, it looked like we 
 the relative paths in the code directly.  Either way is fine, but we should only use one of them.  Search on getpref( to see
 find and review all instances.  Our plan is to respect the specific preferences -- see the local hook template for those.
 
-* NICOLAS, DAVID  - Let's add comments to each default routine that says what each field is about.
-
-* NICOLAS, DAVID: Routines that cache backgrounds and directions should do a parameter field check on read, and
-  call the cache stale if parameters have changed.  See comments we added together in 
-  OLReceptorIsolateMakeBackgroundNominalPrimaries.
-
 * NICOLAS: Pass both modulation names cell array and direction names cell array to OLMakeModulationsStartsStops.
   For each modulation, take the corresponding direction name as the direction.  Create the output filename by
   concatenating the two names, separated by an "_".  Remove direction from the dictionary.  Also, in the approach
@@ -38,16 +32,6 @@ find and review all instances.  Our plan is to respect the specific preferences 
 
 * DAVID: Need to get light flux modulations working in new code.
 
-* DAVID: Need to consolidate the various pieces of code that compute fraction pigment bleached
-  into a single routine that is called from everywhere else.
-
-* DAVID: SilentSubstitutionToolbox.  The routine GetHumanPhotoreceptorSS was updated
-in a way that is not backwards compatible with 'Hemo' types, and this breaks
-the routine OLEstimateConePhotopigmentFraction routine.  The latter routine is
-in the OneLightToolbox, but should probably renamed and moved into the SilentSubstitutionToolbox.
-  - The "Hemo" code in OLEstimateConePhotopigmentFraction is currently commented out.
-    Lines 58, 80-81, 88.
-
 * US: It used to be the case that blank trials were handled by a special case in make modulation starts stops
   that forced the modulations to be zero, and did a check on the direction primary cache file name to
   decide when to do this.  No No No! Going forward, this will be handled by explicitly created a zero
@@ -59,12 +43,12 @@ COMMENTING WHERE WE NEED MANUEL TO HELP:
 
 * DAVID, MANUEL: We need good comments in OLCalculateStartsStopsModulation.  Understanding this would then
   allow us to do a better job of commenting OLReceptorIsolateMakeModulationStartsStops, which also needs 
-  commenting and cleaning.
+  commenting and cleaning.  Also at that point add comments to Modulation dictionary.
 
 * DAVID, MANUEL: Review header comments in SST/GetHumanPhotoreceptorSS.
 
 * MANUEL: SilentSubstitutionToolbox.  Routine ReceptorIsolateOptimBackgroundMulti needs its
-comments updated to match what it does.
+  comments updated to match what it does.
   - It is possible that we should make RecetporIsolate call through this, as in some
     sense it is a generalization.  But write some good unit tests first.
   - Deep question, in ReceptorIsolate should we be smoothing primaries or spectra?  We
@@ -94,6 +78,19 @@ should be by type. - DONE.
   machine configs straight. - DONE.
 
 * DAVID: Clean up OneLightDriver config file so that it only includes needed subdirectories. - DONE.
+
+* NICOLAS, DAVID: Routines that cache backgrounds and directions should do a parameter field check on read, and
+  call the cache stale if parameters have changed. DONE.
+
+* DAVID: Need to consolidate the various pieces of code that compute fraction pigment bleached
+  into a single routine that is called from everywhere else.  DONE
+
+* DAVID: SilentSubstitutionToolbox.  The routine GetHumanPhotoreceptorSS was updated
+in a way that is not backwards compatible with 'Hemo' types, and this breaks
+the routine OLEstimateConePhotopigmentFraction routine.  The latter routine is
+in the OneLightToolbox, but should probably renamed and moved into the SilentSubstitutionToolbox. DONE
+
+* NICOLAS, DAVID  - Let's add comments to background/directoin dictionary default routine that says what each field is about. DONE.
 
 FOR THE FUTURE:
 

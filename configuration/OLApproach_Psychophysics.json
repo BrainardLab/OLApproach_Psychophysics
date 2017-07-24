@@ -77,6 +77,19 @@
 		"update": "",
 		"url": ""
 	},
+{
+		"flavor": "",
+		"hook": "",
+		"importance": "",
+		"localHookTemplate": "",
+		"name": "mgl",
+		"pathPlacement": "append",
+		"subfolder": "",
+		"toolboxRoot": "",
+		"type": "git",
+		"update": "never",
+		"url": "https://github.com/justingardner/mgl"
+	},
 	{
 		"flavor": "",
 		"hook": "",

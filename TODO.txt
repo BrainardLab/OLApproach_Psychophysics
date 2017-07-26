@@ -5,14 +5,6 @@ locations for directions, modulations, etc.  But in the code, it looked like we 
 the relative paths in the code directly.  Either way is fine, but we should only use one of them.  Search on getpref( to see
 find and review all instances.  Our plan is to respect the specific preferences -- see the local hook template for those.
 
-* NICOLAS: Add a CorrectionsParams dictionary.  The name should be the Box (e.g. BoxA, BoxB, ....).  Use this
-  in OLMakeDirectionCorrectedPrimaries - will need to have a box field in the protocol params and respect this.
-  - Might want to handle calibrations across boxes in this way too, having dictionary 
-    entries that describe the calibration parameters for each box.  The params for each of the four boxes
-    are currently hard coded into OLCalibrateOOC -- remove from there and use dictionary.  Check that they
-    are not specified elsewhere and if so also use dictionary.  Use just one dictionary (BoxParams dictionary
-    both for calibration and spectral correction params.)
-
 * NICOLAS: Worry about how to make cal file related routines in OneLightToolbox read/write from the right cal
   directory.  Currently the core routines respect a 'OneLightToolbox' preference, which is a good default.
   Try to make sure that all calibration related routines respect the 'OneLightToolbox' preference.
@@ -91,6 +83,14 @@ in the OneLightToolbox, but should probably renamed and moved into the SilentSub
   code, let's change the modulationContrast field to directionModulationContrast and harmonize with what we
   just decided to use in the protocols.  This change will require a change in how the modulation files are named
   in the Demo/Experimental code. - DONE.
+
+* NICOLAS: Add a CorrectionsParams dictionary.  The name should be the Box (e.g. BoxA, BoxB, ....).  Use this
+  in OLMakeDirectionCorrectedPrimaries - will need to have a box field in the protocol params and respect this.
+  - Might want to handle calibrations across boxes in this way too, having dictionary 
+    entries that describe the calibration parameters for each box.  The params for each of the four boxes
+    are currently hard coded into OLCalibrateOOC -- remove from there and use dictionary.  Check that they
+    are not specified elsewhere and if so also use dictionary.  Use just one dictionary (BoxParams dictionary
+    both for calibration and spectral correction params.) - DONE
 
 FOR THE FUTURE:
 

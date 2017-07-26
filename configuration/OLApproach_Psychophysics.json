@@ -1,17 +1,4 @@
 [
-	{
-		"flavor": "",
-		"hook": "",
-		"importance": "",
-		"localHookTemplate": "configuration/OLApproach_PsychophysicsLocalHookTemplate.m",
-		"name": "OLApproach_Psychophysics",
-		"pathPlacement": "append",
-		"subfolder": "code",
-		"toolboxRoot": "",
-		"type": "git",
-		"update": "",
-		"url": ""
-	},
     {
 		"flavor": "",
 		"hook": "",
@@ -102,5 +89,18 @@
 		"type": "git",
 		"update": "",
 		"url": "https:\/\/github.com\/gkaguirrelab\/PupilAnalysisToolbox.git"
+	},
+    {
+		"flavor": "",
+		"hook": "",
+		"importance": "",
+		"localHookTemplate": "configuration/OLApproach_PsychophysicsLocalHookTemplate.m",
+		"name": "OLApproach_Psychophysics",
+		"pathPlacement": "append",
+		"subfolder": "code",
+		"toolboxRoot": "",
+		"type": "git",
+		"update": "",
+		"url": ""
 	}
 ]

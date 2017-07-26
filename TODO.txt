@@ -5,13 +5,6 @@ locations for directions, modulations, etc.  But in the code, it looked like we 
 the relative paths in the code directly.  Either way is fine, but we should only use one of them.  Search on getpref( to see
 find and review all instances.  Our plan is to respect the specific preferences -- see the local hook template for those.
 
-* NICOLAS: Pass both modulation names cell array and direction names cell array to OLMakeModulationsStartsStops.
-  For each modulation, take the corresponding direction name as the direction.  Create the output filename by
-  concatenating the two names, separated by an "_".  Remove direction from the dictionary.  Also, in the approach
-  code, let's change the modulationContrast field to directionModulationContrast and harmonize with what we
-  just decided to use in the protocols.  This change will require a change in how the modulation files are named
-  in the Demo/Experimental code.
-
 * NICOLAS: Add a CorrectionsParams dictionary.  The name should be the Box (e.g. BoxA, BoxB, ....).  Use this
   in OLMakeDirectionCorrectedPrimaries - will need to have a box field in the protocol params and respect this.
   - Might want to handle calibrations across boxes in this way too, having dictionary 
@@ -42,12 +35,12 @@ COMMENTING WHERE WE NEED MANUEL TO HELP:
 * DAVID, MANUEL: Add comments to: OLAnalyzeValidationReceptorIsolate and SST/ComputeAndReportContrastsFromSpds.
 
 * DAVID, MANUEL: We need good comments in OLCalculateStartsStopsModulation.  Understanding this would then
-  allow us to do a better job of commenting OLReceptorIsolateMakeModulationStartsStops, which also needs 
+  allow us to do a better job of commenting the lower part of OLReceptorIsolateMakeModulationStartsStops, which also needs 
   commenting and cleaning.  Also at that point add comments to Modulation dictionary.
 
 * DAVID, MANUEL: Review header comments in SST/GetHumanPhotoreceptorSS.
 
-* MANUEL: SilentSubstitutionToolbox.  Routine ReceptorIsolateOptimBackgroundMulti needs its
+* MANUEL: SilentSubstitutionToolbox.  Routine SST/ReceptorIsolateOptimBackgroundMulti needs its
   comments updated to match what it does.
   - It is possible that we should make RecetporIsolate call through this, as in some
     sense it is a generalization.  But write some good unit tests first.
@@ -91,6 +84,13 @@ the routine OLEstimateConePhotopigmentFraction routine.  The latter routine is
 in the OneLightToolbox, but should probably renamed and moved into the SilentSubstitutionToolbox. DONE
 
 * NICOLAS, DAVID  - Let's add comments to background/directoin dictionary default routine that says what each field is about. DONE.
+
+* NICOLAS: Pass both modulation names cell array and direction names cell array to OLMakeModulationsStartsStops.
+  For each modulation, take the corresponding direction name as the direction.  Create the output filename by
+  concatenating the two names, separated by an "_".  Remove direction from the dictionary.  Also, in the approach
+  code, let's change the modulationContrast field to directionModulationContrast and harmonize with what we
+  just decided to use in the protocols.  This change will require a change in how the modulation files are named
+  in the Demo/Experimental code. - DONE.
 
 FOR THE FUTURE:
 

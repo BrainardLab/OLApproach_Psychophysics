@@ -1,21 +1,10 @@
-
-* JACK, MICHAEL: We should review the prefs we set up in the OLApproach_Psyhchophysics local hook file.  I think we may
-not need all of them.  In the original version of the local hook file, we defined many preferences that defined explicitly the
-locations for directions, modulations, etc.  But in the code, it looked like we had moved to using just the base path and defining
-the relative paths in the code directly.  Either way is fine, but we should only use one of them.  Search on getpref( to see
-find and review all instances.  Our plan is to respect the specific preferences -- see the local hook template for those.
-
+**************
 * NICOLAS: Worry about how to make cal file related routines in OneLightToolbox read/write from the right cal
   directory.  Currently the core routines respect a 'OneLightToolbox' preference, which is a good default.
   Try to make sure that all calibration related routines respect the 'OneLightToolbox' preference.
     
 * MICHAEL: Create an OLApproach_TrialSequenceMR repository and start populating it.  Or at least think about
   how the current "driver" works and what we'll need to do to make it work in the new regime.
-
-* US: Make sure field names match between the nominal and corrected versions for directions, so that the
-  make modulations code can take either version transparently.
-
-* DAVID: Need to get light flux modulations working in new code.
 
 * US: It used to be the case that blank trials were handled by a special case in make modulation starts stops
   that forced the modulations to be zero, and did a check on the direction primary cache file name to
@@ -24,6 +13,7 @@ find and review all instances.  Our plan is to respect the specific preferences 
 
 * DAVID: Finish commenting corrections dictionary.
 
+**************
 COMMENTING WHERE WE NEED MANUEL TO HELP:
 
 * DAVID, MANUEL: Add comments to: OLAnalyzeValidationReceptorIsolate and SST/ComputeAndReportContrastsFromSpds.
@@ -34,6 +24,8 @@ COMMENTING WHERE WE NEED MANUEL TO HELP:
 
 * DAVID, MANUEL: Review header comments in SST/GetHumanPhotoreceptorSS.
 
+* DAVID, MANUEL: Comments are not accurate in OLGetModulationCacheData.  Need to figure out what it does and where it should live.
+
 * MANUEL: SilentSubstitutionToolbox.  Routine SST/ReceptorIsolateOptimBackgroundMulti needs its
   comments updated to match what it does.
   - It is possible that we should make RecetporIsolate call through this, as in some
@@ -41,7 +33,8 @@ COMMENTING WHERE WE NEED MANUEL TO HELP:
   - Deep question, in ReceptorIsolate should we be smoothing primaries or spectra?  We
     currently do the latter.
 
-DONE:
+**************
+DONE!!!!!!!
 
 * NICOLAS, JACK, MICHAEL: We took off some subject/date/session from files stored in subject/date/session directory trees, but
    this needs to be done consistently throughout.
@@ -93,6 +86,17 @@ in the OneLightToolbox, but should probably renamed and moved into the SilentSub
     are currently hard coded into OLCalibrateOOC -- remove from there and use dictionary.  Check that they
     are not specified elsewhere and if so also use dictionary.  Use just one dictionary (BoxParams dictionary
     both for calibration and spectral correction params.) - DONE
+
+* DAVID: Need to get light flux modulations working in new code. DONE.
+
+* JACK, MICHAEL: We should review the prefs we set up in the OLApproach_Psyhchophysics local hook file.  I think we may
+not need all of them.  In the original version of the local hook file, we defined many preferences that defined explicitly the
+locations for directions, modulations, etc.  But in the code, it looked like we had moved to using just the base path and defining
+the relative paths in the code directly.  Either way is fine, but we should only use one of them.  Search on getpref( to see
+find and review all instances.  Our plan is to respect the specific preferences -- see the local hook template for those.  DONE BY DAVID.
+
+* DAVID: Make sure field names match between the nominal and corrected versions for directions, so that the
+  make modulations code can take either version transparently.  DONE SUBJECT TO THINGS BEING BROKEN.
 
 FOR THE FUTURE:
 

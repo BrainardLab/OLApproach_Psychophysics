@@ -26,7 +26,7 @@ SpeakRateDefault = getpref('protocolParams.approach', 'SpeakRateDefault');
 % Adaptation time
 protocolParams.adaptTimeSecs = 300; % 5 minutes - 300
 protocolParams.frameDurationSecs = 1/64;
-savePath = fullfile(getpref(protocolParams.approach, 'DataPath'),'Experiments', protocolParams.approach, protocolParams.protocol, 'DataFiles', protocolParams.observerID, protocolParams.todayDate, protocolParams.sessionName, 'MatFiles');
+savePath = fullfile(getpref(protocolParams.approach, 'DataFilesBasePath'),protocolParams.observerID, protocolParams.todayDate, protocolParams.sessionName);
 saveFileCSV = [protocolParams.observerID '-' protocolParams.protocolType '.csv'];
 saveFileMAT = [protocolParams.observerID '-' protocolParams.protocolType '.mat'];
 

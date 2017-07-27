@@ -58,7 +58,7 @@ setpref(theApproach,'BackgroundNominalPrimariesPath',fullfile(getpref(theApproac
 %% Set the direction nominal primaries path
 setpref(theApproach,'DirectionNominalPrimariesPath',fullfile(getpref(theApproach, 'MaterialsPath'),'Experiments',theApproach,'DirectionNominalPrimaries'));
 
-% Set the spectrum sought primaries base path
+% Set the direction corrected primaries base path
 setpref(theApproach,'DirectionCorrectedPrimariesBasePath',fullfile(getpref(theApproach, 'DataPath'),'Experiments',theApproach,'MaxMelPulsePsychophysics','DirectionCorrectedPrimaries'));
 
 % Set the validation base path
@@ -70,8 +70,12 @@ setpref(theApproach,'ModulationConfigPath',fullfile(tbLocateProject(theApproach)
 % Modulation starts/stops files base path
 setpref(theApproach,'ModulationStartsStopsBasePath',fullfile(getpref(theApproach, 'DataPath'),'Experiments',theApproach,'MaxMelPulsePsychophysics','ModulationsStartsStops'));
 
-% Session Record base path
+% Session record base path
 setpref(theApproach,'SessionRecordsBasePath',fullfile(getpref(theApproach, 'DataPath'),'Experiments',theApproach,'MaxMelPulsePsychophysics','SessionRecords'));
+
+% Data files base path
+setpref(theApproach,'DataFilesBasePath',fullfile(getpref(theApproach, 'DataPath'),'Experiments',theApproach,'MaxMelPulsePsychophysics','DataFiles'));
+
 
 %% Set the default speak rate
 setpref(theApproach, 'SpeakRateDefault', 230);

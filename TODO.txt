@@ -1,5 +1,5 @@
 
-* NICOLAS, JACK, MICHAEL: We should review the prefs we set up in the OLApproach_Psyhchophysics local hook file.  I think we may
+* JACK, MICHAEL: We should review the prefs we set up in the OLApproach_Psyhchophysics local hook file.  I think we may
 not need all of them.  In the original version of the local hook file, we defined many preferences that defined explicitly the
 locations for directions, modulations, etc.  But in the code, it looked like we had moved to using just the base path and defining
 the relative paths in the code directly.  Either way is fine, but we should only use one of them.  Search on getpref( to see
@@ -21,6 +21,8 @@ find and review all instances.  Our plan is to respect the specific preferences 
   that forced the modulations to be zero, and did a check on the direction primary cache file name to
   decide when to do this.  No No No! Going forward, this will be handled by explicitly created a zero
   contrast modulation file.
+
+* DAVID: Finish commenting corrections dictionary.
 
 COMMENTING WHERE WE NEED MANUEL TO HELP:
 

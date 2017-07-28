@@ -9,9 +9,6 @@
 %          dhb  Move params.photoreceptorClasses into the dictionaries.
 %          dhb  Move params.useAmbient into the dictionaries.
 
-%% POWER LEVELS SHOULD COME OUT OF CORRECTION DICTIONARY AND INTO PROTOCOL.  POSSIBLY
-%% INTO DIRECTION DICTIONARY.
-
 %% Clear
 clear; close all;
 

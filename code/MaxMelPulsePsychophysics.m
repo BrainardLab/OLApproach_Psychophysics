@@ -54,8 +54,11 @@ protocolParams.primaryHeadroom = 0.01;
 % OneLight parameters
 protocolParams.boxName = 'BoxB';  
 protocolParams.calibrationType = 'BoxBRandomizedLongCableBEyePiece1_ND03';
-protocolParams.takeTemperatureMeasurements = false;
-protocolParams.spectroRadiometerOBJWillShutdownAfterMeasurement = false;
+protocolParams.takeCalStateMeasurements = true;
+protocolParams.takeTemperatureMeasurements = true;
+
+% Validation parameters
+protocolParams.nValidationsPerDirection = 2;
 
 % Information we prompt for and related
 commandwindow;
@@ -72,31 +75,33 @@ end
 if (length(protocolParams.modulationNames) ~= length(protocolParams.directionNames))
     error('Modulation and direction names cell arrays must have same length');
 end
-                               
-% Handle simulation case for corrections by setting directions correct
-if (protocolParams.simulate)
-    for ii = 1:length(protocolParams.directionsCorrect)
-        protocolParams.directionsCorrect(ii) = false;
-    end
-end
+
+%% Open the OneLight
+ol = OneLight('simulate',protocolParams.simulate);
 
 %% Open the session
+%
+% The call to OLSessionLog sets up info in protocolParams for where
+% the logs go.
 protocolParams = OLSessionLog(protocolParams,'OLSessionInit');
 
 %% Make the corrected modulation primaries
-protocolParams = OLMakeDirectionCorrectedPrimaries(protocolParams,'verbose',protocolParams.verbose);
+OLMakeDirectionCorrectedPrimaries(ol,protocolParams,'verbose',protocolParams.verbose);
+% OLAnalyzeValidationReceptorIsolate(validationPath, 'short');
 
 %% Make the modulation starts and stops
 OLMakeModulationStartsStops(protocolParams.modulationNames,protocolParams.directionNames, protocolParams,'verbose',protocolParams.verbose);
 
 %% Validate direction corrected primaries prior to experiemnt
-protocolParams = OLValidateDirectionCorrectedPrimaries(protocolParams,'Pre');
+OLValidateDirectionCorrectedPrimaries(ol,protocolParams,'Pre');
+% OLAnalyzeValidationReceptorIsolate(validationPath, validationDescribe.postreceptoralCombinations);
 
 %% Run demo code
-protocolParams = Psychophysics.Demo(protocolParams);
+Psychophysics.Demo(ol,protocolParams);
 
 %% Run experiment
-protocolParams = Psychophysics.Experiment(protocolParams);
+Psychophysics.Experiment(ol,protocolParams);
 
 %% Validate direction corrected primaries post experiment
-protocolParams = OLValidateDirectionCorrectedPrimaries(protocolParams,'Post');
+OLValidateDirectionCorrectedPrimaries(ol,protocolParams,'Post');
+% OLAnalyzeValidationReceptorIsolate(validationPath, validationDescribe.postreceptoralCombinations);

@@ -1,4 +1,4 @@
-function protocolParams = Experiment(protocolParams)
+function Experiment(ol,protocolParams)
 % Experiment
 %
 % Description
@@ -7,29 +7,32 @@ function protocolParams = Experiment(protocolParams)
 
 % 7/7/16    ms      Wrote it.
 % 11/17/2016 jr     Added additional perceptual dimensions and light
+% 7/28/17   dhb     Pass OneLight object.
 
+%% [DHB NOTE: MODULATIONS SHOULD BE TAKEN FROM PARAMETERS.]
 
-% ALL OF THE PARAMETERS NEED TO COME OUT OF HERE.
-% SHOULD THE ol OBJECT BE OPENED OR PASSED?  PASSED
-% I WOULD THINK.
+%% [DHB NOTE: THERE WAS A NOTE HERE THAT A SWITCH STATEMENT ON protocolParams.protocolType WOULD BE GOOD.  I AGREE.]
 
-% SHOULD BE A switch on params.protocol, so different protocols within
-% Psychophysics approach can do different sorts of things.
-% Update Session Log file
+%% [DHB NOTE: ADD 'verbose' key/value pair AND SUPRESS PRINTS TO COMMAND WINDOW WHEN IT IS FALSE]
+
+%% Update Session Log file
 protocolParams = OLSessionLog(protocolParams,mfilename,'StartEnd','start');
 
-% Flux to the stimulus labels.
+%% Parameters
+
+% Speaking
 SpeakRateDefault = getpref('protocolParams.approach', 'SpeakRateDefault');
 
-% Parameters
-
 % Adaptation time
-protocolParams.adaptTimeSecs = 300; % 5 minutes - 300
+protocolParams.adaptTimeSecs = 300;
+
+% This needs to be checked against the modulations
 protocolParams.frameDurationSecs = 1/64;
+
+% Where the data goes
 savePath = fullfile(getpref(protocolParams.approach, 'DataFilesBasePath'),protocolParams.observerID, protocolParams.todayDate, protocolParams.sessionName);
 saveFileCSV = [protocolParams.observerID '-' protocolParams.protocolType '.csv'];
 saveFileMAT = [protocolParams.observerID '-' protocolParams.protocolType '.mat'];
-
 if ~exist(savePath)
     mkdir(savePath);
 end
@@ -68,9 +71,6 @@ protocolParams.NPerceptualDimensions = length(perceptualDimensions);
 Speak('Press key to start experiment', [], SpeakRateDefault);
 WaitForKeyPress;
 fprintf('* <strong>Experiment started</strong>\n');
-
-% Open the OneLight
-ol = OneLight('simulate',protocolParams.simulate);
 
 % Open the file to save to
 f = fopen(fullfile(savePath, saveFileCSV), 'w');
@@ -139,4 +139,4 @@ end
 % Save the data as in the end
 save(fullfile(savePath, saveFileMAT), 'data', 'protocolParams');
 fprintf('* Data saved.\n');
-protocolParams = OLSessionLog(protocolParams,mfilename,'StartEnd','end');
+OLSessionLog(protocolParams,mfilename,'StartEnd','end');

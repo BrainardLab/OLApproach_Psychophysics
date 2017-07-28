@@ -1,20 +1,20 @@
-function protocolParams = Demo(protocolParams)
+function Demo(ol,protocolParams)
 % Demo
 %
 % Description:
 %   Simple program for demo of MaxMel/MaxLMS pulses
-%
+
 % 7/7/16    ms      Wrote it.
+% 7/28/17   dhb     Pass ol object
 
-% ALL OF THE PARAMETERS NEED TO COME OUT OF HERE.
-% SHOULD THE ol OBJECT BE OPENED OR PASSED?  PASSED
-% I WOULD THINK.
+%% [DHB NOTE: MODULATIONS SHOULD BE TAKEN FROM PARAMETERS.]
 
-% SHOULD BE A switch on params.protocol, so different protocols within
-% Psychophysics approach can do different sorts of things.
-% Update Session Log file
+%% [DHB NOTE: THERE WAS A NOTE HERE THAT A SWITCH STATEMENT ON protocolParams.protocolType WOULD BE GOOD.  I AGREE.]
+
+%% [DHB NOTE: ADD 'verbose' key/value pair AND SUPRESS PRINTS TO COMMAND WINDOW WHEN IT IS FALSE]
+
+%% Update Session Log file
 protocolParams = OLSessionLog(protocolParams,mfilename,'StartEnd','start');
-
 
 % Setup and prompt user for info
 SpeakRateDefault = getpref(protocolParams.approach, 'SpeakRateDefault');
@@ -32,7 +32,6 @@ modulationDir =  fullfile(getpref(protocolParams.approach, 'ModulationStartsStop
 
 startsStopsCacheFileNames{1} = 'ModulationStartsStops_MaxContrast3sSegment_MaxLMS_275_80_667';
 startsStopsCacheFileNames{2} = 'ModulationStartsStops_MaxContrast3sSegment_MaxMel_275_80_667';
-
 
 pathToModFileLMS = sprintf('%s.mat', startsStopsCacheFileNames{1});  %  ['Direction_' num2str(protocolParams.observerAgeInYrs) '_' protocolParams.observerID '_' protocolParams.todayDate '.mat'];
 pathToModFileMel = sprintf('%s.mat', startsStopsCacheFileNames{2});  % ['Direction_' num2str(protocolParams.observerAgeInYrs) '_' protocolParams.observerID '_' protocolParams.todayDate '.mat'];
@@ -66,9 +65,6 @@ Speak('Press key to start demo', [], SpeakRateDefault);
 %WaitForKeyPress;
 
 fprintf('* <strong>Experiment started</strong>\n');
-
-% Open the OneLight
-ol = OneLight('simulate',protocolParams.simulate);
 
 for is = 1:protocolParams.NStimuli
     % Set to background

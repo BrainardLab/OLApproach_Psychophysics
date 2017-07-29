@@ -59,14 +59,14 @@ stopsMel = modFileMel.modulationData.modulation.stops;
 stimStarts = {startsLMS startsMel};
 stimStops = {stopsLMS stopsMel};
 stimFrameDurations = [modFileLMS.modulationData.params.timeStep modFileMel.modulationData.params.timeStep];
-stimStartsBG = {modFileLMS.modulationObj.modulation.background.starts modFileMel.modulationObj.modulation.background.starts};
-stimStopsBG = {modFileLMS.modulationObj.modulation.background.stops modFileMel.modulationObj.modulation.background.stops};
+stimStartsBG = {modFileLMS.modulationData.modulation.background.starts modFileMel.modulationData.modulation.background.starts};
+stimStopsBG = {modFileLMS.modulationData.modulation.background.stops modFileMel.modulationData.modulation.background.stops};
 
 % Wait for button press
 Speak('Press key to start demo', [], speakRateDefault);
 if (~protocolParams.simulate), WaitForKeyPress; end;
 
-fprintf('* <strong>Experiment started</strong>\n');
+fprintf('* <strong>Demo started</strong>\n');
 for is = 1:nStimuli
     % Set to background
     ol.setMirrors(stimStartsBG{is}, stimStopsBG{is});

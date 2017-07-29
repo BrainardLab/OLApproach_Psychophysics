@@ -72,8 +72,8 @@ stopsLightFlux = modFileLightFlux.modulationData.modulation.stops;
 stimStarts = {startsLightFlux startsLMS startsMel};
 stimStops = {stopsLightFlux stopsLMS stopsMel};
 stimFrameDurations = [modFileLightFlux.modulationData.params.timeStep modFileLMS.modulationData.params.timeStep modFileMel.modulationData.params.timeStep];
-stimStartsBG = {modFileLightFlux.modulationObj.modulation.background.starts modFileLMS.modulationObj.modulation.background.starts modFileMel.modulationObj.modulation.background.starts};
-stimStopsBG = {modFileLightFlux.modulationObj.modulation.background.stops modFileLMS.modulationObj.modulation.background.stops modFileMel.modulationObj.modulation.background.stops};
+stimStartsBG = {modFileLightFlux.modulationData.modulation.background.starts modFileLMS.modulationData.modulation.background.starts modFileMel.modulationData.modulation.background.starts};
+stimStopsBG = {modFileLightFlux.modulationData.modulation.background.stops modFileLMS.modulationData.modulation.background.stops modFileMel.modulationData.modulation.background.stops};
 
 %% Perceptual dimensions
 perceptualDimensions = {'cool to warm', 'dull to glowing', 'colorless to colored', 'focused to blurred', 'slow to rapid', 'pleasant to unpleasant', 'dim to bright', 'smooth to jagged', 'constant to fading'};
@@ -111,7 +111,7 @@ for ii = 1:protocolParams.NStimuli
         fprintf('\n* <strong>Trial %g</strong>\n', trialNum);
         fprintf('\t- Stimulus: <strong>%s</strong>\n', stimLabels{is});
         fprintf('\t- Dimension: <strong>%s</strong>\n', perceptualDimensions{ps});
-        fprintf('\t- Repeat: <strong>%g</strong>\n');
+        fprintf('\t- Repeat?');
         Speak(['Wait for instructions.'], [], 200);
         if (~protocolParams.simulate), WaitForKeyPress; end
         
@@ -119,12 +119,12 @@ for ii = 1:protocolParams.NStimuli
         counter = 1;
         while keepGoing
             fprintf('* <strong>Showing stimulus</strong>\n')
-            OLFlicker(ol, stimStarts{is}', stimStops{is}', stimFrameDurations(is), 1);
+            OLFlicker(ol, stimStarts{is}, stimStops{is}, stimFrameDurations(is), 1);
             fprintf('Done.\n')
             counter =  counter+1;
-            ol.setMirrors(stimStartsBG{is}', stimStopsBG{is}');
+            ol.setMirrors(stimStartsBG{is}, stimStopsBG{is});
             if counter == 2
-                keepGoing = GetWithDefault('Show stimulus again? [0 = no, 1 = yes]', 0);
+                if (~protocolParams.simulate), keepGoing = GetWithDefault('Show stimulus again? [0 = no, 1 = yes]', 0); end
             else
                 keepGoing = false;
             end    

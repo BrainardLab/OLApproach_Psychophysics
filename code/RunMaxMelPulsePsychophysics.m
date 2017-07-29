@@ -51,13 +51,6 @@ protocolParams.directionsCorrect = [...
 % Timing things
 protocolParams.demoAdaptTimeSecs = 1; 
 protocolParams.experimentAdaptTimeSecs = 1;
-
-% Photoreceptor parameters, assume a dialated pupil
-protocolParams.fieldSizeDegrees = 27.5;
-protocolParams.pupilDiameterMm = 8; 
-protocolParams.baseModulationContrast = 4/6;
-protocolParams.maxPowerDiff = 10^(-1);
-protocolParams.primaryHeadroom = 0.01;
       
 % OneLight parameters
 protocolParams.boxName = 'BoxB';  

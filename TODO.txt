@@ -11,8 +11,6 @@
   decide when to do this.  No No No! Going forward, this will be handled by explicitly created a zero
   contrast modulation file.
 
-* DAVID: Finish commenting corrections dictionary.
-
 **************
 COMMENTING WHERE WE NEED MANUEL TO HELP:
 
@@ -33,76 +31,7 @@ COMMENTING WHERE WE NEED MANUEL TO HELP:
   - Deep question, in ReceptorIsolate should we be smoothing primaries or spectra?  We
     currently do the latter.
 
-**************
-DONE!!!!!!!
-
-* NICOLAS, JACK, MICHAEL: We took off some subject/date/session from files stored in subject/date/session directory trees, but
-   this needs to be done consistently throughout.
-    - For example, corrected direction primaries, modulations, etc. - DONE
-
-* NICOLAS, MICHAEL, JACK: Deal with all the broken calls where adding "OL" broke it. - DONE
-
-% NICOLAS, MICHAEL, JACK.  Work together to integrate the the style we developed for the modulations code into
-  the i/o for the correct and validate code. - DONE
-
-* NICOLAS, MICHAEL, JACK.  Work together to debug all the changes made in the code that makes the modulations.
-  This may involve some changes where the modulations are used, as we streamlined the return structure.  But,
-  we didn't change any of the actual data returned, we don't think. - DONE
-
-* NICOLAS: Dictionaries.  Each "thing" should have a type as its first field, and the defaults and checking
-should be by type. - DONE.
-
-* NICOLAS: Add "OL" to the "Merge ..." routines in OLDictionaries and the dictionary routines as well. - DONE.
-
-* DAVID: Add gitHub version info to the tbUseProject config files for the OneLight stuff, so we can keep
-  machine configs straight. - DONE.
-
-* DAVID: Clean up OneLightDriver config file so that it only includes needed subdirectories. - DONE.
-
-* NICOLAS, DAVID: Routines that cache backgrounds and directions should do a parameter field check on read, and
-  call the cache stale if parameters have changed. DONE.
-
-* DAVID: Need to consolidate the various pieces of code that compute fraction pigment bleached
-  into a single routine that is called from everywhere else.  DONE
-
-* DAVID: SilentSubstitutionToolbox.  The routine GetHumanPhotoreceptorSS was updated
-in a way that is not backwards compatible with 'Hemo' types, and this breaks
-the routine OLEstimateConePhotopigmentFraction routine.  The latter routine is
-in the OneLightToolbox, but should probably renamed and moved into the SilentSubstitutionToolbox. DONE
-
-* NICOLAS, DAVID  - Let's add comments to background/directoin dictionary default routine that says what each field is about. DONE.
-
-* NICOLAS: Pass both modulation names cell array and direction names cell array to OLMakeModulationsStartsStops.
-  For each modulation, take the corresponding direction name as the direction.  Create the output filename by
-  concatenating the two names, separated by an "_".  Remove direction from the dictionary.  Also, in the approach
-  code, let's change the modulationContrast field to directionModulationContrast and harmonize with what we
-  just decided to use in the protocols.  This change will require a change in how the modulation files are named
-  in the Demo/Experimental code. - DONE.
-
-* NICOLAS: Add a CorrectionsParams dictionary.  The name should be the Box (e.g. BoxA, BoxB, ....).  Use this
-  in OLMakeDirectionCorrectedPrimaries - will need to have a box field in the protocol params and respect this.
-  - Might want to handle calibrations across boxes in this way too, having dictionary 
-    entries that describe the calibration parameters for each box.  The params for each of the four boxes
-    are currently hard coded into OLCalibrateOOC -- remove from there and use dictionary.  Check that they
-    are not specified elsewhere and if so also use dictionary.  Use just one dictionary (BoxParams dictionary
-    both for calibration and spectral correction params.) - DONE
-
-* DAVID: Need to get light flux modulations working in new code. DONE.
-
-* JACK, MICHAEL: We should review the prefs we set up in the OLApproach_Psyhchophysics local hook file.  I think we may
-not need all of them.  In the original version of the local hook file, we defined many preferences that defined explicitly the
-locations for directions, modulations, etc.  But in the code, it looked like we had moved to using just the base path and defining
-the relative paths in the code directly.  Either way is fine, but we should only use one of them.  Search on getpref( to see
-find and review all instances.  Our plan is to respect the specific preferences -- see the local hook template for those.  DONE BY DAVID.
-
-* DAVID: Make sure field names match between the nominal and corrected versions for directions, so that the
-  make modulations code can take either version transparently.  DONE SUBJECT TO THINGS BEING BROKEN.
-
 FOR THE FUTURE:
-
-* I think that files that get written into MELA_data should not use cache files. These
-  get run per session and we have a scheme that keeps them apart.  This would apply
-  to the corrected primaries and validations, for example, as well as the Modulations.
 
 * There is old splatter code that we pulled out.  Probably want a way to run splatter analyses
 easily, based on direction/validation files.  This should be modular.

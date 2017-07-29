@@ -24,19 +24,23 @@ protocolParams.simulate = true;
 
 % Modulations used in this experiment
 % 
-% These two cell arrays should have teh same length - the modulations get paired 
-% with the directions in a one-to-one way.
-protocolParams.modulationNames = {'MaxContrast3sSegment', ...
-                                  'MaxContrast3sSegment'};
+% These four arrays should have the same length, the entries get paired.
+protocolParams.modulationNames = {'MaxContrast3sSegment' ...
+                                  'MaxContrast3sSegment' ...
+                                  'MaxContrast3sSegment' ...
+                                  };
 protocolParams.directionNames = {...
-    'MaxLMS' ...
-    'MaxMel' ...
+    'MaxMel_275_80_667' ...
+    'MaxLMS_275_80_667' ...
+    'LightFlux_540_380_50' ...
     };
 protocolParams.directionTypes = {...
     'pulse' ...
     'pulse' ...
+    'lightfluxpulse' ...
     };
 protocolParams.directionsCorrect = [...
+    true ...
     true ...
     true ...
     ];
@@ -74,7 +78,16 @@ if (length(protocolParams.modulationNames) ~= length(protocolParams.directionNam
 end
 
 %% Open the OneLight
-ol = OneLight('simulate',protocolParams.simulate);
+ol = OneLight('simulate',protocolParams.simulate); drawnow;
+
+%% Let user get the radiometer set up
+radiometerPauseDuration = 0;
+ol.setAll(true);
+commandwindow;
+fprintf('- Focus the radiometer and press enter to pause %d seconds and start measuring.\n', radiometerPauseDuration);
+input('');
+ol.setAll(false);
+pause(radiometerPauseDuration);
 
 %% Open the session
 %
@@ -85,6 +98,12 @@ protocolParams = OLSessionLog(protocolParams,'OLSessionInit');
 %% Make the corrected modulation primaries
 OLMakeDirectionCorrectedPrimaries(ol,protocolParams,'verbose',protocolParams.verbose);
 % OLAnalyzeValidationReceptorIsolate(validationPath, 'short');
+% % Compute and print out information about the quality of
+% % the current measurement, in contrast terms.
+% theCanonicalPhotoreceptors = cacheData.data(correctionDescribe.observerAgeInYrs).describe.photoreceptors;
+% T_receptors = cacheData.data(correctionDescribe.observerAgeInYrs).describe.T_receptors;
+% [contrasts(:,iter) postreceptoralContrasts(:,iter)] = ComputeAndReportContrastsFromSpds(['Iteration ' num2str(iter, '%02.0f')] ,theCanonicalPhotoreceptors,T_receptors,...
+%     backgroundSpdMeasured,modulationSpdMeasured,correctionDescribe.postreceptoralCombinations,true);
 
 %% Make the modulation starts and stops
 OLMakeModulationStartsStops(protocolParams.modulationNames,protocolParams.directionNames, protocolParams,'verbose',protocolParams.verbose);
@@ -98,6 +117,14 @@ Psychophysics.Demo(ol,protocolParams);
 
 %% Run experiment
 Psychophysics.Experiment(ol,protocolParams);
+
+%% Let user get the radiometer set up
+ol.setAll(true);
+commandwindow;
+fprintf('- Focus the radiometer and press enter to pause %d seconds and start measuring.\n', radiometerPauseDuration);
+input('');
+ol.setAll(false);
+pause(radiometerPauseDuration);
 
 %% Validate direction corrected primaries post experiment
 OLValidateDirectionCorrectedPrimaries(ol,protocolParams,'Post');

@@ -1,14 +1,12 @@
-% MaxPulsePsychophysics_Analysis.m
+%%Analysis  Analyses for MaxMelPulsePsychophysics protocol
 %
-% Analyses rating data. Hacked up for now.
+% Description
+%     Simple analysis for MaxMelPulsePsychophysics protocol
 %
-% 11/22/16  spitschan  Wrote it.
-% 02/09/2017 JR proposed edits: Plot of average ratings across subjects
-% with standard error bars; Histogram of each rating value (1 -7) across subjects for each
-% perceptual dimension for each trial (1-3). This would be a figure with 3
-% bar plots in it containing the number of times subjects responded 1-7 for
-% each dimension.
+%     The status of this routine is uncertain.  For sure, has not been
+%     updated to read data from approach/protocol specific place.  
 
+% 11/22/16  spitschan  Wrote it.
 
 %% Individual Plots
 

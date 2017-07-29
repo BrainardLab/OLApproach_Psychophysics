@@ -1,4 +1,4 @@
-% ApproachSetup
+%%SetupPsychophysicsAppraoch  Do the protocol indpendent steps required to run a psychophysics protocol.
 %
 % Description:
 %   Do the protocol indpendent steps required to run a protocol.  

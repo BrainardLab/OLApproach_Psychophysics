@@ -1,4 +1,4 @@
-% MaxMelPulsePsychophysics
+% RunMaxMelPulsePsychophysics
 %
 % Description:
 %   Define the parameters for the MaxPulsePsychophysics protocol of the
@@ -24,7 +24,10 @@ protocolParams.simulate = true;
 
 % Modulations used in this experiment
 % 
-% These four arrays should have the same length, the entries get paired.
+% Thee four arrays below should have the same length, the entries get paired.
+%
+% Do not change the order of these directions without also fixing up
+% the Demo and Experimental programs, which are counting on this order.
 protocolParams.modulationNames = {'MaxContrast3sSegment' ...
                                   'MaxContrast3sSegment' ...
                                   'MaxContrast3sSegment' ...
@@ -44,6 +47,10 @@ protocolParams.directionsCorrect = [...
     true ...
     true ...
     ];
+
+% Timing things
+protocolParams.demoAdaptTimeSecs = 1; 
+protocolParams.experimentAdaptTimeSecs = 1;
 
 % Photoreceptor parameters, assume a dialated pupil
 protocolParams.fieldSizeDegrees = 27.5;
@@ -113,10 +120,10 @@ OLValidateDirectionCorrectedPrimaries(ol,protocolParams,'Pre');
 % OLAnalyzeValidationReceptorIsolate(validationPath, validationDescribe.postreceptoralCombinations);
 
 %% Run demo code
-Psychophysics.Demo(ol,protocolParams);
+MaxMelPulsePsychophysics.Demo(ol,protocolParams);
 
 %% Run experiment
-Psychophysics.Experiment(ol,protocolParams);
+MaxMelPulsePsychophysics.Experiment(ol,protocolParams);
 
 %% Let user get the radiometer set up
 ol.setAll(true);

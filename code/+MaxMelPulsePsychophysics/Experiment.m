@@ -4,6 +4,13 @@ function Experiment(ol,protocolParams,varargin)
 % Description:
 %     Simple program to run a rating psychophysical task with OneLight pulses.
 %
+% Input:
+%    ol (object)              An open OneLight object.
+%    protocolParams (struct)  The protocol parameters structure.
+%
+% Output:
+%    None.
+%
 % Optional key/value pairs:
 %    verbose (logical)         true       Be chatty?
 
@@ -40,7 +47,7 @@ stimOrder = [1 3 2 1 3 2];
 % done something unexpected in the calling program.
 modulationDir = fullfile(getpref(protocolParams.protocol, 'ModulationStartsStopsBasePath'), protocolParams.observerID,protocolParams.todayDate,protocolParams.sessionName);
 for mm = 1:length(protocolParams.modulationNames)
-    modulationNames{mm} = sprintf('ModulationStartsStops_%s_%s', protocolParams.modulationNames{mm}, protocolParams.directionNames{mm});
+    fullModulationNames{mm} = sprintf('ModulationStartsStops_%s_%s', protocolParams.modulationNames{mm}, protocolParams.directionNames{mm});
 end
 if (~strcmp(protocolParams.directionNames{1}(1:6),'MaxMel'))
     error('Direction order not as expected');
@@ -51,9 +58,9 @@ end
 if (~strcmp(protocolParams.directionNames{3}(1:9),'LightFlux'))
     error('Direction order not as expected');
 end
-pathToModFileMel = [modulationNames{1} '.mat'];
-pathToModFileLMS = [modulationNames{2} '.mat'];
-pathToModFileLightFlux = [modulationNames{3} '.mat'];
+pathToModFileMel = [fullModulationNames{1} '.mat'];
+pathToModFileLMS = [fullModulationNames{2} '.mat'];
+pathToModFileLightFlux = [fullModulationNames{3} '.mat'];
 
 % Load in the files
 modFileLMS = load(fullfile(modulationDir, pathToModFileLMS));

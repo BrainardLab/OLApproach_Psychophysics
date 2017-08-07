@@ -54,7 +54,7 @@ protocolParams.experimentAdaptTimeSecs = 1;
       
 % OneLight parameters
 protocolParams.boxName = 'BoxB';  
-protocolParams.calibrationType = 'BoxBRandomizedLongCableBEyePiece1_ND03';
+protocolParams.calibrationType = 'BoxARandomizedLongCableAEyePiece1_ND03';
 protocolParams.takeCalStateMeasurements = true;
 protocolParams.takeTemperatureMeasurements = true;
 

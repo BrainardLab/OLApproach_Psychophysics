@@ -16,21 +16,6 @@ COMMENTING WHERE WE NEED MANUEL TO HELP:
 
 * DAVID, MANUEL: Add comments to: OLAnalyzeValidationReceptorIsolate and SST/ComputeAndReportContrastsFromSpds.
 
-* DAVID, MANUEL: We need good comments in OLCalculateStartsStopsModulation.  Understanding this would then
-  allow us to do a better job of commenting the lower part of OLReceptorIsolateMakeModulationStartsStops, which also needs 
-  commenting and cleaning.  Also at that point add comments to Modulation dictionary.
-
-* DAVID, MANUEL: Review header comments in SST/GetHumanPhotoreceptorSS.
-
-* DAVID, MANUEL: Comments are not accurate in OLGetModulationCacheData.  Need to figure out what it does and where it should live.
-
-* MANUEL: SilentSubstitutionToolbox.  Routine SST/ReceptorIsolateOptimBackgroundMulti needs its
-  comments updated to match what it does.
-  - It is possible that we should make RecetporIsolate call through this, as in some
-    sense it is a generalization.  But write some good unit tests first.
-  - Deep question, in ReceptorIsolate should we be smoothing primaries or spectra?  We
-    currently do the latter.
-
 FOR THE FUTURE:
 
 * There is old splatter code that we pulled out.  Probably want a way to run splatter analyses

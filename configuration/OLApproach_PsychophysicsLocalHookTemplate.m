@@ -44,8 +44,16 @@ switch userID
         materialsBasePath = ['/Users1'  '/Dropbox (Aguirre-Brainard Lab)/MELA_materials'];
         dataBasePath = ['/Users1' '/Dropbox (Aguirre-Brainard Lab)/MELA_data/'];     
     case {'nicolas'}
-        materialsBasePath = '/Volumes/Manta TM HD/Dropbox (Aguirre-Brainard Lab)/MELA_materials';
-        dataBasePath = '/Volumes/Manta TM HD/Dropbox (Aguirre-Brainard Lab)/MELA_data';
+        [~, computerName] = system('hostname');
+        if (~isempty(strfind(computerName, 'Ithaka')))
+            ABDBoxPath = '/Volumes/SamsungT3/Dropbox/AguirreBrainardLabsDropbox';
+        elseif (~isempty(strfind(computerName, 'Manta')))
+            ABDBoxPath = '/Volumes/Manta TM HD/Dropbox (Aguirre-Brainard Lab)';
+        else
+            error('Unknown computer name: ''%s'' !\n', computerName);
+        end
+        materialsBasePath = fullfile(ABDBoxPath, 'MELA_materials');
+        dataBasePath = fullfile(ABDBoxPath, 'MELA_data');
     otherwise
         materialsBasePath = ['/Users/' userID '/Dropbox (Aguirre-Brainard Lab)/MELA_materials'];
         dataBasePath = ['/Users/' userID '/Dropbox (Aguirre-Brainard Lab)/MELA_data/'];

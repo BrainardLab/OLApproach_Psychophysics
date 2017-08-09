@@ -2,7 +2,8 @@
 * NICOLAS: Worry about how to make cal file related routines in OneLightToolbox read/write from the right cal
   directory.  Currently the core routines respect a 'OneLightToolbox' preference, which is a good default.
   Try to make sure that all calibration related routines respect the 'OneLightToolbox' preference.
-    
+  -DONE as of 8/8/2017. Jack to test. - NPC.
+
 * MICHAEL: Create an OLApproach_TrialSequenceMR repository and start populating it.  Or at least think about
   how the current "driver" works and what we'll need to do to make it work in the new regime.
 

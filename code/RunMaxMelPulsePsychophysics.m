@@ -20,7 +20,7 @@ protocolParams.protocol = 'MaxMelPulsePsychophysics';
 protocolParams.protocolType = 'PulseRating';
 protocolParams.emailRecipient = 'jryan@mail.med.upenn.edu';
 protocolParams.verbose = false;
-protocolParams.simulate = true;
+protocolParams.simulate = false;
 
 % Modulations used in this experiment
 % 
@@ -58,10 +58,10 @@ protocolParams.demoAdaptTimeSecs = 1;
 protocolParams.experimentAdaptTimeSecs = 1;
       
 % OneLight parameters
-protocolParams.boxName = 'BoxB';  
-protocolParams.calibrationType = 'BoxBRandomizedLongCableBEyePiece1_ND03';
+protocolParams.boxName = 'BoxA';  
+protocolParams.calibrationType = 'BoxARandomizedLongCableAEyePiece1_ND03_NoReticle';
 protocolParams.takeCalStateMeasurements = true;
-protocolParams.takeTemperatureMeasurements = true;
+protocolParams.takeTemperatureMeasurements = false;
 
 % Validation parameters
 protocolParams.nValidationsPerDirection = 2;

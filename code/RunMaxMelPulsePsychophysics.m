@@ -20,7 +20,7 @@ protocolParams.protocol = 'MaxMelPulsePsychophysics';
 protocolParams.protocolType = 'PulseRating';
 protocolParams.emailRecipient = 'jryan@mail.med.upenn.edu';
 protocolParams.verbose = false;
-protocolParams.simulate = false;
+protocolParams.simulate = true;
 
 % Modulations used in this experiment
 % 
@@ -70,7 +70,16 @@ protocolParams.nValidationsPerDirection = 2;
 commandwindow;
 protocolParams.observerID = GetWithDefault('>> Enter <strong>user name</strong>', 'HERO_xxxx');
 protocolParams.observerAgeInYrs = GetWithDefault('>> Enter <strong>observer age</strong>:', 32);
-protocolParams.todayDate = datestr(now, 'mmddyy');
+protocolParams.todayDate = datestr(now, 'yyyy-mm-dd');
+
+%% Use these to test reportin on validation and spectrum seeking
+%
+% Spectrum Seeking: /MELA_data/Experiments/OLApproach_Psychophysics/DirectionCorrectedPrimaries/Jimbo/081117/session_1/...
+% Validation: /MELA_data/Experiments/OLApproach_Psychophysics/DirectionValidationFiles/Jimbo/081117/session_1/...
+protocolParams.observerID = 'Jimbo';
+protocolParams.observerAgeInYrs = 32;
+protocolParams.todayDate = '081117';
+protocolParams.sessionName = 'session_1';
 
 %% Check that prefs are as expected, as well as some parameter sanity checks/adjustments
 if (~strcmp(getpref('OneLightToolbox','OneLightCalData'),getpref(protocolParams.approach,'OneLightCalDataPath')))
@@ -115,7 +124,7 @@ OLMakeModulationStartsStops(protocolParams.modulationNames,protocolParams.direct
 
 %% Validate direction corrected primaries prior to experiemnt
 OLValidateDirectionCorrectedPrimaries(ol,protocolParams,'Pre');
-% OLAnalyzeValidationReceptorIsolate(validationPath, validationDescribe.postreceptoralCombinations);
+OLAnalyzeDirectionCorrectedPrimaries(protocolParams,'Pre');
 
 %% Run demo code
 MaxMelPulsePsychophysics.Demo(ol,protocolParams);

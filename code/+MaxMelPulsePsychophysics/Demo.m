@@ -58,7 +58,7 @@ stopsMel = modFileMel.modulationData.modulation.stops;
 % Put starts stops into cell arrays that can be indexed by stimOrder variable above
 stimStarts = {startsLMS startsMel};
 stimStops = {stopsLMS stopsMel};
-stimFrameDurations = [modFileLMS.modulationData.params.timeStep modFileMel.modulationData.params.timeStep];
+stimFrameDurations = [modFileLMS.modulationData.modulationParams.timeStep modFileMel.modulationData.modulationParams.timeStep];
 stimStartsBG = {modFileLMS.modulationData.modulation.background.starts modFileMel.modulationData.modulation.background.starts};
 stimStopsBG = {modFileLMS.modulationData.modulation.background.stops modFileMel.modulationData.modulation.background.stops};
 

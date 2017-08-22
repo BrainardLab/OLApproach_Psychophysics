@@ -83,7 +83,7 @@ protocolParams.observerID = GetWithDefault('>> Enter <strong>user name</strong>'
 protocolParams.observerAgeInYrs = GetWithDefault('>> Enter <strong>observer age</strong>:', 32);
 protocolParams.todayDate = datestr(now, 'yyyy-mm-dd');
 
-%% Use these to test reportin on validation and spectrum seeking
+%% Use these to test reporting on validation and spectrum seeking
 %
 % Spectrum Seeking: /MELA_data/Experiments/OLApproach_Psychophysics/DirectionCorrectedPrimaries/Jimbo/081117/session_1/...
 % Validation: /MELA_data/Experiments/OLApproach_Psychophysics/DirectionValidationFiles/Jimbo/081117/session_1/...

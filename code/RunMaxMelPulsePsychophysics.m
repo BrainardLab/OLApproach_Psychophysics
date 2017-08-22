@@ -53,6 +53,17 @@ protocolParams.directionsCorrect = [...
     true ...
     ];
 
+% Field size and pupil size.
+%
+% These are used to construct photoreceptors for validation for directions
+% (e.g. light flux) where they are not available in the direction file.
+% They can also be used to check for consistency.  
+%
+% If we ever want to run with more than one field size and pupil size in a single 
+% run, this will need a little rethinking.
+protocolParams.fieldSizeDegrees = 27.5;
+protocolParams.pupilDiameterMm = 8;
+
 % Timing things
 protocolParams.demoAdaptTimeSecs = 1; 
 protocolParams.experimentAdaptTimeSecs = 1;
@@ -142,4 +153,4 @@ pause(radiometerPauseDuration);
 
 %% Validate direction corrected primaries post experiment
 OLValidateDirectionCorrectedPrimaries(ol,protocolParams,'Post');
-% OLAnalyzeValidationReceptorIsolate(validationPath, validationDescribe.postreceptoralCombinations);
+OLAnalyzeDirectionCorrectedPrimaries(protocolParams,'Post');

@@ -18,7 +18,7 @@ clear; close all;
 protocolParams.approach = 'OLApproach_Psychophysics';
 protocolParams.protocol = 'MaxMelPulsePsychophysics';
 protocolParams.protocolType = 'PulseRating';
-protocolParams.emailRecipient = 'jryan@mail.med.upenn.edu';
+protocolParams.emailRecipient = 'jryan@upenn.edu';
 protocolParams.verbose = false;
 protocolParams.simulate = false;
 protocolParams.doCorrectionFlag = true;

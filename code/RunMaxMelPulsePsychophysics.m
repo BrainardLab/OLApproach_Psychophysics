@@ -20,7 +20,8 @@ protocolParams.protocol = 'MaxMelPulsePsychophysics';
 protocolParams.protocolType = 'PulseRating';
 protocolParams.emailRecipient = 'jryan@mail.med.upenn.edu';
 protocolParams.verbose = false;
-protocolParams.simulate = true;
+protocolParams.simulate = false;
+protocolParams.doCorrectionFlag = true;
 
 % Modulations used in this experiment
 % 

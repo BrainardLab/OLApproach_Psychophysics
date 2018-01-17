@@ -18,10 +18,10 @@ clear; close all;
 protocolParams.approach = 'OLApproach_Psychophysics';
 protocolParams.protocol = 'MaxMelPulsePsychophysics';
 protocolParams.protocolType = 'PulseRating';
-protocolParams.emailRecipient = 'jryan@upenn.edu';
+protocolParams.emailRecipient = 'joris.vincent@pennmedicine.upenn.edu';
 protocolParams.verbose = false;
-protocolParams.simulate = false;
-protocolParams.doCorrectionFlag = true;
+protocolParams.simulate.oneLight = true;
+%protocolParams.doCorrectionFlag = true;
 
 % Modulations used in this experiment
 % 
@@ -48,11 +48,16 @@ protocolParams.trialTypeParams = [...
     struct('contrast',1) ...
     struct('contrast',1) ...
     ];
-protocolParams.directionsCorrect = [...
+protocolParams.correctBySimulation = [...
     true ...
     true ...
     true ...
     ];
+protocolParams.doCorrectionAndValidationFlag = {...
+    true ...
+    true ...
+    true ...
+    };
 
 % Field size and pupil size.
 %
@@ -104,7 +109,7 @@ if (length(protocolParams.modulationNames) ~= length(protocolParams.directionNam
 end
 
 %% Open the OneLight
-ol = OneLight('simulate',protocolParams.simulate); drawnow;
+ol = OneLight('simulate',protocolParams.simulate.oneLight); drawnow;
 
 %% Let user get the radiometer set up
 radiometerPauseDuration = 0;

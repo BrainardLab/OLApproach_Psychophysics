@@ -47,7 +47,7 @@ stimOrder = [1 3 2 1 3 2];
 % done something unexpected in the calling program.
 modulationDir = fullfile(getpref(protocolParams.protocol, 'ModulationStartsStopsBasePath'), protocolParams.observerID,protocolParams.todayDate,protocolParams.sessionName);
 for mm = 1:length(protocolParams.modulationNames)
-    fullModulationNames{mm} = sprintf('ModulationStartsStops_%s_%s', protocolParams.modulationNames{mm}, protocolParams.directionNames{mm});
+    fullModulationNames{mm} = sprintf('ModulationStartsStops_%s_%s_trialType_%d', protocolParams.modulationNames{mm}, protocolParams.directionNames{mm}, mm);
 end
 if (~strcmp(protocolParams.directionNames{1}(1:6),'MaxMel'))
     error('Direction order not as expected');
@@ -89,7 +89,7 @@ protocolParams.NPerceptualDimensions = length(perceptualDimensions);
 
 %% Wait for button press
 Speak('Press key to start experiment', [], speakRateDefault);
-if (~protocolParams.simulate), WaitForKeyPress; end
+if (~protocolParams.simulate.oneLight), WaitForKeyPress; end
 fprintf('* <strong>Experiment started</strong>\n');
 
 %% Open the text file to save to on a trial by trial basis
@@ -106,7 +106,7 @@ for ii = 1:protocolParams.NStimuli
     
     % Adapt to background for 5 minutes
     Speak(sprintf('Adapt to background for %g minutes. Press key to start adaptation', protocolParams.experimentAdaptTimeSecs/60), [], speakRateDefault);
-    if (~protocolParams.simulate), WaitForKeyPress; end
+    if (~protocolParams.simulate.oneLight), WaitForKeyPress; end
     fprintf('\tAdaptation started.');
     Speak('Adaptation started', [], speakRateDefault);
     mglWaitSecs(protocolParams.experimentAdaptTimeSecs);
@@ -120,7 +120,7 @@ for ii = 1:protocolParams.NStimuli
         fprintf('\t- Dimension: <strong>%s</strong>\n', perceptualDimensions{ps});
         fprintf('\t- Repeat?');
         Speak(['Wait for instructions.'], [], 200);
-        if (~protocolParams.simulate), WaitForKeyPress; end
+        if (~protocolParams.simulate.oneLight), WaitForKeyPress; end
         
         keepGoing = true;
         counter = 1;
@@ -131,7 +131,7 @@ for ii = 1:protocolParams.NStimuli
             counter =  counter+1;
             ol.setMirrors(stimStartsBG{is}, stimStopsBG{is});
             if counter == 2
-                if (~protocolParams.simulate), keepGoing = GetWithDefault('Show stimulus again? [0 = no, 1 = yes]', 0); end
+                if (~protocolParams.simulate.oneLight), keepGoing = GetWithDefault('Show stimulus again? [0 = no, 1 = yes]', 0); end
             else
                 keepGoing = false;
             end    
@@ -139,7 +139,7 @@ for ii = 1:protocolParams.NStimuli
         
         % Show the stimulus
         Speak('Answer?', [], speakRateDefault);
-        if (~protocolParams.simulate) 
+        if (~protocolParams.simulate.oneLight) 
             perceptualRating(trialNum) = GetInput('> Subject rating');
         else
             perceptualRating(trialNum) = 1;

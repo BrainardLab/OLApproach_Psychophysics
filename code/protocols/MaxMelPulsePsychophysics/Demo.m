@@ -34,7 +34,7 @@ stimLabels = {'MaxLMS' 'MaxMel'};
 % done something unexpected in the calling program.
 modulationDir = fullfile(getpref(protocolParams.protocol, 'ModulationStartsStopsBasePath'), protocolParams.observerID,protocolParams.todayDate,protocolParams.sessionName);
 for mm = 1:length(protocolParams.modulationNames)
-    modulationNames{mm} = sprintf('ModulationStartsStops_%s_%s', protocolParams.modulationNames{mm}, protocolParams.directionNames{mm});
+    modulationNames{mm} = sprintf('ModulationStartsStops_%s_%s_trialType_%d', protocolParams.modulationNames{mm}, protocolParams.directionNames{mm}, mm);
 end
 if (~strcmp(protocolParams.directionNames{1}(1:6),'MaxMel'))
     error('Direction order not as expected');
@@ -64,7 +64,7 @@ stimStopsBG = {modFileLMS.modulationData.modulation.background.stops modFileMel.
 
 % Wait for button press
 Speak('Press key to start demo', [], speakRateDefault);
-if (~protocolParams.simulate), WaitForKeyPress; end;
+if (~protocolParams.simulate.oneLight), WaitForKeyPress; end;
 
 fprintf('* <strong>Demo started</strong>\n');
 for is = 1:nStimuli
@@ -73,7 +73,7 @@ for is = 1:nStimuli
     
     % Adapt to background for 1 minute
     Speak(sprintf('Adapt to background for %g seconds. Press key to start adaptation', protocolParams.demoAdaptTimeSecs), [], speakRateDefault);
-    if (~protocolParams.simulate), WaitForKeyPress; end;
+    if (~protocolParams.simulate.oneLight), WaitForKeyPress; end;
     fprintf('\tAdaptation started.');
     Speak('Adaptation started', [], speakRateDefault);
     mglWaitSecs(protocolParams.demoAdaptTimeSecs);
@@ -85,7 +85,7 @@ for is = 1:nStimuli
         fprintf('\t- Stimulus: <strong>%s</strong>\n', stimLabels{is});
         fprintf('\t- Repeat: <strong>%g</strong>\n', js);
         Speak(['Press key to start.'], [], 200);
-        if (~protocolParams.simulate), WaitForKeyPress; end
+        if (~protocolParams.simulate.oneLight), WaitForKeyPress; end
         
         fprintf('* Showing stimulus...')
         OLFlicker(ol, stimStarts{is}, stimStops{is}, stimFrameDurations(is), 1);

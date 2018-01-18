@@ -19,8 +19,10 @@ protocolParams.approach = 'OLApproach_Psychophysics';
 protocolParams.protocol = 'MaxMelPulsePsychophysics';
 protocolParams.protocolType = 'PulseRating';
 protocolParams.emailRecipient = 'joris.vincent@pennmedicine.upenn.edu';
-protocolParams.verbose = false;
+protocolParams.verbose = true;
 protocolParams.simulate.oneLight = true;
+protocolParams.protocolOutputName = '';
+protocolParams.acquisitionNumber = 0;
 %protocolParams.doCorrectionFlag = true;
 
 % Modulations used in this experiment
@@ -144,10 +146,10 @@ OLValidateDirectionCorrectedPrimaries(ol,protocolParams,'Pre');
 OLAnalyzeDirectionCorrectedPrimaries(protocolParams,'Pre');
 
 %% Run demo code
-MaxMelPulsePsychophysics.Demo(ol,protocolParams);
+Demo(ol,protocolParams);
 
 %% Run experiment
-MaxMelPulsePsychophysics.Experiment(ol,protocolParams);
+Experiment(ol,protocolParams);
 
 %% Let user get the radiometer set up
 ol.setAll(true);

@@ -83,8 +83,8 @@ protocolParams.demoAdaptTimeSecs = 1;
 protocolParams.experimentAdaptTimeSecs = 1;
       
 % OneLight parameters
-protocolParams.boxName = 'BoxC';  
-protocolParams.calibrationType = 'BoxCRandomizedLongCableBEyePiece2_ND01';
+protocolParams.boxName = 'BoxA';  
+protocolParams.calibrationType = 'OLDemoCal';
 protocolParams.takeCalStateMeasurements = true;
 protocolParams.takeTemperatureMeasurements = false;
 
@@ -141,9 +141,6 @@ OLAnalyzeDirectionCorrectedPrimaries(protocolParams,'Pre');
 
 %% Run demo code
 Demo(ol,protocolParams);
-
-%% Run experiment
-Experiment(ol,protocolParams);
 
 %% Let user get the radiometer set up
 ol.setAll(true);

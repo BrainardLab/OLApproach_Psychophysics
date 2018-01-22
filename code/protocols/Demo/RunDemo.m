@@ -37,35 +37,20 @@ protocolParams.acquisitionNumber = 0;
 %
 % Do not change the order of these directions without also fixing up
 % the Demo and Experimental programs, which are counting on this order.
-protocolParams.modulationNames = {'MaxContrast3sPulse' ...
-                                  'MaxContrast3sPulse' ...
-                                  'MaxContrast3sPulse' ...
-                                  };
-protocolParams.directionNames = {...
-    'MaxMel_275_80_667' ...
-    'MaxLMS_275_80_667' ...
-    'LightFlux_540_380_50' ...
+trialMatrix = {...
+    1,'MaxLMS_275_80_667','MaxContrast3sPulse','pulse',struct('contrast',1),true,true;...
+    2,'MaxMel_275_80_667','MaxContrast3sPulse','pulse',struct('contrast',1),true,true;...
+    3,'LightFlux_540_380_50','MaxContrast3sPulse','lightfluxchrom',struct('contrast',1),true,true;...
     };
-protocolParams.directionTypes = {...
-    'pulse' ...
-    'pulse' ...
-    'lightfluxchrom' ...
-    };
-protocolParams.trialTypeParams = [...
-    struct('contrast',1) ...
-    struct('contrast',1) ...
-    struct('contrast',1) ...
-    ];
-protocolParams.correctBySimulation = [...
-    true ...
-    true ...
-    true ...
-    ];
-protocolParams.doCorrectionAndValidationFlag = {...
-    true ...
-    true ...
-    true ...
-    };
+trialParamsList = cell2struct(trialMatrix,...
+    {'trialNum','directionName','modulationName','directionType','trialTypeParams','doCorrectionAndValidationFlag','correctBySimulation'},2);
+
+protocolParams.directionNames = {trialParamsList.directionName};
+protocolParams.modulationNames = {trialParamsList.modulationName};
+protocolParams.directionTypes = {trialParamsList.directionType};
+protocolParams.trialTypeParams = [trialParamsList.trialTypeParams];
+protocolParams.doCorrectionAndValidationFlag = {trialParamsList.doCorrectionAndValidationFlag};
+protocolParams.correctBySimulation = [trialParamsList.correctBySimulation];
 
 % Field size and pupil size.
 %
@@ -79,8 +64,8 @@ protocolParams.fieldSizeDegrees = 27.5;
 protocolParams.pupilDiameterMm = 8;
 
 % Timing things
-protocolParams.demoAdaptTimeSecs = 1; 
-protocolParams.experimentAdaptTimeSecs = 1;
+protocolParams.AdaptTimeSecs = 1; 
+protocolParams.nRepeatsPerStimulus = 2;
       
 % OneLight parameters
 protocolParams.boxName = 'BoxA';  
@@ -91,18 +76,22 @@ protocolParams.takeTemperatureMeasurements = false;
 % Validation parameters
 protocolParams.nValidationsPerDirection = 2;
 
-% Spectrum Seeking: /MELA_data/Experiments/OLApproach_Psychophysics/DirectionCorrectedPrimaries/Jimbo/081117/session_1/...
-% Validation: /MELA_data/Experiments/OLApproach_Psychophysics/DirectionValidationFiles/Jimbo/081117/session_1/...
+% Spectrum Seeking: /MELA_data/Experiments/OLApproach_Psychophysics/DirectionCorrectedPrimaries/DEMO/1970-01-01/demo_session/...
+% Validation: /MELA_data/Experiments/OLApproach_Psychophysics/DirectionValidationFiles/DEMO/1970-01-01/demo_session/...
 protocolParams.observerID = 'DEMO';
 protocolParams.observerAgeInYrs = 32;
-protocolParams.todayDate = datestr(now, 'yyyy-mm-dd');
-protocolParams.sessionName = 'demo_session';
+protocolParams.todayDate = '1970-01-01';
 
 % Sanity check on modulations
 if (length(protocolParams.modulationNames) ~= length(protocolParams.directionNames))
     error('Modulation and direction names cell arrays must have same length');
 end
 
+%% Open the session
+%
+% The call to OLSessionLog sets up info in protocolParams for where
+% the logs go.
+protocolParams = OLSessionLog(protocolParams,'OLSessionInit');
 
 %% Open the OneLight
 ol = OneLight('simulate',protocolParams.simulate.oneLight); drawnow;
@@ -116,21 +105,8 @@ input('');
 ol.setAll(false);
 pause(radiometerPauseDuration);
 
-%% Open the session
-%
-% The call to OLSessionLog sets up info in protocolParams for where
-% the logs go.
-protocolParams = OLSessionLog(protocolParams,'OLSessionInit');
-
 %% Make the corrected modulation primaries
 OLMakeDirectionCorrectedPrimaries(ol,protocolParams,'verbose',protocolParams.verbose);
-% OLAnalyzeValidationReceptorIsolate(validationPath, 'short');
-% % Compute and print out information about the quality of
-% % the current measurement, in contrast terms.
-% theCanonicalPhotoreceptors = cacheData.data(correctionDescribe.observerAgeInYrs).describe.photoreceptors;
-% T_receptors = cacheData.data(correctionDescribe.observerAgeInYrs).describe.T_receptors;
-% [contrasts(:,iter) postreceptoralContrasts(:,iter)] = ComputeAndReportContrastsFromSpds(['Iteration ' num2str(iter, '%02.0f')] ,theCanonicalPhotoreceptors,T_receptors,...
-%     backgroundSpdMeasured,modulationSpdMeasured,correctionDescribe.postreceptoralCombinations,true);
 
 %% Make the modulation starts and stops
 OLMakeModulationStartsStops(protocolParams.modulationNames,protocolParams.directionNames, protocolParams,'verbose',protocolParams.verbose);
@@ -139,8 +115,26 @@ OLMakeModulationStartsStops(protocolParams.modulationNames,protocolParams.direct
 OLValidateDirectionCorrectedPrimaries(ol,protocolParams,'Pre');
 OLAnalyzeDirectionCorrectedPrimaries(protocolParams,'Pre');
 
+%% Load
+trialList = struct([]);
+modulationDir = fullfile(getpref(protocolParams.protocol, 'ModulationStartsStopsBasePath'), protocolParams.observerID,protocolParams.todayDate,protocolParams.sessionName);
+for trialNum = 1:size(trialParamsList,1)
+    trial = trialParamsList(trialNum);
+    trial.modulationName = sprintf('ModulationStartsStops_%s_%s_trialType_%d', trial.modulationName, trial.directionName, trial.trialNum);
+    trial.path = [trial.modulationName '.mat'];
+    trial.modulation = load(fullfile(modulationDir, trial.path),'modulationData');
+    trial.modulationData = trial.modulation.modulationData.modulation;
+    trial.backgroundStarts = trial.modulationData.background.starts;
+    trial.backgroundStops = trial.modulationData.background.stops;
+    trial.modulationStarts = trial.modulationData.starts;
+    trial.modulationStops = trial.modulationData.stops;
+    trial.timestep = trial.modulation.modulationData.modulationParams.timeStep;
+    
+    trialList = [trialList trial];
+end
+
 %% Run demo code
-DemoEngine(ol,protocolParams);
+DemoEngine(trialList,ol,protocolParams);
 
 %% Let user get the radiometer set up
 ol.setAll(true);

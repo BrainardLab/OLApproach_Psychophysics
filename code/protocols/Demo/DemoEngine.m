@@ -1,4 +1,4 @@
-function Demo(ol,protocolParams,varargin)
+function DemoEngine(ol,protocolParams,varargin)
 %%Demo  Simple program for demo of MaxMel/MaxLMS pulses 
 %
 % Description:

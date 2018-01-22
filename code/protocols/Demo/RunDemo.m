@@ -140,7 +140,7 @@ OLValidateDirectionCorrectedPrimaries(ol,protocolParams,'Pre');
 OLAnalyzeDirectionCorrectedPrimaries(protocolParams,'Pre');
 
 %% Run demo code
-Demo(ol,protocolParams);
+DemoEngine(ol,protocolParams);
 
 %% Let user get the radiometer set up
 ol.setAll(true);

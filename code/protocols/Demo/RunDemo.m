@@ -14,7 +14,7 @@
 %% Setup into a good state for this protocol
 clear; close all;
 protocolParams.approach = 'OLApproach_Psychophysics';
-protocolParams.protocol = 'MaxMelPulsePsychophysics';
+protocolParams.protocol = 'Demo';
 if (~strcmp(getpref('OneLightToolbox','OneLightCalData'),getpref(protocolParams.approach,'OneLightCalDataPath')))
     error('Calibration file prefs not set up as expected for an approach');
 end
@@ -80,8 +80,8 @@ protocolParams.AdaptTimeSecs = 1;
 protocolParams.nRepeatsPerStimulus = 2;
       
 % OneLight parameters
-protocolParams.boxName = 'BoxA';  
-protocolParams.calibrationType = 'OLDemoCal';
+protocolParams.boxName = 'BoxC';  
+protocolParams.calibrationType = 'BoxCRandomizedLongCableBEyePiece2_ND01';
 protocolParams.takeCalStateMeasurements = true;
 protocolParams.takeTemperatureMeasurements = false;
 

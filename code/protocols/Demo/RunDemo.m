@@ -31,14 +31,26 @@ protocolParams.protocolOutputName = '';
 protocolParams.acquisitionNumber = 0;
 %protocolParams.doCorrectionFlag = true;
 
-% Modulations used in this experiment
-% 
-% Thee four arrays below should have the same length, the entries get paired.
+% Modulations used in this experiment.  
+%
+% Each row of the trialMatrix cell array specifies one trial type.  The
+% columns provide specifics, as follows.
+%   trialNum            - Trial type number
+%   directionName       - Name of direction file to be used
+%   modulationName      - Name of modulation dictionary entry.
+%   directionType       - Type of direction
+%   trialTypeParams     - These override standard information in [FIGURE ME
+%                         OUT.]
+%   doCorrectionAndValidationFlag - Correct and validate direction.
+%                         Otherwise use nominal values and don't validate.
+%   correctBySimulation - If correct and validate is true, can correct
+%                         using simulation (which will not change
+%                         primaries), but still validate.
 %
 % Do not change the order of these directions without also fixing up
 % the Demo and Experimental programs, which are counting on this order.
 trialMatrix = {...
-    1,'MaxLMS_275_80_667','MaxContrast3sPulse','pulse',struct('contrast',1),true,true;...
+    1,'MaxLMS_275_80_667','MaxContrast3sSinusoid','pulse',struct('contrast',1),true,true;...
     2,'MaxMel_275_80_667','MaxContrast3sPulse','pulse',struct('contrast',1),true,true;...
     3,'LightFlux_540_380_50','MaxContrast3sPulse','lightfluxchrom',struct('contrast',1),true,true;...
     };

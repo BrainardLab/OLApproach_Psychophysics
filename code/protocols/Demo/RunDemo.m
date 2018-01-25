@@ -80,8 +80,8 @@ protocolParams.AdaptTimeSecs = 1;
 protocolParams.nRepeatsPerStimulus = 2;
       
 % OneLight parameters
-protocolParams.boxName = 'BoxC';  
-protocolParams.calibrationType = 'BoxCRandomizedLongCableBEyePiece2_ND01';
+protocolParams.boxName = 'BoxB';  
+protocolParams.calibrationType = 'BoxBRandomizedLongCableBEyePiece2_ND01';
 protocolParams.takeCalStateMeasurements = true;
 protocolParams.takeTemperatureMeasurements = false;
 

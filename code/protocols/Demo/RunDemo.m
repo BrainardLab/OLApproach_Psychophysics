@@ -26,7 +26,7 @@ end
 %protocolParams.protocolType = 'PulseRating';
 %protocolParams.emailRecipient = 'joris.vincent@pennmedicine.upenn.edu';
 protocolParams.verbose = true;
-protocolParams.simulate.oneLight = false;
+protocolParams.simulate.oneLight = true;
 protocolParams.protocolOutputName = '';
 protocolParams.acquisitionNumber = 0;
 protocolParams.doCorrectionFlag = true;

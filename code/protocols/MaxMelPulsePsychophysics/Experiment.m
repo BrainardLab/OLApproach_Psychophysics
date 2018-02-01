@@ -78,7 +78,7 @@ stopsLightFlux = modFileLightFlux.modulationData.modulation.stops;
 % Put starts stops into cell arrays that can be indexed by stimOrder variable above
 stimStarts = {startsLightFlux startsLMS startsMel};
 stimStops = {stopsLightFlux stopsLMS stopsMel};
-stimFrameDurations = [modFileLightFlux.modulationData.modulationParams.timeStep modFileLMS.modulationData.modulationParams.timeStep modFileMel.modulationData.modulationParams.timeStep];
+stimFrameDurations = [modFileLightFlux.modulationData.waveformParams.timeStep modFileLMS.modulationData.waveformParams.timeStep modFileMel.modulationData.waveformParams.timeStep];
 stimStartsBG = {modFileLightFlux.modulationData.modulation.background.starts modFileLMS.modulationData.modulation.background.starts modFileMel.modulationData.modulation.background.starts};
 stimStopsBG = {modFileLightFlux.modulationData.modulation.background.stops modFileLMS.modulationData.modulation.background.stops modFileMel.modulationData.modulation.background.stops};
 

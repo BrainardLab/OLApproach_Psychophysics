@@ -77,11 +77,11 @@ protocolParams.pupilDiameterMm = 8;
 
 % Timing things
 protocolParams.AdaptTimeSecs = 1; 
-protocolParams.nRepeatsPerStimulus = 2;
+protocolParams.nRepeatsPerStimulus = 1;
       
 % OneLight parameters
-protocolParams.boxName = 'BoxB';  
-protocolParams.calibrationType = 'BoxBRandomizedLongCableBEyePiece2_ND01';
+protocolParams.boxName = 'BoxC';  
+protocolParams.calibrationType = 'BoxCRandomizedLongCableBEyePiece2_ND01';
 protocolParams.takeCalStateMeasurements = true;
 protocolParams.takeTemperatureMeasurements = false;
 

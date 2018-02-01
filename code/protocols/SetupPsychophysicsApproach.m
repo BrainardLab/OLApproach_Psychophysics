@@ -13,7 +13,7 @@
 approachParams.approach = 'OLApproach_Psychophysics';
 
 % List of all calibrations used in this approach
-approachParams.calibrationTypes = {'BoxCRandomizedLongCableBEyePiece2_ND01', 'BoxBRandomizedLongCableBEyePiece2_ND01'};
+approachParams.calibrationTypes = {'BoxCRandomizedLongCableBEyePiece2_ND01'};%, 'BoxBRandomizedLongCableBEyePiece2_ND01'};
 
 % List of all backgrounds used in this approach
 approachParams.backgroundNames = {'LightFlux_540_380_50', 'MelanopsinDirected_275_80_667', 'LMSDirected_275_80_667',};%, 'MelanopsinDirected_275_60_667', 'LMSDirected_275_60_667', };

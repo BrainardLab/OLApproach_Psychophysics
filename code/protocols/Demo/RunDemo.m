@@ -105,6 +105,7 @@ end
 % The call to OLSessionLog sets up info in protocolParams for where
 % the logs go.
 protocolParams = OLSessionLog(protocolParams,'OLSessionInit');
+protocolParams.sessionName = 'session_9';
 
 %% Open the OneLight
 ol = OneLight('simulate',protocolParams.simulate.oneLight); drawnow;

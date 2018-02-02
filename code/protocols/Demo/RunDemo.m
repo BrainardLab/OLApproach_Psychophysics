@@ -25,6 +25,10 @@ end
 
 %protocolParams.protocolType = 'PulseRating';
 %protocolParams.emailRecipient = 'joris.vincent@pennmedicine.upenn.edu';
+protocolParams.observerID = 'DEMO';
+protocolParams.observerAgeInYrs = 32;
+protocolParams.todayDate = '0000-01-00';
+protocolParams.sessionName = '';
 protocolParams.verbose = true;
 protocolParams.simulate.oneLight = true;
 protocolParams.protocolOutputName = '';
@@ -88,11 +92,7 @@ protocolParams.takeTemperatureMeasurements = false;
 % Validation parameters
 protocolParams.nValidationsPerDirection = 2;
 
-% Spectrum Seeking: /MELA_data/Experiments/OLApproach_Psychophysics/DirectionCorrectedPrimaries/DEMO/1970-01-01/demo_session/...
-% Validation: /MELA_data/Experiments/OLApproach_Psychophysics/DirectionValidationFiles/DEMO/1970-01-01/demo_session/...
-protocolParams.observerID = 'DEMO';
-protocolParams.observerAgeInYrs = 32;
-protocolParams.todayDate = '1970-01-01';
+
 
 % Sanity check on modulations
 if (length(protocolParams.modulationNames) ~= length(protocolParams.directionNames))

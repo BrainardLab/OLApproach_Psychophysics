@@ -25,10 +25,13 @@ end
 
 %protocolParams.protocolType = 'PulseRating';
 %protocolParams.emailRecipient = 'joris.vincent@pennmedicine.upenn.edu';
+protocolParams.observerID = 'DEMO';
+protocolParams.observerAgeInYrs = 32;
+protocolParams.todayDate = '1970-01-01';
+protocolParams.sessionName = 'test';
 protocolParams.verbose = true;
-protocolParams.simulate.oneLight = false;
-protocolParams.simulate.radiometer = false;
-protocolParams.protocolOutputName = '';
+protocolParams.simulate.oneLight = true;
+protocolParams.simulate.radiometer = true;
 protocolParams.acquisitionNumber = 0;
 protocolParams.doCorrection = true;
 
@@ -89,11 +92,7 @@ protocolParams.takeTemperatureMeasurements = false;
 % Validation parameters
 protocolParams.nValidationsPerDirection = 2;
 
-% Spectrum Seeking: /MELA_data/Experiments/OLApproach_Psychophysics/DirectionCorrectedPrimaries/DEMO/1970-01-01/demo_session/...
-% Validation: /MELA_data/Experiments/OLApproach_Psychophysics/DirectionValidationFiles/DEMO/1970-01-01/demo_session/...
-protocolParams.observerID = 'DEMO';
-protocolParams.observerAgeInYrs = 32;
-protocolParams.todayDate = '1970-01-01';
+
 
 % Sanity check on modulations
 if (length(protocolParams.modulationNames) ~= length(protocolParams.directionNames))
@@ -105,7 +104,6 @@ end
 % The call to OLSessionLog sets up info in protocolParams for where
 % the logs go.
 protocolParams = OLSessionLog(protocolParams,'OLSessionInit');
-protocolParams.sessionName = 'session_9';
 
 %% Open the OneLight
 ol = OneLight('simulate',protocolParams.simulate.oneLight); drawnow;

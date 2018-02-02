@@ -25,15 +25,11 @@ end
 
 %protocolParams.protocolType = 'PulseRating';
 %protocolParams.emailRecipient = 'joris.vincent@pennmedicine.upenn.edu';
-protocolParams.observerID = 'DEMO';
-protocolParams.observerAgeInYrs = 32;
-protocolParams.todayDate = '0000-01-00';
-protocolParams.sessionName = '';
 protocolParams.verbose = true;
 protocolParams.simulate.oneLight = true;
-protocolParams.simulate.radiometer = true;
+protocolParams.protocolOutputName = '';
 protocolParams.acquisitionNumber = 0;
-protocolParams.doCorrection = true;
+protocolParams.doCorrectionFlag = true;
 
 % Modulations used in this experiment.  
 %
@@ -54,9 +50,9 @@ protocolParams.doCorrection = true;
 % Do not change the order of these directions without also fixing up
 % the Demo and Experimental programs, which are counting on this order.
 trialMatrix = {...
-    1,'MaxMel_bipolar_275_80_667','MaxContrast3sSinusoid','bipolar',struct('contrast',1),protocolParams.doCorrection,protocolParams.simulate.radiometer;...
-    2,'MaxMel_unipolar_275_80_667','MaxContrast3sPulse','unipolar',struct('contrast',1),protocolParams.doCorrection,protocolParams.simulate.radiometer;...
-    3,'LightFlux_540_380_50','MaxContrast3sPulse','lightfluxchrom',struct('contrast',1),protocolParams.doCorrection,protocolParams.simulate.radiometer;...
+    1,'MaxMel_bipolar_275_80_667','MaxContrast3sSinusoid','bipolar',struct('contrast',1),protocolParams.doCorrectionFlag,protocolParams.simulate.oneLight;...
+    2,'MaxMel_unipolar_275_80_667','MaxContrast3sPulse','unipolar',struct('contrast',1),protocolParams.doCorrectionFlag,protocolParams.simulate.oneLight;...
+    3,'LightFlux_540_380_50','MaxContrast3sPulse','lightfluxchrom',struct('contrast',1),protocolParams.doCorrectionFlag,protocolParams.simulate.oneLight;...
     };
 trialParamsList = cell2struct(trialMatrix,...
     {'trialNum','directionName','modulationName','directionType','trialTypeParams','doCorrectionAndValidationFlag','correctBySimulation'},2);
@@ -65,7 +61,7 @@ protocolParams.directionNames = {trialParamsList.directionName};
 protocolParams.modulationNames = {trialParamsList.modulationName};
 protocolParams.directionTypes = {trialParamsList.directionType};
 protocolParams.trialTypeParams = [trialParamsList.trialTypeParams];
-protocolParams.doCorrection = [trialParamsList.doCorrectionAndValidationFlag];
+protocolParams.doCorrectionAndValidationFlag = {trialParamsList.doCorrectionAndValidationFlag};
 protocolParams.correctBySimulation = [trialParamsList.correctBySimulation];
 
 % Field size and pupil size.
@@ -91,6 +87,12 @@ protocolParams.takeTemperatureMeasurements = false;
 
 % Validation parameters
 protocolParams.nValidationsPerDirection = 2;
+
+% Spectrum Seeking: /MELA_data/Experiments/OLApproach_Psychophysics/DirectionCorrectedPrimaries/DEMO/1970-01-01/demo_session/...
+% Validation: /MELA_data/Experiments/OLApproach_Psychophysics/DirectionValidationFiles/DEMO/1970-01-01/demo_session/...
+protocolParams.observerID = 'DEMO';
+protocolParams.observerAgeInYrs = 32;
+protocolParams.todayDate = '1970-01-01';
 
 % Sanity check on modulations
 if (length(protocolParams.modulationNames) ~= length(protocolParams.directionNames))

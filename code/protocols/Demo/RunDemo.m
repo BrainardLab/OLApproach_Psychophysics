@@ -27,8 +27,8 @@ end
 %protocolParams.emailRecipient = 'joris.vincent@pennmedicine.upenn.edu';
 protocolParams.observerID = 'DEMO';
 protocolParams.observerAgeInYrs = 32;
-protocolParams.todayDate = '1970-01-01';
-protocolParams.sessionName = 'test';
+protocolParams.todayDate = '0000-01-00';
+protocolParams.sessionName = '';
 protocolParams.verbose = true;
 protocolParams.simulate.oneLight = true;
 protocolParams.simulate.radiometer = true;
@@ -91,8 +91,6 @@ protocolParams.takeTemperatureMeasurements = false;
 
 % Validation parameters
 protocolParams.nValidationsPerDirection = 2;
-
-
 
 % Sanity check on modulations
 if (length(protocolParams.modulationNames) ~= length(protocolParams.directionNames))

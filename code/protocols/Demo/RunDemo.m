@@ -10,6 +10,7 @@
 %          dhb  Move params.useAmbient into the dictionaries.
 % 01/18/18 jv  Created RunDemo protocol as copy of legacy
 %              RunMaxMelPulsePsychophysics
+% 02/12/18  jv  heavy modifications.
 
 %% Setup into a good state for this protocol
 clear; close all;
@@ -22,18 +23,16 @@ end
 %% Set the parameter structure here
 %
 % Who we are and what we're doing today
-
-%protocolParams.protocolType = 'PulseRating';
-%protocolParams.emailRecipient = 'joris.vincent@pennmedicine.upenn.edu';
 protocolParams.observerID = 'DEMO';
 protocolParams.observerAgeInYrs = 32;
 protocolParams.todayDate = '0000-01-00';
-protocolParams.sessionName = '';
+protocolParams.sessionName = 'test';
 protocolParams.verbose = true;
 protocolParams.simulate.oneLight = true;
+protocolParams.simulate.radiometer = true;
 protocolParams.protocolOutputName = '';
 protocolParams.acquisitionNumber = 0;
-protocolParams.doCorrectionFlag = true;
+protocolParams.doCorrection = true;
 
 % Modulations used in this experiment.  
 %
@@ -54,9 +53,9 @@ protocolParams.doCorrectionFlag = true;
 % Do not change the order of these directions without also fixing up
 % the Demo and Experimental programs, which are counting on this order.
 trialMatrix = {...
-    1,'MaxMel_bipolar_275_80_667','MaxContrast3sSinusoid','bipolar',struct('contrast',1),protocolParams.doCorrectionFlag,protocolParams.simulate.oneLight;...
-    2,'MaxMel_unipolar_275_80_667','MaxContrast3sPulse','unipolar',struct('contrast',1),protocolParams.doCorrectionFlag,protocolParams.simulate.oneLight;...
-    3,'LightFlux_540_380_50','MaxContrast3sPulse','lightfluxchrom',struct('contrast',1),protocolParams.doCorrectionFlag,protocolParams.simulate.oneLight;...
+    1,'MaxMel_bipolar_275_80_667','MaxContrast3sSinusoid','bipolar',struct('contrast',1),protocolParams.doCorrection,protocolParams.simulate.radiometer;...
+    2,'MaxMel_unipolar_275_80_667','MaxContrast3sPulse','unipolar',struct('contrast',1),protocolParams.doCorrection,protocolParams.simulate.radiometer;...
+    3,'LightFlux_540_380_50','MaxContrast3sPulse','lightfluxchrom',struct('contrast',1),protocolParams.doCorrection,protocolParams.simulate.radiometer;...
     };
 trialParamsList = cell2struct(trialMatrix,...
     {'trialNum','directionName','modulationName','directionType','trialTypeParams','doCorrectionAndValidationFlag','correctBySimulation'},2);
@@ -92,8 +91,6 @@ protocolParams.takeTemperatureMeasurements = false;
 % Validation parameters
 protocolParams.nValidationsPerDirection = 2;
 
-
-
 % Sanity check on modulations
 if (length(protocolParams.modulationNames) ~= length(protocolParams.directionNames))
     error('Modulation and direction names cell arrays must have same length');
@@ -105,27 +102,50 @@ end
 % the logs go.
 protocolParams = OLSessionLog(protocolParams,'OLSessionInit');
 
-%% Open the OneLight
-ol = OneLight('simulate',protocolParams.simulate.oneLight); drawnow;
+% Set up directory stuff
+sessionPath = {protocolParams.observerID, protocolParams.todayDate, protocolParams.sessionName};
 
-%% Let user get the radiometer set up
-radiometerPauseDuration = 0;
-ol.setAll(true);
-commandwindow;
-fprintf('- Focus the radiometer and press enter to pause %d seconds and start measuring.\n', radiometerPauseDuration);
-input('');
-ol.setAll(false);
-pause(radiometerPauseDuration);
+%% Get calibration
+protocolParams.boxName = 'BoxC';  
+protocolParams.calibrationType = 'BoxCRandomizedLongCableBEyePiece2_ND01';
+if (~strcmp(getpref('OneLightToolbox','OneLightCalData'),getpref(protocolParams.approach,'OneLightCalDataPath')))
+    error('Calibration file prefs not set up as expected for an approach');
+end
+calibration = OLGetCalibrationStructure('CalibrationType',protocolParams.calibrationType,'CalibrationDate','latest');
+
+%% Open devices
+% Open the OneLight
+oneLight = OneLight('simulate',protocolParams.simulate.oneLight); drawnow;
+
+% Get radiometer
+if ~protocolParams.simulate.radiometer
+    radiometerPauseDuration = 0;
+    oneLight.setAll(true);
+    commandwindow;
+    fprintf('- Focus the radiometer and press enter to pause %d seconds and start measuring.\n', radiometerPauseDuration);
+    input('');
+    oneLight.setAll(false);
+    pause(radiometerPauseDuration);
+    radiometer = OLOpenSpectroRadiometerObj('PR-670');
+else
+    radiometer = [];
+end
 
 %% Make the corrected modulation primaries
-OLMakeDirectionCorrectedPrimaries(ol,protocolParams,'verbose',protocolParams.verbose);
+OLMakeDirectionCorrectedPrimaries(oneLight,protocolParams,'verbose',protocolParams.verbose);
 
-%% Make the modulation starts and stops
+%% TODO Validate direction corrected primaries
+%OLValidateDirectionCorrectedPrimaries(oneLight,protocolParams,'Pre');
+%OLAnalyzeDirectionCorrectedPrimaries(protocolParams,'Pre');
+
+%% Close radiometer
+if ~protocolParams.simulate.radiometer
+    shutDown(radiometer);
+end
+clear radiometer;
+
+%% TODO Make the modulation starts and stops
 OLMakeModulationStartsStops(protocolParams.modulationNames,protocolParams.directionNames, protocolParams,'verbose',protocolParams.verbose);
-
-%% Validate direction corrected primaries prior to experiemnt
-OLValidateDirectionCorrectedPrimaries(ol,protocolParams,'Pre');
-OLAnalyzeDirectionCorrectedPrimaries(protocolParams,'Pre');
 
 %% Load
 trialList = struct([]);
@@ -146,16 +166,29 @@ for trialNum = 1:size(trialParamsList,1)
 end
 
 %% Run demo code
-DemoEngine(trialList,ol,protocolParams);
-
-%% Let user get the radiometer set up
-ol.setAll(true);
-commandwindow;
-fprintf('- Focus the radiometer and press enter to pause %d seconds and start measuring.\n', radiometerPauseDuration);
-input('');
-ol.setAll(false);
-pause(radiometerPauseDuration);
+DemoEngine(trialList,oneLight,protocolParams);
 
 %% Validate direction corrected primaries post experiment
-OLValidateDirectionCorrectedPrimaries(ol,protocolParams,'Post');
-OLAnalyzeDirectionCorrectedPrimaries(protocolParams,'Post');
+% Setup radiometer
+if ~protocolParams.simulate.radiometer
+    radiometerPauseDuration = 0;
+    oneLight.setAll(true);
+    commandwindow;
+    fprintf('- Focus the radiometer and press enter to pause %d seconds and start measuring.\n', radiometerPauseDuration);
+    input('');
+    oneLight.setAll(false);
+    pause(radiometerPauseDuration);
+    radiometer = OLOpenSpectroRadiometerObj('PR-670');
+else
+    radiometer = [];
+end
+
+% TODO Validate direction corrected primaries post experiment
+%TODO OLValidateDirectionCorrectedPrimaries(oneLight,protocolParams,'Post');
+%TODO OLAnalyzeDirectionCorrectedPrimaries(protocolParams,'Post');
+
+% Close radiometer
+if ~protocolParams.simulate.radiometer
+    shutDown(radiometer);
+end
+clear radiometer;

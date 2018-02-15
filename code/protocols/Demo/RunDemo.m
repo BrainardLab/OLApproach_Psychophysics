@@ -32,8 +32,7 @@ oneLight = OneLight('simulate',protocolParams.simulate.oneLight); drawnow;
 if ~protocolParams.simulate.radiometer
     oneLight.setAll(true);
     commandwindow;
-    fprintf('<strong>Focus the radiometer and press enter to pause %d seconds and start measuring.</strong>\n', radiometerPauseDuration);
-    input('');
+    input(sprintf('<strong>Focus the radiometer and press enter to pause %d seconds and start measuring.</strong>\n', radiometerPauseDuration));
     oneLight.setAll(false);
     pause(radiometerPauseDuration);
     radiometer = OLOpenSpectroRadiometerObj('PR-670');
@@ -88,7 +87,7 @@ directionStruct = OLDirectionNominalStructFromParams(directionParams, calibratio
 % means that the same field(names) form the 'business end' of the direction
 % struct, before and after correction. Thus, subsequent code does not have
 % to know whether the direction was corrected or not. It also stores a lot
-% of data in unde .describe.correction, for debugging purposes.
+% of data in under .describe.correction, for debugging purposes.
 directionStruct = OLCorrectDirection(directionStruct, calibration, oneLight, radiometer);
 
 % We then validate the direction, by comparing the predicted and measured
@@ -151,8 +150,7 @@ if ~protocolParams.simulate.radiometer
     shutDown(radiometer);
     oneLight.setAll(false);
     commandwindow;
-    fprintf('Unhook the eyepiece from the radiometer and set up for viewing. Press enter to pause %d seconds and start experiment.\n', radiometerPauseDuration);
-    input('');
+    input(sprintf('<strong>Unhook the eyepiece from the radiometer and set up for viewing. Press enter to pause %d seconds and start experiment.</strong>\n', radiometerPauseDuration));
     pause(radiometerPauseDuration);
 end
 clear radiometer;
@@ -170,8 +168,7 @@ if ~protocolParams.simulate.radiometer
     radiometerPauseDuration = 0;
     oneLight.setAll(true);
     commandwindow;
-    fprintf('<strong>Focus the radiometer and press enter to pause %d seconds and start measuring.</strong>\n', radiometerPauseDuration);
-    input('');
+    input(sprintf('<strong>Focus the radiometer and press enter to pause %d seconds and start measuring.</strong>\n', radiometerPauseDuration));
     oneLight.setAll(false);
     pause(radiometerPauseDuration);
     radiometer = OLOpenSpectroRadiometerObj('PR-670');

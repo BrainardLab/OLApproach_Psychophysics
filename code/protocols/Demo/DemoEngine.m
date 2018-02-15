@@ -29,7 +29,7 @@ if (~oneLight.Simulate), WaitForKeyPress; end
 fprintf('<strong>Demo started</strong>\n');
 for trialNum = 1:numel(trialList)
     trial = trialList(trialNum);
-    fprintf('Stimulus: <strong>%s</strong>\n', trial.directionName);
+    fprintf('Stimulus: <strong>%s</strong>\n', trial.name);
     
     % Adapt to background for 1 minute
     oneLight.setMirrors(trial.backgroundStarts, trial.backgroundStops);

@@ -1,4 +1,4 @@
-function DemoEngine(trialList,ol,protocolParams,varargin)
+function DemoEngine(trialList,oneLight,varargin)
 %%Demo  Simple program for demo of pulses
 %
 % Description:
@@ -12,17 +12,19 @@ function DemoEngine(trialList,ol,protocolParams,varargin)
 
 %% Parse
 p = inputParser;
+p.addRequired('trialList');
+p.addRequired('oneLight',@(x) isa(x,'OneLight'));
 p.addParameter('verbose',true,@islogical);
-p.parse;
+p.addParameter('speakRate',320,@isscalar);
+p.parse(trialList, oneLight, varargin{:});
 
-%% Speaking rate
-speakRateDefault = getpref(protocolParams.approach, 'SpeakRateDefault');
+speakRate = p.Results.speakRate;
 
 %% Run trialList
 
 % Wait for button press
-Speak('Press key to start demo', [], speakRateDefault);
-if (~protocolParams.simulate.oneLight), WaitForKeyPress; end
+Speak('Press key to start demo', [], speakRate);
+if (~oneLight.Simulate), WaitForKeyPress; end
 
 fprintf('<strong>Demo started</strong>\n');
 for trialNum = 1:numel(trialList)
@@ -30,27 +32,27 @@ for trialNum = 1:numel(trialList)
     fprintf('Stimulus: <strong>%s</strong>\n', trial.directionName);
     
     % Adapt to background for 1 minute
-    ol.setMirrors(trial.backgroundStarts, trial.backgroundStops);
-    Speak(sprintf('Adapt to background for %g seconds. Press key to start adaptation', protocolParams.AdaptTimeSecs), [], speakRateDefault);
-    if (~protocolParams.simulate.oneLight), WaitForKeyPress; end
-    fprintf('Adapting...'); Speak('Adaptation started.', [], speakRateDefault);
-    mglWaitSecs(protocolParams.AdaptTimeSecs);
-    Speak('Adaptation complete', [], speakRateDefault);
+    oneLight.setMirrors(trial.backgroundStarts, trial.backgroundStops);
+    Speak(sprintf('Adapt to background for %g seconds. Press key to start adaptation', trial.adaptTime), [], speakRate);
+    if (~oneLight.Simulate), WaitForKeyPress; end
+    fprintf('Adapting...'); Speak('Adaptation started.', [], speakRate);
+    mglWaitSecs(trial.adaptTime);
+    Speak('Adaptation complete', [], speakRate);
     fprintf('Done.\n');
     
     % Show N repeats of stimulus
-    for R = 1:protocolParams.nRepeatsPerStimulus
-        ol.setMirrors(trial.backgroundStarts, trial.backgroundStops);
+    for R = 1:trial.repeats
+        oneLight.setMirrors(trial.backgroundStarts, trial.backgroundStops);
 
         fprintf('Repeat: <strong>%g</strong>\n', R);
         Speak('Press key to start.', [], 200);
-        if (~protocolParams.simulate.oneLight), WaitForKeyPress; end
+        if (~oneLight.Simulate), WaitForKeyPress; end
         
-        fprintf('Showing stimulus...'); Speak('Showing stimulus.',[], speakRateDefault);
-        OLFlicker(ol, trial.modulationStarts, trial.modulationStops, trial.timestep, 1);
+        fprintf('Showing stimulus...'); Speak('Showing stimulus.',[], speakRate);
+        OLFlicker(oneLight, trial.modulationStarts, trial.modulationStops, trial.timestep, 1);
         fprintf('Done.\n')
     end
 end
 
 %% Inform user that we are done
-Speak('End of demo.', [], speakRateDefault);
+Speak('End of demo.', [], speakRate);

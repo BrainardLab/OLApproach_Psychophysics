@@ -1,111 +1,21 @@
-% RunMaxMelPulsePsychophysics
-%
-% Description:
-%   Define the parameters for the MaxPulsePsychophysics protocol of the
-%   OLApproach_Psychophysics approach, and then invoke each of the
-%   steps required to set up and run a session of the experiment.
-
-% 6/28/17  dhb  Added first history comment.
-%          dhb  Move params.photoreceptorClasses into the dictionaries.
-%          dhb  Move params.useAmbient into the dictionaries.
-% 01/18/18 jv  Created RunDemo protocol as copy of legacy
-%              RunMaxMelPulsePsychophysics
-% 02/12/18  jv  heavy modifications.
-
-%% Setup into a good state for this protocol
-clear; close all;
-protocolParams.approach = 'OLApproach_Psychophysics';
-protocolParams.protocol = 'Demo';
-if (~strcmp(getpref('OneLightToolbox','OneLightCalData'),getpref(protocolParams.approach,'OneLightCalDataPath')))
-    error('Calibration file prefs not set up as expected for an approach');
-end
+%% Demo protocol in the Psychophysics approach
+% This script demonstrates the workflow of running a protocol in the
+% psychophysics approach.
 
 %% Set the parameter structure here
-%
-% Who we are and what we're doing today
-protocolParams.observerID = 'DEMO';
-protocolParams.observerAgeInYrs = 32;
-protocolParams.todayDate = '0000-01-00';
-protocolParams.sessionName = 'test';
-protocolParams.verbose = true;
+% We want to start with a clean slate, and set a number of parameters
+% before doing anything else.
+clear all; close all; clc;
+protocolParams.approach = 'OLApproach_Psychophysics';
+protocolParams.protocol = 'Demo';
+protocolParams.observerAge = 32;
 protocolParams.simulate.oneLight = true;
 protocolParams.simulate.radiometer = true;
-protocolParams.protocolOutputName = '';
-protocolParams.acquisitionNumber = 0;
-protocolParams.doCorrection = true;
-
-% Modulations used in this experiment.  
-%
-% Each row of the trialMatrix cell array specifies one trial type.  The
-% columns provide specifics, as follows.
-%   trialNum            - Trial type number
-%   directionName       - Name of direction file to be used
-%   modulationName      - Name of modulation dictionary entry.
-%   directionType       - Type of direction
-%   trialTypeParams     - These override standard information in [FIGURE ME
-%                         OUT.]
-%   doCorrectionAndValidationFlag - Correct and validate direction.
-%                         Otherwise use nominal values and don't validate.
-%   correctBySimulation - If correct and validate is true, can correct
-%                         using simulation (which will not change
-%                         primaries), but still validate.
-%
-% Do not change the order of these directions without also fixing up
-% the Demo and Experimental programs, which are counting on this order.
-trialMatrix = {...
-    1,'MaxMel_bipolar_275_80_667','MaxContrast3sSinusoid','bipolar',struct('contrast',1),protocolParams.doCorrection,protocolParams.simulate.radiometer;...
-    2,'MaxMel_unipolar_275_80_667','MaxContrast3sPulse','unipolar',struct('contrast',1),protocolParams.doCorrection,protocolParams.simulate.radiometer;...
-    3,'LightFlux_540_380_50','MaxContrast3sPulse','lightfluxchrom',struct('contrast',1),protocolParams.doCorrection,protocolParams.simulate.radiometer;...
-    };
-trialParamsList = cell2struct(trialMatrix,...
-    {'trialNum','directionName','modulationName','directionType','trialTypeParams','doCorrectionAndValidationFlag','correctBySimulation'},2);
-
-protocolParams.directionNames = {trialParamsList.directionName};
-protocolParams.modulationNames = {trialParamsList.modulationName};
-protocolParams.directionTypes = {trialParamsList.directionType};
-protocolParams.trialTypeParams = [trialParamsList.trialTypeParams];
-protocolParams.doCorrectionAndValidationFlag = {trialParamsList.doCorrectionAndValidationFlag};
-protocolParams.correctBySimulation = [trialParamsList.correctBySimulation];
-
-% Field size and pupil size.
-%
-% These are used to construct photoreceptors for validation for directions
-% (e.g. light flux) where they are not available in the direction file.
-% They can also be used to check for consistency.  
-%
-% If we ever want to run with more than one field size and pupil size in a single 
-% run, this will need a little rethinking.
-protocolParams.fieldSizeDegrees = 27.5;
-protocolParams.pupilDiameterMm = 8;
-
-% Timing things
-protocolParams.AdaptTimeSecs = 1; 
-protocolParams.nRepeatsPerStimulus = 1;
-      
-% OneLight parameters
-protocolParams.boxName = 'BoxC';  
-protocolParams.calibrationType = 'BoxCRandomizedLongCableBEyePiece2_ND01';
-protocolParams.takeCalStateMeasurements = true;
-protocolParams.takeTemperatureMeasurements = false;
-
-% Validation parameters
-protocolParams.nValidationsPerDirection = 2;
-
-% Sanity check on modulations
-if (length(protocolParams.modulationNames) ~= length(protocolParams.directionNames))
-    error('Modulation and direction names cell arrays must have same length');
-end
-
-%% Open the session
-%
-% The call to OLSessionLog sets up info in protocolParams for where
-% the logs go.
-protocolParams = OLSessionLog(protocolParams,'OLSessionInit');
-
-% Set up directory stuff
-sessionPath = {protocolParams.observerID, protocolParams.todayDate, protocolParams.sessionName};
+radiometerPauseDuration = 0;
 
 %% Get calibration
+% Specify which box and calibration to use, check that everything is set up
+% correctly, and retrieve the calibration structure.
 protocolParams.boxName = 'BoxC';  
 protocolParams.calibrationType = 'BoxCRandomizedLongCableBEyePiece2_ND01';
 if (~strcmp(getpref('OneLightToolbox','OneLightCalData'),getpref(protocolParams.approach,'OneLightCalDataPath')))
@@ -113,16 +23,16 @@ if (~strcmp(getpref('OneLightToolbox','OneLightCalData'),getpref(protocolParams.
 end
 calibration = OLGetCalibrationStructure('CalibrationType',protocolParams.calibrationType,'CalibrationDate','latest');
 
-%% Open devices
-% Open the OneLight
+%% Open the OneLight
+% Open up a OneLight device
 oneLight = OneLight('simulate',protocolParams.simulate.oneLight); drawnow;
 
-% Get radiometer
+%% Get radiometer
+% Open up a radiometer, which we will need later on.
 if ~protocolParams.simulate.radiometer
-    radiometerPauseDuration = 0;
     oneLight.setAll(true);
     commandwindow;
-    fprintf('- Focus the radiometer and press enter to pause %d seconds and start measuring.\n', radiometerPauseDuration);
+    fprintf('Focus the radiometer and press enter to pause %d seconds and start measuring.\n', radiometerPauseDuration);
     input('');
     oneLight.setAll(false);
     pause(radiometerPauseDuration);
@@ -131,44 +41,71 @@ else
     radiometer = [];
 end
 
-%% Make the corrected modulation primaries
-OLMakeDirectionCorrectedPrimaries(oneLight,protocolParams,'verbose',protocolParams.verbose);
+%% Create the melanopsin direction with maximal bipolar contrast
+% There are several ways to construct a direction. Here, we demonstrate
+% getting a set of parameters from the directions dictionary, adjusting
+% some of those parameters, and then generating the direction.
+directionParams = OLDirectionParamsFromName('MaxMel_bipolar_275_80_667');
+directionParams.primaryHeadRoom = .01;
+directionNominalStruct = OLDirectionNominalStructFromParams(directionParams, calibration, 'observerAge', protocolParams.observerAge);
 
-%% TODO Validate direction corrected primaries
-%OLValidateDirectionCorrectedPrimaries(oneLight,protocolParams,'Pre');
-%OLAnalyzeDirectionCorrectedPrimaries(protocolParams,'Pre');
+%% Correct and validate the direction
+% The nominal primary values often do not generate the spectral power
+% distributions that we expect. We iteratively correct the primary values
+% to get closer to the desired SPDs, and then validate that these primary
+% values produce a direction that we can live with. 
+directionCorrectedStruct = OLCorrectDirection(directionNominalStruct, calibration, oneLight, radiometer);
+SPDs = OLValidateDirection(directionCorrectedStruct, calibration, oneLight, radiometer);
+
+%% Create the temporal waveform
+% Just like with directions, temporal waveforms can be constructed in
+% several ways. Again, we demonstrate here getting a set of parameters from
+% a dictionary, adjusting a parameter, and then constructing the waveform.
+waveformParams = OLWaveformParamsFromName('MaxContrast3sSinusoid');
+waveformParams.stimulusDuration = 5;
+[waveform, timestep] = OLWaveformFromParams(waveformParams);
+
+%% Assemble the modulation
+% The direction information, and the temporal waveform, are combined into a
+% a modulation. This modulation is also converted to starts/stops. All this
+% data is stroed in a structure 'modulation'.
+modulation = OLAssembleModulation(directionCorrectedStruct,waveform,calibration);
+
+%% Package trial for DemoEngine
+% The Psychophysics engine (or at least this demo version) expects
+% information to be packaged in a certain way, so thats what we do here.
+trialList = struct([]);
+trial.adaptTime = 1;
+trial.repeats = 1;
+trial.directionName = 'MaxMel_bipolar_275_80_667';
+trial.modulationStarts = modulation.starts;
+trial.modulationStops = modulation.stops;
+[trial.backgroundStarts, trial.backgroundStops] = OLPrimaryToStartsStops(directionCorrectedStruct.backgroundPrimary, calibration); 
+trial.timestep = timestep;
+trialList = [trialList, trial];
 
 %% Close radiometer
+% We don't need the radiometer for now, so let's make sure we close it
+% properly. This allows the user to unhook the eyepiece from the
+% radiometer, and set it up for viewing.
 if ~protocolParams.simulate.radiometer
     shutDown(radiometer);
+    oneLight.setAll(false);
+    commandwindow;
+    fprintf('Unhook the eyepiece from the radiometer and set up for viewing. Press enter to pause %d seconds and start experiment.\n', radiometerPauseDuration);
+    input('');
+    pause(radiometerPauseDuration);
 end
 clear radiometer;
 
-%% TODO Make the modulation starts and stops
-OLMakeModulationStartsStops(protocolParams.modulationNames,protocolParams.directionNames, protocolParams,'verbose',protocolParams.verbose);
-
-%% Load
-trialList = struct([]);
-modulationDir = fullfile(getpref(protocolParams.protocol, 'ModulationStartsStopsBasePath'), protocolParams.observerID,protocolParams.todayDate,protocolParams.sessionName);
-for trialNum = 1:size(trialParamsList,1)
-    trial = trialParamsList(trialNum);
-    trial.modulationName = sprintf('ModulationStartsStops_%s_%s_trialType_%d', trial.modulationName, trial.directionName, trial.trialNum);
-    trial.path = [trial.modulationName '.mat'];
-    trial.modulation = load(fullfile(modulationDir, trial.path),'modulationData');
-    trial.modulationData = trial.modulation.modulationData.modulation;
-    trial.backgroundStarts = trial.modulationData.background.starts;
-    trial.backgroundStops = trial.modulationData.background.stops;
-    trial.modulationStarts = trial.modulationData.starts;
-    trial.modulationStops = trial.modulationData.stops;
-    trial.timestep = trial.modulation.modulationData.modulationParams.timeStep;
-    
-    trialList = [trialList trial];
-end
-
-%% Run demo code
-DemoEngine(trialList,oneLight,protocolParams);
+%% Run demo trial
+% Call the DemoEngine to execute our trials
+DemoEngine(trialList,oneLight,'speakRate',getpref(protocolParams.approach, 'SpeakRateDefault'));
 
 %% Validate direction corrected primaries post experiment
+% We often want to validate our directions after the experiment as well, so
+% that we know that we had the correct SPDs throughout.
+
 % Setup radiometer
 if ~protocolParams.simulate.radiometer
     radiometerPauseDuration = 0;
@@ -183,9 +120,8 @@ else
     radiometer = [];
 end
 
-% TODO Validate direction corrected primaries post experiment
-%TODO OLValidateDirectionCorrectedPrimaries(oneLight,protocolParams,'Post');
-%TODO OLAnalyzeDirectionCorrectedPrimaries(protocolParams,'Post');
+% Validate direction corrected primaries post experiment
+SPDs = OLValidateDirection(directionCorrectedStruct, calibration, oneLight, radiometer);
 
 % Close radiometer
 if ~protocolParams.simulate.radiometer

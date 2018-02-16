@@ -46,7 +46,7 @@ for trialNum = 1:numel(trialList)
 
         fprintf('Repeat: <strong>%g</strong>\n', R);
         Speak('Press key to start.', [], 200);
-        if (~oneLight.Simulate), ; commandwindowWaitForKeyPress; end
+        if (~oneLight.Simulate), commandwindow; WaitForKeyPress; end
         
         fprintf('Showing stimulus...'); Speak('Showing stimulus.',[], speakRate);
         OLFlicker(oneLight, trial.modulationStarts, trial.modulationStops, trial.timestep, 1);

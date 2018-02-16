@@ -11,15 +11,15 @@
 clear all; close all; clc;
 protocolParams.approach = 'OLApproach_Psychophysics';
 protocolParams.protocol = 'Demo'; % all demos can be filed under the same protocol
-protocolParams.simulate.oneLight = true;
-protocolParams.simulate.radiometer = true;
+protocolParams.simulate.oneLight = false;
+protocolParams.simulate.radiometer = false;
 radiometerPauseDuration = 0;
 
 %% Get calibration
 % Specify which box and calibration to use, check that everything is set up
 % correctly, and retrieve the calibration structure.
-protocolParams.boxName = 'BoxC';  
-protocolParams.calibrationType = 'BoxCRandomizedLongCableBEyePiece2_ND01';
+protocolParams.boxName = 'BoxB';  
+protocolParams.calibrationType = 'BoxBRandomizedLongCableBEyePiece2_ND01';
 if (~strcmp(getpref('OneLightToolbox','OneLightCalData'),getpref(protocolParams.approach,'OneLightCalDataPath')))
     error('Calibration file prefs not set up as expected for an approach');
 end
@@ -77,8 +77,7 @@ directionStruct.describe = struct;
 % Open up a OneLight device
 oneLight = OneLight('simulate',protocolParams.simulate.oneLight); drawnow;
 
-%% Correct & validate
-% Get radiometer
+%% Get radiometer
 % Open up a radiometer, which we will need later on.
 if ~protocolParams.simulate.radiometer
     oneLight.setAll(true);
@@ -91,10 +90,13 @@ else
     radiometer = [];
 end
 
+%% Correct
 directionStruct = OLCorrectDirection(directionStruct, calibration, oneLight, radiometer);
+
+%% Validate
 directionStruct.describe.validationPre = OLValidateDirection(directionStruct, calibration, oneLight, radiometer,'receptors',receptors);
 
-% Close radiometer
+%% Close radiometer
 % We don't need the radiometer for now, so let's make sure we close it
 % properly. This allows the user to unhook the eyepiece from the
 % radiometer, and set it up for viewing.
@@ -111,7 +113,7 @@ clear radiometer;
 waveformParams = OLWaveformParamsFromName('MaxContrastSquarewave');
 waveformParams.frequency = 16;
 waveformParams.stimulusDuration = 10;
-waveform = OLWaveformFromParams(waveformParams);
+[waveform, timestep] = OLWaveformFromParams(waveformParams);
 modulationStruct = OLAssembleModulation(directionStruct,waveform,calibration);
 
 %% Package trial for DemoEngine

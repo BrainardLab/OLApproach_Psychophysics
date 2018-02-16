@@ -24,7 +24,7 @@ speakRate = p.Results.speakRate;
 
 % Wait for button press
 Speak('Press key to start demo', [], speakRate);
-if (~oneLight.Simulate), WaitForKeyPress; end
+if (~oneLight.Simulate), commandwindow; WaitForKeyPress; end
 
 fprintf('<strong>Demo started</strong>\n');
 for trialNum = 1:numel(trialList)
@@ -34,7 +34,7 @@ for trialNum = 1:numel(trialList)
     % Adapt to background for 1 minute
     oneLight.setMirrors(trial.backgroundStarts, trial.backgroundStops);
     Speak(sprintf('Adapt to background for %g seconds. Press key to start adaptation', trial.adaptTime), [], speakRate);
-    if (~oneLight.Simulate), WaitForKeyPress; end
+    if (~oneLight.Simulate), commandwindow; WaitForKeyPress; end
     fprintf('Adapting...'); Speak('Adaptation started.', [], speakRate);
     mglWaitSecs(trial.adaptTime);
     Speak('Adaptation complete', [], speakRate);
@@ -46,7 +46,7 @@ for trialNum = 1:numel(trialList)
 
         fprintf('Repeat: <strong>%g</strong>\n', R);
         Speak('Press key to start.', [], 200);
-        if (~oneLight.Simulate), WaitForKeyPress; end
+        if (~oneLight.Simulate), ; commandwindowWaitForKeyPress; end
         
         fprintf('Showing stimulus...'); Speak('Showing stimulus.',[], speakRate);
         OLFlicker(oneLight, trial.modulationStarts, trial.modulationStops, trial.timestep, 1);

@@ -18,7 +18,7 @@ radiometerPauseDuration = 0;
 %% Get calibration
 % Specify which box and calibration to use, check that everything is set up
 % correctly, and retrieve the calibration structure.
-protocolParams.boxName = 'BoxB';  
+protocolParams.boxName = 'BoxB';
 protocolParams.calibrationType = 'BoxBRandomizedLongCableBEyePiece2_ND01';
 if (~strcmp(getpref('OneLightToolbox','OneLightCalData'),getpref(protocolParams.approach,'OneLightCalDataPath')))
     error('Calibration file prefs not set up as expected for an approach');
@@ -124,7 +124,7 @@ trialList = struct([]);
 trial.name = 'Penubmral_squarewave_10s';
 trial.modulationStarts = modulationStruct.starts;
 trial.modulationStops = modulationStruct.stops;
-[trial.backgroundStarts, trial.backgroundStops] = OLPrimaryToStartsStops(directionStruct.backgroundPrimary, calibration); 
+[trial.backgroundStarts, trial.backgroundStops] = OLPrimaryToStartsStops(directionStruct.backgroundPrimary, calibration);
 trial.timestep = timestep;
 trial.adaptTime = 1;
 trial.repeats = 1;
@@ -134,3 +134,10 @@ trialList = [trialList, trial];
 %% Run demo trial
 % Call the DemoEngine to execute our trials
 DemoEngine(trialList,oneLight,'speakRate',getpref(protocolParams.approach, 'SpeakRateDefault'));
+
+%% Close OneLight
+shutdown = input('Shutdown OneLight? [Y/N]','s');
+if upper(shutdown) == 'Y'
+    oneLight.shutdown()
+end
+clear oneLight

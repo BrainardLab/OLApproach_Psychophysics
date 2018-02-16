@@ -91,7 +91,7 @@ else
 end
 
 %% Correct
-directionStruct = OLCorrectDirection(directionStruct, calibration, oneLight, radiometer);
+directionStruct = OLCorrectDirection(directionStruct, calibration, oneLight, radiometer, 'iterativeSearch',true);
 
 %% Validate
 directionStruct.describe.validationPre = OLValidateDirection(directionStruct, calibration, oneLight, radiometer,'receptors',receptors);
@@ -136,7 +136,7 @@ trialList = [trialList, trial];
 DemoEngine(trialList,oneLight,'speakRate',getpref(protocolParams.approach, 'SpeakRateDefault'));
 
 %% Close OneLight
-shutdown = input('Shutdown OneLight? [Y/N]','s');
+shutdown = input('<strong>Shutdown OneLight? [Y/N]</strong>','s');
 if upper(shutdown) == 'Y'
     oneLight.shutdown()
 end

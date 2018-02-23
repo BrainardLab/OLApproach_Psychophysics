@@ -18,8 +18,8 @@ radiometerPauseDuration = 0;
 %% Get calibration
 % Specify which box and calibration to use, check that everything is set up
 % correctly, and retrieve the calibration structure.
-protocolParams.boxName = 'BoxB';
-protocolParams.calibrationType = 'BoxBRandomizedLongCableBEyePiece2_ND01';
+protocolParams.boxName = 'BoxD';
+protocolParams.calibrationType = 'BoxDRandomizedLongCableBEyePiece2_ND01';
 if (~strcmp(getpref('OneLightToolbox','OneLightCalData'),getpref(protocolParams.approach,'OneLightCalDataPath')))
     error('Calibration file prefs not set up as expected for an approach');
 end

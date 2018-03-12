@@ -61,17 +61,10 @@ directionPrimary = ReceptorIsolate(receptors.T.T_energyNormalized,targetReceptor
     [],B_primary, backgroundPrimary, backgroundPrimary, [], primaryHeadRoom,...
     maxPowerDiff, [], ambientSpd);
 
-% Unipolar direction, so set backgroundPrimary to direction negative pole
+% Create unipolar direction, and unipolar background.
 differential = directionPrimary - backgroundPrimary;
-differentialNeg = -1 * differential;
-backgroundPrimary = backgroundPrimary + differentialNeg;
-
-% Assemble directionStruct
-directionStruct.backgroundPrimary = backgroundPrimary;
-directionStruct.differentialPositive = directionPrimary - backgroundPrimary;
-directionStruct.differentialNegative = 0*differentialNeg;
-directionStruct.calibration = calibration;
-directionStruct.describe = struct;
+direction = OLDirection_unipolar(differential,calibration);
+background = OLDirection_unipolar(backgroundPrimary - differential,calibration);
 
 %% Open the OneLight
 % Open up a OneLight device
@@ -114,7 +107,7 @@ waveformParams = OLWaveformParamsFromName('MaxContrastSquarewave');
 waveformParams.frequency = 16;
 waveformParams.stimulusDuration = 10;
 [waveform, timestep] = OLWaveformFromParams(waveformParams);
-modulationStruct = OLAssembleModulation(directionStruct,waveform,calibration);
+modulationStruct = OLAssembleModulation([background, direction],[ones(1,length(waveform)); waveform]);
 
 %% Package trial for DemoEngine
 % The Psychophysics engine (or at least this demo version) expects
@@ -124,7 +117,7 @@ trialList = struct([]);
 trial.name = 'Penubmral_squarewave_10s';
 trial.modulationStarts = modulationStruct.starts;
 trial.modulationStops = modulationStruct.stops;
-[trial.backgroundStarts, trial.backgroundStops] = OLPrimaryToStartsStops(directionStruct.backgroundPrimary, calibration);
+[trial.backgroundStarts, trial.backgroundStops] = OLPrimaryToStartsStops(background.differentialPrimaryValues, calibration);
 trial.timestep = timestep;
 trial.adaptTime = 1;
 trial.repeats = 1;

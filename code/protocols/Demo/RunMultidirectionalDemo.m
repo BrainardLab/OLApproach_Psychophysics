@@ -74,17 +74,14 @@ melDirectionParams = OLDirectionParamsFromName('MaxMel_unipolar_275_80_667');
 melDirectionParams.primaryHeadRoom = .01;
 meldirectionStruct = OLDirectionNominalStructFromParams(melDirectionParams, calibration, 'observerAge', protocolParams.observerAge);
 background = OLDirection_unipolar(meldirectionStruct.backgroundPrimary,calibration);
-MelDirection = .75 .* OLDirection_unipolar(meldirectionStruct.differentialPositive,calibration, meldirectionStruct.describe);
+MelDirection = OLDirection_unipolar(meldirectionStruct.differentialPositive,calibration, meldirectionStruct.describe);
 
 %% Construct LMS modulation with maximum bipolar contrast around the Mel pulse
 LMSDirectionParams = OLDirectionParamsFromName('MaxLMS_bipolar_275_60_667');
 LMSDirectionParams.pupilDiameterMm = 8.0;
-LMSDirectionParams.backgroundPrimary = background.differentialPrimaryValues+MelDirection.differentialPos;
+LMSDirectionParams.backgroundPrimary = background.differentialPrimaryValues+MelDirection.differentialPrimaryValues;
 lmsdirectionStruct = OLDirectionNominalStructFromParams(LMSDirectionParams, calibration, 'observerAge', protocolParams.observerAge);
-LMSDirection = .5 .* OLDirection_bipolar(lmsdirectionStruct.differentialPositive, lmsdirectionStruct.differentialNegative, calibration, lmsdirectionStruct.describe);
-
-%% concat directions
-directions = [background, MelDirection, LMSDirection];
+LMSDirection = OLDirection_bipolar(lmsdirectionStruct.differentialPositive, lmsdirectionStruct.differentialNegative, calibration, lmsdirectionStruct.describe);
 
 %% Correct and validate the direction
 % The nominal primary values often do not generate the exact spectral power
@@ -151,7 +148,7 @@ waveforms = [backgroundWaveform; MelWaveform; LMSWaveform];
 % single waveform, where negative values in the waveform are applied to the
 % negative differential primary vector, and positive values in the waveform
 % are applied to the positive differential primary vector.
-modulationStruct = OLAssembleModulation(directions,waveforms);
+modulationStruct = OLAssembleModulation([background, .875.*MelDirection, .05.*LMSDirection],waveforms);
 
 %% Package trial for DemoEngine
 % The Psychophysics engine (or at least this demo version) expects
@@ -164,7 +161,7 @@ trial.modulationStops = modulationStruct.stops;
 [trial.backgroundStarts, trial.backgroundStops] = OLPrimaryToStartsStops(meldirectionStruct.backgroundPrimary, calibration); 
 trial.timestep = timestep;
 trial.adaptTime = 1;
-trial.repeats = 1;
+trial.repeats = 5;
 
 trialList = [trialList, trial];
 

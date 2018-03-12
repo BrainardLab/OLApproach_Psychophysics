@@ -16,8 +16,8 @@ radiometerPauseDuration = 0;
 %% Get calibration
 % Specify which box and calibration to use, check that everything is set up
 % correctly, and retrieve the calibration structure.
-protocolParams.boxName = 'BoxC';  
-protocolParams.calibrationType = 'BoxCRandomizedLongCableBEyePiece2_ND01';
+protocolParams.boxName = 'BoxD';  
+protocolParams.calibrationType = 'BoxDRandomizedLongCableBEyePiece2_ND01';
 if (~strcmp(getpref('OneLightToolbox','OneLightCalData'),getpref(protocolParams.approach,'OneLightCalDataPath')))
     error('Calibration file prefs not set up as expected for an approach');
 end
@@ -50,8 +50,7 @@ end
 %                          the background primary to create the negative
 %                          direction
 %  - calibration         : the calibration structure used to generate the
-%                          directionStruct. No code relies on this being in
-%                          the struct, but it's good to store it.
+%                          direction.
 %  - describe            : structure with additional metadata
 %
 % There are several ways to construct a directionStruct:
@@ -80,7 +79,7 @@ MelDirection = .75 .* OLDirection_unipolar(meldirectionStruct.differentialPositi
 %% Construct LMS modulation with maximum bipolar contrast around the Mel pulse
 LMSDirectionParams = OLDirectionParamsFromName('MaxLMS_bipolar_275_60_667');
 LMSDirectionParams.pupilDiameterMm = 8.0;
-LMSDirectionParams.backgroundPrimary = background.differentialPrimaryValues;
+LMSDirectionParams.backgroundPrimary = background.differentialPrimaryValues+MelDirection.differentialPos;
 lmsdirectionStruct = OLDirectionNominalStructFromParams(LMSDirectionParams, calibration, 'observerAge', protocolParams.observerAge);
 LMSDirection = .5 .* OLDirection_bipolar(lmsdirectionStruct.differentialPositive, lmsdirectionStruct.differentialNegative, calibration, lmsdirectionStruct.describe);
 
@@ -159,7 +158,7 @@ modulationStruct = OLAssembleModulation(directions,waveforms);
 % information to be packaged in a certain way, so thats what we do here.
 trialList = struct([]);
 
-trial.name = 'MaxMel_sinusoid_5s';
+trial.name = 'MelPulse5s_LMSsinusoid5s';
 trial.modulationStarts = modulationStruct.starts;
 trial.modulationStops = modulationStruct.stops;
 [trial.backgroundStarts, trial.backgroundStops] = OLPrimaryToStartsStops(meldirectionStruct.backgroundPrimary, calibration); 

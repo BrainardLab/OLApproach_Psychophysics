@@ -85,6 +85,9 @@ else
     radiometer = [];
 end
 
+%% Validate pre correction
+OLValidateDirection(direction, background, oneLight, radiometer,'receptors',receptors);
+
 %% Correct
 OLCorrectDirection([background, direction],[OLDirection_unipolar.Null(calibration), background], oneLight, radiometer, 'iterativeSearch',true);
 

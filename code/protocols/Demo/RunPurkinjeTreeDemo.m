@@ -62,9 +62,11 @@ directionPrimary = ReceptorIsolate(receptors.T.T_energyNormalized,targetReceptor
     maxPowerDiff, [], ambientSpd);
 
 % Create unipolar direction, and unipolar background.
-differential = directionPrimary - backgroundPrimary;
+differential = directionPrimary - backgroundPrimary; % determine initial bipolar differential
+backgroundPrimary = backgroundPrimary - differential; % set new background (background - bipolar differential)
+differential = directionPrimary - backgroundPrimary; % determine unipolar differential (direction - new background)
+background = OLDirection_unipolar(backgroundPrimary,calibration);
 direction = OLDirection_unipolar(differential,calibration);
-background = OLDirection_unipolar(backgroundPrimary - differential,calibration);
 
 %% Open the OneLight
 % Open up a OneLight device
@@ -84,10 +86,10 @@ else
 end
 
 %% Correct
-directionStruct = OLCorrectDirection(directionStruct, calibration, oneLight, radiometer, 'iterativeSearch',true);
+OLCorrectDirection([background, direction],[OLDirection_unipolar.Null(calibration), background], oneLight, radiometer, 'iterativeSearch',true);
 
 %% Validate
-directionStruct.describe.validationPre = OLValidateDirection(directionStruct, calibration, oneLight, radiometer,'receptors',receptors);
+OLValidateDirection(direction, background, oneLight, radiometer,'receptors',receptors);
 
 %% Close radiometer
 % We don't need the radiometer for now, so let's make sure we close it

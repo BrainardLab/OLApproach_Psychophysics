@@ -19,10 +19,7 @@ fprintf('Running OLApproach_Psychophysics local hook\n');
 theApproach = 'OLApproach_Psychophysics';
 
 %% Define protocols for this approach
-theProtocols = { ...
-    'Demo' ...
-    'MaxMelPulsePsychophysics' ...
-    };
+theProtocols = DefineProtocolNames;
 
 %% Remove old preferences
 if (ispref(theApproach))
@@ -46,9 +43,9 @@ switch userID
         dataBasePath = ['/Users1' '/Dropbox (Aguirre-Brainard Lab)/MELA_data/'];     
     case {'nicolas'}
         [~, computerName] = system('hostname');
-        if (~isempty(strfind(computerName, 'Ithaka')))
+        if (contains(computerName, 'Ithaka'))
             ABDBoxPath = '/Volumes/SamsungT3/Dropbox/AguirreBrainardLabsDropbox';
-        elseif (~isempty(strfind(computerName, 'Manta')))
+        elseif (contains(computerName, 'Manta'))
             ABDBoxPath = '/Volumes/Manta TM HD/Dropbox (Aguirre-Brainard Lab)';
         else
             error('Unknown computer name: ''%s'' !\n', computerName);
@@ -71,27 +68,10 @@ setpref(theApproach,'CodePath', fullfile(tbLocateProject(theApproach),'code'));
 setpref(theApproach, 'OneLightCalDataPath', fullfile(getpref(theApproach, 'MaterialsPath'), 'Experiments', theApproach, 'OneLightCalData'));
 setpref('OneLightToolbox','OneLightCalData',getpref(theApproach,'OneLightCalDataPath'));
 
-%% Set the background nominal primaries path
-setpref(theApproach,'BackgroundNominalPrimariesPath',fullfile(getpref(theApproach, 'MaterialsPath'),'Experiments',theApproach,'BackgroundNominalPrimaries'));
-
-%% Set the direction nominal primaries path
-setpref(theApproach,'DirectionNominalPrimariesPath',fullfile(getpref(theApproach, 'MaterialsPath'),'Experiments',theApproach,'DirectionNominalPrimaries'));
-
 %% Prefs for individual protocols
 for pp = 1:length(theProtocols)
-    setpref(theProtocols{pp},'DirectionCorrectedPrimariesBasePath',fullfile(getpref(theApproach, 'DataPath'),'Experiments',theApproach,theProtocols{pp},'DirectionCorrectedPrimaries'));
-    
-    % Set the validation base path
-    setpref(theProtocols{pp},'DirectionCorrectedValidationBasePath',fullfile(getpref(theApproach, 'DataPath'),'Experiments',theApproach,theProtocols{pp},'DirectionValidationFiles'));
-    
-    % Modulation starts/stops files base path
-    setpref(theProtocols{pp},'ModulationStartsStopsBasePath',fullfile(getpref(theApproach, 'DataPath'),'Experiments',theApproach,theProtocols{pp},'ModulationsStartsStops'));
-    
-    % Session record base path
-    setpref(theProtocols{pp},'SessionRecordsBasePath',fullfile(getpref(theApproach, 'DataPath'),'Experiments',theApproach,theProtocols{pp},'SessionRecords'));
-    
     % Data files base path
-    setpref(theProtocols{pp},'DataFilesBasePath',fullfile(getpref(theApproach, 'DataPath'),'Experiments',theApproach,theProtocols{pp},'DataFiles'));
+    setpref(theProtocols{pp},'DataFilesBasePath',fullfile(getpref(theApproach, 'DataPath'),'Experiments',theApproach,theProtocols{pp}));
 end
 
 %% Set the default speak rate

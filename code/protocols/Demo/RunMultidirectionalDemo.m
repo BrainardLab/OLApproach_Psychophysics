@@ -73,6 +73,7 @@ end
 melDirectionParams = OLDirectionParamsFromName('MaxMel_unipolar_275_80_667');
 melDirectionParams.primaryHeadRoom = .01;
 [MelDirection, background] = OLDirectionNominalFromParams(melDirectionParams, calibration, 'observerAge', protocolParams.observerAge);
+MelDirection = .75 .* MelDirection; % scale to 300% contrast
 
 %% Construct LMS modulation with maximum bipolar contrast around the Mel pulse
 LMSDirectionParams = OLDirectionParamsFromName('MaxLMS_bipolar_275_60_667');
@@ -86,11 +87,11 @@ LMSDirection = OLDirectionNominalFromParams(LMSDirectionParams, calibration, bac
 % properties that we want. Optionally, this can also calculate the actual and predicted
 % contrasts, by passing the receptor fundamentals. We store this validation
 % information under the '.describe.validation' field of the OLDirection.
-receptors = MelDirection.describe.directionParams.T_receptors;
+receptors = LMSDirection.describe.directionParams.T_receptors;
 
 % Since OLDirections store differential primaries (and SPDs), validation
 % must happen around a userdefined background.  For the MelPulse, this is
-% simply the background. For the background, it's the 'Null' direction. 
+% simply the background. For the background, it's the 'Null' direction.
 OLValidateDirection(background, OLDirection_unipolar.Null(calibration), oneLight, radiometer, 'receptors', receptors);
 OLValidateDirection(MelDirection, background, oneLight, radiometer, 'receptors', receptors);
 
@@ -164,7 +165,7 @@ waveforms = [backgroundWaveform; MelWaveform; LMSWaveform];
 % single waveform, where negative values in the waveform are applied to the
 % negative differential primary vector, and positive values in the waveform
 % are applied to the positive differential primary vector.
-modulationStruct = OLAssembleModulation([background, .875.*MelDirection, .25.*LMSDirection],waveforms);
+modulationStruct = OLAssembleModulation([background, MelDirection, .25.*LMSDirection],waveforms);
 
 %% Package trial for DemoEngine
 % The Psychophysics engine (or at least this demo version) expects

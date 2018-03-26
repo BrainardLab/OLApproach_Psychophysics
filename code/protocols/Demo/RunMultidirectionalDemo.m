@@ -72,36 +72,52 @@ end
 % direction.
 melDirectionParams = OLDirectionParamsFromName('MaxMel_unipolar_275_80_667');
 melDirectionParams.primaryHeadRoom = .01;
-meldirectionStruct = OLDirectionNominalStructFromParams(melDirectionParams, calibration, 'observerAge', protocolParams.observerAge);
-background = OLDirection_unipolar(meldirectionStruct.backgroundPrimary,calibration);
-MelDirection = OLDirection_unipolar(meldirectionStruct.differentialPositive,calibration, meldirectionStruct.describe);
+[MelDirection, background] = OLDirectionNominalFromParams(melDirectionParams, calibration, 'observerAge', protocolParams.observerAge);
 
 %% Construct LMS modulation with maximum bipolar contrast around the Mel pulse
 LMSDirectionParams = OLDirectionParamsFromName('MaxLMS_bipolar_275_60_667');
 LMSDirectionParams.pupilDiameterMm = 8.0;
-LMSDirectionParams.backgroundPrimary = background.differentialPrimaryValues+MelDirection.differentialPrimaryValues;
-lmsdirectionStruct = OLDirectionNominalStructFromParams(LMSDirectionParams, calibration, 'observerAge', protocolParams.observerAge);
-LMSDirection = OLDirection_bipolar(lmsdirectionStruct.differentialPositive, lmsdirectionStruct.differentialNegative, calibration, lmsdirectionStruct.describe);
+LMSDirection = OLDirectionNominalFromParams(LMSDirectionParams, calibration, background+MelDirection, 'observerAge', protocolParams.observerAge);
 
-%% Correct and validate the direction
+%% Validate and correct the directions
 % The nominal primary values often do not generate the exact spectral power
-% distributions that we expect. We iteratively correct the primary values
-% to get closer to the desired SPDs, and then validate that these primary
-% values produce a direction that we can live with.
-%
-% The corrections code overwrites the primaries in the directionStruct
-% (although it saves the nominal ones under the .describe field). This
-% means that the same field(names) form the 'business end' of the direction
-% struct, before and after correction. Thus, subsequent code does not have
-% to know whether the direction was corrected or not. It also stores a lot
-% of data in under .describe.correction, for debugging purposes.
-%meldirectionStruct = OLCorrectDirection(meldirectionStruct, calibration, oneLight, radiometer);
+% distributions that we expect. We validate each direction, comparing the
+% desired and measured SPD, to determine whether it has the colorimetric
+% properties that we want. Optionally, this can also calculate the actual and predicted
+% contrasts, by passing the receptor fundamentals. We store this validation
+% information under the '.describe.validation' field of the OLDirection.
+receptors = MelDirection.describe.directionParams.T_receptors;
 
-% We then validate the direction, by comparing the predicted and measured
-% SPDs. Optionally, this can also calculate the actual and predicted
-% contrasts. We store this information under the 'describe' field of the
-% direction struct.
-%meldirectionStruct.describe.validationPre = OLValidateDirection(meldirectionStruct, calibration, oneLight, radiometer);
+% Since OLDirections store differential primaries (and SPDs), validation
+% must happen around a userdefined background.  For the MelPulse, this is
+% simply the background. For the background, it's the 'Null' direction. 
+OLValidateDirection(background, OLDirection_unipolar.Null(calibration), oneLight, radiometer, 'receptors', receptors);
+OLValidateDirection(MelDirection, background, oneLight, radiometer, 'receptors', receptors);
+
+% For the LMS-modulation, the background is the combination of the
+% Mel-pulse on its background, which can be constructed by adding the two
+% OLDirection objects:
+OLValidateDirection(LMSDirection, background+MelDirection, oneLight, radiometer, 'receptors', receptors);
+
+% We then iteratively correct the primary values for each direction to get
+% closer to the desired SPDs, Since OLDirections store differential
+% primaries (and SPDs), correction must happen around a userdefined
+% background as well.
+% The corrections code overwrites the primaries in the OLDirection
+% (although it saves the nominal ones under the .describe field). This
+% means that the same property(names) form the 'business end' of the
+% direction, before and after correction. Thus, subsequent code does not
+% have to know whether the direction was corrected or not. It also stores a
+% lot of data in under '.describe.correction', for debugging purposes.
+OLCorrectDirection(background, OLDirection_unipolar.Null(calibration), oneLight, radiometer);
+OLCorrectDirection(MelDirection, background, oneLight, radiometer);
+OLCorrectDirection(LMSDirection, background+MelDirection, oneLight, radiometer);
+
+% Then we validate that these corrected directions bring us closer to what
+% we want:
+OLValidateDirection(background, OLDirection_unipolar.Null(calibration), oneLight, radiometer, 'receptors', receptors);
+OLValidateDirection(MelDirection, background, oneLight, radiometer, 'receptors', receptors);
+OLValidateDirection(LMSDirection, background+MelDirection, oneLight, radiometer, 'receptors', receptors);
 
 %% Create the temporal waveforms
 % Just like with directions, temporal waveforms can be constructed in
@@ -144,11 +160,11 @@ waveforms = [backgroundWaveform; MelWaveform; LMSWaveform];
 %   - waveformMatrix: matrix defining temporal waveforms for each primary
 %     vector, one row per vector.
 %
-% OLAssembleModulation can assemble this from a directionStruct and a a
+% OLAssembleModulation can assemble this from an OLDirection and a
 % single waveform, where negative values in the waveform are applied to the
 % negative differential primary vector, and positive values in the waveform
 % are applied to the positive differential primary vector.
-modulationStruct = OLAssembleModulation([background, .875.*MelDirection, .05.*LMSDirection],waveforms);
+modulationStruct = OLAssembleModulation([background, .875.*MelDirection, .25.*LMSDirection],waveforms);
 
 %% Package trial for DemoEngine
 % The Psychophysics engine (or at least this demo version) expects
@@ -158,7 +174,7 @@ trialList = struct([]);
 trial.name = 'MelPulse5s_LMSsinusoid5s';
 trial.modulationStarts = modulationStruct.starts;
 trial.modulationStops = modulationStruct.stops;
-[trial.backgroundStarts, trial.backgroundStops] = OLPrimaryToStartsStops(meldirectionStruct.backgroundPrimary, calibration); 
+[trial.backgroundStarts, trial.backgroundStops] = OLPrimaryToStartsStops(background.differentialPrimaryValues, calibration); 
 trial.timestep = timestep;
 trial.adaptTime = 1;
 trial.repeats = 5;

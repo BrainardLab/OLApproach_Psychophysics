@@ -113,3 +113,14 @@ while ~accept
             accept = true;
     end
 end
+
+%% Validate post acquisition
+
+OLValidateDirection(background, OLDirection_unipolar.Null(calibration), oneLight, radiometer, 'receptors', receptors,'label','pre-correction');
+OLValidateDirection(MelDirection, background, oneLight, radiometer, 'receptors', receptors, 'label','pre-correction');
+OLValidateDirection(LMSDirection, background+MelDirection, oneLight, radiometer, 'receptors', receptors, 'label','pre-correction');
+
+%% Close radiometer
+if exist('radiometer','var') && ~isempty(radiometer)
+    radiometer.shutDown()
+end

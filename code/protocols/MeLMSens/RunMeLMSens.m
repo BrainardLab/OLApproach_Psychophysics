@@ -50,9 +50,12 @@ melDirectionParams.modulationContrast = OLUnipolarToBipolarContrast(3);
 [MelDirection, background] = OLDirectionNominalFromParams(melDirectionParams, calibration, 'observerAge', observerAge);
 LMSDirectionParams = OLDirectionParamsFromName('MaxLMS_bipolar_275_60_667','alternateDictionaryFunc','OLDirectionParamsDictionary_Psychophysics');
 LMSDirectionParams.primaryHeadRoom = 0;
-LMSDirectionParams.modulationContrast = [.05 .05 .05];
 LMSDirection = OLDirectionNominalFromParams(LMSDirectionParams, calibration, 'background', background+MelDirection, 'observerAge', observerAge);
+
+% Desired contrasts
 receptors = LMSDirection.describe.directionParams.T_receptors;
+[nominalMelPulseContrast, nomMelExcitations] = ToDesiredReceptorContrast(MelDirection,background, receptors);
+[nominalMaxLMSFlickerContrast, nomLMSExcitations] = ToDesiredReceptorContrast(LMSDirection, background+MelDirection, receptors);
 
 %% Validate the directions
 % Pre-correction validation
@@ -85,7 +88,7 @@ modulation = AssembleModulation_MeLMS(background, MelDirection, LMSDirection,...
 %% Unhook radiometer
 % We don't need the radiometer for now, so allow the user to unhook the
 % eyepiece from the radiometer, and set it up for viewing.
-if ~protocolParams.simulate.radiometer
+if ~simulate.radiometer
     oneLight.setAll(false);
     commandwindow;
     input(sprintf('<strong>Unhook the eyepiece from the radiometer and set up for viewing. Press enter to continue</strong>\n'));

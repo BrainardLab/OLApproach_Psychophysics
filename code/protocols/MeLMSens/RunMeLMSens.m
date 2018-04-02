@@ -73,11 +73,12 @@ OLValidateDirection(LMSDirection, background+MelDirection, oneLight, radiometer,
 pulseDuration = 3;
 pulseContrast = 3;
 flickerDuration = .250;
+flickerFrequency = 25;
 flickerLag = 0;
 flickerContrast = .05;
 
 modulation = AssembleModulation_MeLMS(background, MelDirection, LMSDirection,...
-        pulseDuration, pulseContrast, flickerDuration, flickerLag, flickerContrast);
+        pulseDuration, pulseContrast, flickerDuration, flickerLag, flickerFrequency, flickerContrast, receptors);
 [backgroundStarts, backgroundStops] = OLPrimaryToStartsStops(background.differentialPrimaryValues, background.calibration);
 
 
@@ -93,7 +94,7 @@ while ~accept
 
     % Assemble stimulus for this trial
     modulation = AssembleModulation_MeLMS(background, MelDirection, LMSDirection,...
-        pulseDuration, pulseContrast, flickerDuration, flickerLag, flickerContrast);
+        pulseDuration, pulseContrast, flickerDuration, flickerLag, flickerContrast, receptors);
 
     % Display stimulus
     OLFlicker(oneLight,modulation.starts,modulation.stops,modulation.timestep, 1);

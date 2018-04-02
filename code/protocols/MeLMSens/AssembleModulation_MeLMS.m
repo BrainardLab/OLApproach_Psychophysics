@@ -1,4 +1,4 @@
-function modulation = AssembleModulation_MeLMS(background, MelDirection, LMSDirection, pulseDuration, pulseContrast, flickerDuration, flickerLag, flickerContrast)
+function modulation = AssembleModulation_MeLMS(background, MelDirection, LMSDirection, pulseDuration, pulseContrast, flickerDuration, flickerLag, flickerFrequency, flickerContrast, receptors)
 % Assembles trial of LMS flicker on Mel pulse
 %
 % Syntax:
@@ -38,7 +38,7 @@ pulseParams.stimulusDuration = pulseDuration;
 
 %% Create cone flicker
 flickerParams = OLWaveformParamsFromName('MaxContrastSinusoid');
-flickerParams.frequency = 15;
+flickerParams.frequency = flickerFrequency;
 flickerParams.timeStep = 1/200;
 flickerParams.stimulusDuration = flickerDuration;
 flickerParams.cosineWindowIn = false;
@@ -61,30 +61,13 @@ flickerWaveform = OLPadWaveformToReference([zeros(1,t0FlickerFrame) flickerWavef
 % params (assuming that directions are generated from params)
 
 % Mel contrast
-if isfield(MelDirection.describe,'validation') && ~isempty(MelDirection.describe.validation)
-    maxMelContrast = MelDirection.describe.validation(end).contrastActual(4,1); % maximum Mel contrast
-else
-    maxMelContrast = OLBipolarToUnipolarContrast(MelDirection.describe.directionParams.modulationContrast);
-end
-assert(pulseContrast < maxMelContrast,'OLApproach_Psychophysics:AssembleTrial_MeLMS:MaxContrast',...
-    'Desired melanopsin contrast is higher than max contrast');
-melScale = pulseContrast / maxMelContrast;
-pulseWaveform = melScale * pulseWaveform;
+scaledMel = ScaleToReceptorContrast(MelDirection, background, receptors, [0 0 0 pulseContrast]');
 
-%% Scale flicker
 % LMS contrast
-if isfield(LMSDirection.describe,'validation') && ~isempty(LMSDirection.describe.validation)
-    maxLMSContrast = max(LMSDirection.describe.validation(end).contrastActual(1:3,1)); % maximum Mel contrast
-else
-    maxLMSContrast = LMSDirection.describe.directionParams.modulationContrast;
-end
-assert(flickerContrast < maxLMSContrast,'OLApproach_Psychophysics:AssembleTrial_MeLMS:MaxContrast',...
-    'Desired LMS contrast is higher than max contrast');
-LMSScale = flickerContrast / maxLMSContrast;
-flickerWaveform = LMSScale * flickerWaveform;
+scaledLMS = ScaleToReceptorContrast(LMSDirection, background+scaledMel, receptors, [flickerContrast flickerContrast flickerContrast 0]');
 
 %% Assemble
-modulation = OLAssembleModulation([background, MelDirection, LMSDirection],[ones(1,length(pulseWaveform)); pulseWaveform; flickerWaveform]);
+modulation = OLAssembleModulation([background, scaledMel, scaledLMS],[ones(1,length(pulseWaveform)); pulseWaveform; flickerWaveform]);
 modulation.timestep = 1/200;
 
 end

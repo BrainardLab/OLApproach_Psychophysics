@@ -93,7 +93,6 @@ if ~simulate.radiometer
     commandwindow;
     input(sprintf('<strong>Unhook the eyepiece from the radiometer and set up for viewing. Press enter to continue</strong>\n'));
 end
-clear radiometer;
 
 %% Run trial loop
 % Get gamepad
@@ -108,7 +107,7 @@ while ~accept
 
     % Assemble stimulus for this trial
     modulation = AssembleModulation_MeLMS(background, MelDirection, LMSDirection,...
-        pulseDuration, pulseContrast, flickerDuration, flickerLag, flickerContrast, receptors);
+        pulseDuration, pulseContrast, flickerDuration, flickerLag,flickerFrequency, flickerContrast, receptors);
 
     % Display stimulus
     OLFlicker(oneLight,modulation.starts,modulation.stops,modulation.timestep, 1);
@@ -123,7 +122,11 @@ while ~accept
         case 'GP:LowerRightTrigger'
             flickerContrast = flickerContrast + .005;
         case 'GP:LowerLeftTrigger'
-            flickerContrast = flickerContrast - .005;
+            if flickerContrast > .005
+                flickerContrast = flickerContrast - .005;
+            else
+                beep;
+            end
         case 'GP:A'
             accept = true;
     end

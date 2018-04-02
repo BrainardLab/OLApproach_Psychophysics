@@ -51,9 +51,9 @@ LMSDirectionParams = OLDirectionParamsFromName('MaxLMS_bipolar_275_60_667','alte
 LMSDirectionParams.primaryHeadRoom = 0;
 LMSDirection = OLDirectionNominalFromParams(LMSDirectionParams, calibration, background+MelDirection, 'observerAge', observerAge);
 
-%% Validate the directions
 receptors = LMSDirection.describe.directionParams.T_receptors;
 
+%% Validate the directions
 % Pre-correction validation
 OLValidateDirection(background, OLDirection_unipolar.Null(calibration), oneLight, radiometer, 'receptors', receptors,'label','pre-correction');
 OLValidateDirection(MelDirection, background, oneLight, radiometer, 'receptors', receptors, 'label','pre-correction');
@@ -81,9 +81,19 @@ modulation = AssembleModulation_MeLMS(background, MelDirection, LMSDirection,...
         pulseDuration, pulseContrast, flickerDuration, flickerLag, flickerFrequency, flickerContrast, receptors);
 [backgroundStarts, backgroundStops] = OLPrimaryToStartsStops(background.differentialPrimaryValues, background.calibration);
 
+%% Unhook radiometer
+% We don't need the radiometer for now, so allow the user to unhook the
+% eyepiece from the radiometer, and set it up for viewing.
+if ~protocolParams.simulate.radiometer
+    oneLight.setAll(false);
+    commandwindow;
+    input(sprintf('<strong>Unhook the eyepiece from the radiometer and set up for viewing. Press enter to continue</strong>\n'));
+end
+clear radiometer;
 
 %% Run trial loop
 % Get gamepad
+oneLight.setMirrors(backgroundStarts, backgroundStops);
 gpad = GamePad;
 WaitForKeyPress;
 
@@ -115,10 +125,12 @@ while ~accept
     end
 end
 
-%% Validate post acquisition
-OLValidateDirection(background, OLDirection_unipolar.Null(calibration), oneLight, radiometer, 'receptors', receptors,'label','pre-correction');
-OLValidateDirection(MelDirection, background, oneLight, radiometer, 'receptors', receptors, 'label','pre-correction');
-OLValidateDirection(LMSDirection, background+MelDirection, oneLight, radiometer, 'receptors', receptors, 'label','pre-correction');
+%% Validate scaled directions post acquisition
+scaledMel = ScaleToReceptorContrast(MelDirection, background, receptors, [0 0 0 pulseContrast]');
+scaledLMS = ScaleToReceptorContrast(LMSDirection, background+scaledMel, receptors, [flickerContrast flickerContrast flickerContrast 0]');
+backgroundValidation = OLValidateDirection(background, OLDirection_unipolar.Null(calibration), oneLight, radiometer, 'receptors', receptors,'label','pre-correction');
+scaledMelValidation = OLValidateDirection(scaledMel, background, oneLight, radiometer, 'receptors', receptors, 'label','pre-correction');
+LMSValidation = OLValidateDirection(scaledLMS, background+scaledMel, oneLight, radiometer, 'receptors', receptors, 'label','pre-correction');
 
 %% Close radiometer
 if exist('radiometer','var') && ~isempty(radiometer)

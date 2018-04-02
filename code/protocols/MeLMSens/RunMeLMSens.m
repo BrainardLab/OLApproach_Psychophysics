@@ -39,10 +39,10 @@ end
 
 %% Create directions
 % Melanopsin isolating direction
-melDirectionParams = OLDirectionParamsFromName('MaxMel_unipolar_275_60_667');
+melDirectionParams = OLDirectionParamsFromName('MaxMel_unipolar_275_60_667','alternateDictionaryFunc','OLDirectionParamsDictionary_Psychophysics');
 melDirectionParams.primaryHeadRoom = 0;
 [MelDirection, background] = OLDirectionNominalFromParams(melDirectionParams, calibration, 'observerAge', observerAge);
-LMSDirectionParams = OLDirectionParamsFromName('MaxLMS_bipolar_275_60_667');
+LMSDirectionParams = OLDirectionParamsFromName('MaxLMS_bipolar_275_60_667','alternateDictionaryFunc','OLDirectionParamsDictionary_Psychophysics');
 LMSDirectionParams.primaryHeadRoom = 0;
 LMSDirection = OLDirectionNominalFromParams(LMSDirectionParams, calibration, background+MelDirection, 'observerAge', observerAge);
 
@@ -64,4 +64,41 @@ OLValidateDirection(background, OLDirection_unipolar.Null(calibration), oneLight
 OLValidateDirection(MelDirection, background, oneLight, radiometer, 'receptors', receptors, 'label','post-correction');
 OLValidateDirection(LMSDirection, background+MelDirection, oneLight, radiometer, 'receptors', receptors, 'label','post-correction');
 
-%% Get initial trial
+%% Set initial modulation params
+pulseDuration = 3;
+pulseContrast = 3;
+flickerDuration = .250;
+flickerLag = 0;
+flickerContrast = .1;
+
+%% Get gamepad
+gpad = GamePad;
+
+%% Run trial
+accept = false;
+while ~accept
+    % Set OneLight to background
+    [backgroundStarts, backgroundStops] = OLPrimaryToStartsStops(background.differentialPrimaryValues, background.calibration);
+    oneLight.setMirrors(backgroundStarts, backgroundStops);
+
+    % Assemble stimulus for this trial
+    modulation = AssembleModulation_MeLMS(background, MelDirection, LMSDirection,...
+        pulseDuration, pulseContrast, flickerDuration, flickerLag, flickerContrast);
+
+    % Display stimulus
+    OLFlicker(oneLight,modulation.starts,modulation.stops,modulation.timestep, 1);
+
+    % Wait for gamepad
+    WaitForKeyPress;
+    key = gpad.getKeyEvent;
+
+    % Update params
+    switch key.charCode
+        case 'GP:LowerRightTrigger'
+            flickerContrast = flickerContrast + .005;
+        case 'GP:LowerLeftTrigger'
+            flickerContrast = flickerContrast - .005;
+        case 'GP:A'
+            accept = true;
+    end
+end

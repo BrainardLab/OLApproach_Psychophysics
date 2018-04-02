@@ -1,4 +1,4 @@
-function modulation = AssembleTrial_MeLMS(background, MelDirection, LMSDirection, pulseDuration, pulseContrast, flickerDuration, flickerLag, flickerContrast)
+function modulation = AssembleModulation_MeLMS(background, MelDirection, LMSDirection, pulseDuration, pulseContrast, flickerDuration, flickerLag, flickerContrast)
 % Assembles trial of LMS flicker on Mel pulse
 %
 % Syntax:
@@ -32,12 +32,17 @@ function modulation = AssembleTrial_MeLMS(background, MelDirection, LMSDirection
 
 %% Create pulse waveform
 pulseParams = OLWaveformParamsFromName('MaxContrastPulse');
+pulseParams.timeStep = 1/200;
 pulseParams.stimulusDuration = pulseDuration;
 [pulseWaveform, timestep] = OLWaveformFromParams(pulseParams);
 
 %% Create cone flicker
 flickerParams = OLWaveformParamsFromName('MaxContrastSinusoid');
+flickerParams.frequency = 15;
+flickerParams.timeStep = 1/200;
 flickerParams.stimulusDuration = flickerDuration;
+flickerParams.cosineWindowIn = false;
+flickerParams.cosineWindowOut = false;
 flickerWaveform = OLWaveformFromParams(flickerParams);
 
 %% Add lag, pad flicker
@@ -80,5 +85,6 @@ flickerWaveform = LMSScale * flickerWaveform;
 
 %% Assemble
 modulation = OLAssembleModulation([background, MelDirection, LMSDirection],[ones(1,length(pulseWaveform)); pulseWaveform; flickerWaveform]);
+modulation.timestep = 1/200;
 
 end

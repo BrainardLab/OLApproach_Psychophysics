@@ -3,6 +3,11 @@
 %% Set the parameters
 % We want to start with a clean slate, and set a number of parameters
 % before doing anything else.
+if exist('radiometer','var')
+    try radiometer.shutDown;
+    catch
+    end
+end
 clear all; close all; clc;
 
 approach = 'OLApproach_Psychophysics';
@@ -29,7 +34,7 @@ oneLight = OneLight('simulate',simulate.oneLight); drawnow;
 if ~simulate.radiometer
     oneLight.setAll(true);
     commandwindow;
-    input("<strong>Focus the radiometer and press enter to pause 3 seconds and start measuring.</strong>\n");
+    input('<strong>Focus the radiometer and press enter to pause 3 seconds and start measuring.</strong>\n');
     oneLight.setAll(false);
     pause(3);
     radiometer = OLOpenSpectroRadiometerObj('PR-670');
@@ -46,7 +51,7 @@ LMSDirectionParams = OLDirectionParamsFromName('MaxLMS_bipolar_275_60_667','alte
 LMSDirectionParams.primaryHeadRoom = 0;
 LMSDirection = OLDirectionNominalFromParams(LMSDirectionParams, calibration, background+MelDirection, 'observerAge', observerAge);
 
-%% Validate and correct the directions
+%% Validate the directions
 receptors = LMSDirection.describe.directionParams.T_receptors;
 
 % Pre-correction validation
@@ -54,7 +59,7 @@ OLValidateDirection(background, OLDirection_unipolar.Null(calibration), oneLight
 OLValidateDirection(MelDirection, background, oneLight, radiometer, 'receptors', receptors, 'label','pre-correction');
 OLValidateDirection(LMSDirection, background+MelDirection, oneLight, radiometer, 'receptors', receptors, 'label','pre-correction');
 
-% Correction
+%% Correct (and re-validate)
 OLCorrectDirection(background, OLDirection_unipolar.Null(calibration), oneLight, radiometer);
 OLCorrectDirection(MelDirection, background, oneLight, radiometer);
 OLCorrectDirection(LMSDirection, background+MelDirection, oneLight, radiometer);
@@ -69,16 +74,21 @@ pulseDuration = 3;
 pulseContrast = 3;
 flickerDuration = .250;
 flickerLag = 0;
-flickerContrast = .1;
+flickerContrast = .05;
 
-%% Get gamepad
+modulation = AssembleModulation_MeLMS(background, MelDirection, LMSDirection,...
+        pulseDuration, pulseContrast, flickerDuration, flickerLag, flickerContrast);
+[backgroundStarts, backgroundStops] = OLPrimaryToStartsStops(background.differentialPrimaryValues, background.calibration);
+
+
+%% Run trial loop
+% Get gamepad
 gpad = GamePad;
+WaitForKeyPress;
 
-%% Run trial
 accept = false;
 while ~accept
     % Set OneLight to background
-    [backgroundStarts, backgroundStops] = OLPrimaryToStartsStops(background.differentialPrimaryValues, background.calibration);
     oneLight.setMirrors(backgroundStarts, backgroundStops);
 
     % Assemble stimulus for this trial
@@ -87,7 +97,8 @@ while ~accept
 
     % Display stimulus
     OLFlicker(oneLight,modulation.starts,modulation.stops,modulation.timestep, 1);
-
+    oneLight.setMirrors(backgroundStarts, backgroundStops);
+    
     % Wait for gamepad
     WaitForKeyPress;
     key = gpad.getKeyEvent;

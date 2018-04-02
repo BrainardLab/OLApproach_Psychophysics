@@ -16,18 +16,18 @@ function OLApproach_PsychophysicsLocalHook
 
 %% Say hello
 fprintf('Running OLApproach_Psychophysics local hook\n');
-theApproach = 'OLApproach_Psychophysics';
+approach = 'OLApproach_Psychophysics';
 
 %% Define protocols for this approach
-theProtocols = DefineProtocolNames;
+protocols = DefineProtocolNames;
 
 %% Remove old preferences
-if (ispref(theApproach))
-    rmpref(theApproach);
+if (ispref(approach))
+    rmpref(approach);
 end
-for pp = 1:length(theProtocols)
-    if (ispref(theProtocols{pp}))
-        rmpref(theProtocols{pp});
+for pp = 1:length(protocols)
+    if (ispref(protocols{pp}))
+        rmpref(protocols{pp});
     end
 end
 
@@ -58,24 +58,29 @@ switch userID
 end
 
 %% Set prefs for materials and data
-setpref(theApproach,'MaterialsPath',fullfile(materialsBasePath));
-setpref(theApproach,'DataPath',fullfile(dataBasePath));
+setpref(approach,'MaterialsPath',fullfile(materialsBasePath));
+setpref(approach,'DataPath',fullfile(dataBasePath));
    
 %% Set pref to point at the code for this approach
-setpref(theApproach,'CodePath', fullfile(tbLocateProject(theApproach),'code'));
+setpref(approach,'CodePath', fullfile(tbLocateProject(approach),'code'));
 
 %% Set the calibration file path
-setpref(theApproach, 'OneLightCalDataPath', fullfile(getpref(theApproach, 'MaterialsPath'), 'Experiments', theApproach, 'OneLightCalData'));
-setpref('OneLightToolbox','OneLightCalData',getpref(theApproach,'OneLightCalDataPath'));
+setpref(approach, 'OneLightCalDataPath', fullfile(getpref(approach, 'MaterialsPath'), 'Experiments', approach, 'OneLightCalData'));
+setpref('OneLightToolbox','OneLightCalData',getpref(approach,'OneLightCalDataPath'));
 
 %% Prefs for individual protocols
-for pp = 1:length(theProtocols)
+for pp = 1:length(protocols)
     % Data files base path
-    setpref(theProtocols{pp},'DataFilesBasePath',fullfile(getpref(theApproach, 'DataPath'),'Experiments',theApproach,theProtocols{pp}));
+    setpref(protocols{pp},'DataFilesBasePath',fullfile(getpref(approach, 'DataPath'),'Experiments',approach,protocols{pp}));
 end
 
+%% Set simulate.
+simulate.oneLight = true;
+simulate.radiometer = true;
+setpref(approach,'simulate',simulate);
+
 %% Set the default speak rate
-setpref(theApproach, 'SpeakRateDefault', 230);
+setpref(approach, 'SpeakRateDefault', 230);
 
 %% Add OmniDriver.jar to java path
 OneLightDriverPath = tbLocateToolbox('OneLightDriver');

@@ -50,6 +50,7 @@ melDirectionParams.modulationContrast = OLUnipolarToBipolarContrast(3);
 [MelDirection, background] = OLDirectionNominalFromParams(melDirectionParams, calibration, 'observerAge', observerAge);
 LMSDirectionParams = OLDirectionParamsFromName('MaxLMS_bipolar_275_60_667','alternateDictionaryFunc','OLDirectionParamsDictionary_Psychophysics');
 LMSDirectionParams.primaryHeadRoom = 0;
+LMSDirectionParams.modulationContrast = [.05 .05 .05];
 LMSDirection = OLDirectionNominalFromParams(LMSDirectionParams, calibration, 'background', background+MelDirection, 'observerAge', observerAge);
 
 % Desired contrasts
@@ -64,14 +65,14 @@ OLValidateDirection(MelDirection, background, oneLight, radiometer, 'receptors',
 OLValidateDirection(LMSDirection, background+MelDirection, oneLight, radiometer, 'receptors', receptors, 'label','pre-correction');
 
 %% Correct (and re-validate)
-OLCorrectDirection(background, OLDirection_unipolar.Null(calibration), oneLight, radiometer);
-OLCorrectDirection(MelDirection, background, oneLight, radiometer);
-OLCorrectDirection(LMSDirection, background+MelDirection, oneLight, radiometer);
-
-% Post-correction validation
-OLValidateDirection(background, OLDirection_unipolar.Null(calibration), oneLight, radiometer, 'receptors', receptors, 'label','post-correction');
-OLValidateDirection(MelDirection, background, oneLight, radiometer, 'receptors', receptors, 'label','post-correction');
-OLValidateDirection(LMSDirection, background+MelDirection, oneLight, radiometer, 'receptors', receptors, 'label','post-correction');
+% OLCorrectDirection(background, OLDirection_unipolar.Null(calibration), oneLight, radiometer);
+% OLCorrectDirection(MelDirection, background, oneLight, radiometer);
+% OLCorrectDirection(LMSDirection, background+MelDirection, oneLight, radiometer);
+% 
+% % Post-correction validation
+% OLValidateDirection(background, OLDirection_unipolar.Null(calibration), oneLight, radiometer, 'receptors', receptors, 'label','post-correction');
+% OLValidateDirection(MelDirection, background, oneLight, radiometer, 'receptors', receptors, 'label','post-correction');
+% OLValidateDirection(LMSDirection, background+MelDirection, oneLight, radiometer, 'receptors', receptors, 'label','post-correction');
 
 %% Set initial modulation params
 pulseDuration = 3;

@@ -144,3 +144,10 @@ LMSValidation = OLValidateDirection(scaledLMS, background+scaledMel, oneLight, r
 if exist('radiometer','var') && ~isempty(radiometer)
     radiometer.shutDown()
 end
+
+%% Close OneLight
+shutdown = input('<strong>Shutdown OneLight? [Y/N]</strong>','s');
+if upper(shutdown) == 'Y'
+    oneLight.shutdown()
+end
+clear oneLight

@@ -46,11 +46,12 @@ end
 % Melanopsin isolating direction
 melDirectionParams = OLDirectionParamsFromName('MaxMel_unipolar_275_60_667','alternateDictionaryFunc','OLDirectionParamsDictionary_Psychophysics');
 melDirectionParams.primaryHeadRoom = 0;
+melDirectionParams.modulationContrast = OLUnipolarToBipolarContrast(3);
 [MelDirection, background] = OLDirectionNominalFromParams(melDirectionParams, calibration, 'observerAge', observerAge);
 LMSDirectionParams = OLDirectionParamsFromName('MaxLMS_bipolar_275_60_667','alternateDictionaryFunc','OLDirectionParamsDictionary_Psychophysics');
 LMSDirectionParams.primaryHeadRoom = 0;
-LMSDirection = OLDirectionNominalFromParams(LMSDirectionParams, calibration, background+MelDirection, 'observerAge', observerAge);
-
+LMSDirectionParams.modulationContrast = [.05 .05 .05];
+LMSDirection = OLDirectionNominalFromParams(LMSDirectionParams, calibration, 'background', background+MelDirection, 'observerAge', observerAge);
 receptors = LMSDirection.describe.directionParams.T_receptors;
 
 %% Validate the directions
@@ -75,7 +76,7 @@ pulseContrast = 3;
 flickerDuration = .250;
 flickerFrequency = 25;
 flickerLag = 0;
-flickerContrast = .05;
+flickerContrast = .025;
 
 modulation = AssembleModulation_MeLMS(background, MelDirection, LMSDirection,...
         pulseDuration, pulseContrast, flickerDuration, flickerLag, flickerFrequency, flickerContrast, receptors);

@@ -120,10 +120,14 @@ while ~accept
     % Update params
     switch key.charCode
         case 'GP:LowerRightTrigger'
-            flickerContrast = flickerContrast + .005;
+            if flickerContrast < .05
+                flickerContrast = flickerContrast + .001;
+            else
+                beep;
+            end
         case 'GP:LowerLeftTrigger'
             if flickerContrast > .005
-                flickerContrast = flickerContrast - .005;
+                flickerContrast = flickerContrast - .001;
             else
                 beep;
             end

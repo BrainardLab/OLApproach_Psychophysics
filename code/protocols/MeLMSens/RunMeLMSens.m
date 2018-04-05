@@ -52,16 +52,31 @@ LMSDirectionParams.primaryHeadRoom = 0;
 LMSDirectionParams.modulationContrast = [.05 .05 .05];
 LMSDirection = OLDirectionNominalFromParams(LMSDirectionParams, calibration, 'background', background+MelDirection, 'observerAge', observerAge);
 
+%% Set pulse contrast levels
+pulseContrastLevels = [0 1 2 3];
+nRepeatsPulseContrastLevel = 2;
+
+%% Validate the directions
 % Desired contrasts
 receptors = LMSDirection.describe.directionParams.T_receptors;
 nominalMaxMelContrast = ToDesiredReceptorContrast(MelDirection,background, receptors);
 nominalMaxLMSContrast = ToDesiredReceptorContrast(LMSDirection, background+MelDirection, receptors);
 
-%% Validate the directions
-% Pre-correction validation
+% Pre-correction validation of background
 OLValidateDirection(background, OLDirection_unipolar.Null(calibration), oneLight, radiometer, 'receptors', receptors,'label','pre-correction');
-OLValidateDirection(MelDirection, background, oneLight, radiometer, 'receptors', receptors, 'label','pre-correction');
-OLValidateDirection(LMSDirection, background+MelDirection, oneLight, radiometer, 'receptors', receptors, 'label','pre-correction');
+
+% Pulse at receptor contrast levels
+OLValidateDirection(MelDirection, background, oneLight, radiometer, 'receptors', receptors, 'label','pre-correction max contrast');
+for c = pulseContrastLevels
+    % Scale to receptor contrast level, validate, add to MelDirection
+    % validations
+    MelDirection.describe.validation = [MelDirection.describe.validation ...
+        OLValidateDirection(ScaleToReceptorContrast(MelDirection,background,receptors,[0 0 0 c]'),...
+        background, oneLight, radiometer, 'receptors', receptors, 'label',sprintf('pre-correction %d%% contrast',c*100))];
+end
+
+% LMS at max contrast
+OLValidateDirection(LMSDirection, background+MelDirection, oneLight, radiometer, 'receptors', receptors, 'label','pre-correction max contrast');
 
 %% Correct (and re-validate)
 % OLCorrectDirection(background, OLDirection_unipolar.Null(calibration), oneLight, radiometer);
@@ -69,21 +84,20 @@ OLValidateDirection(LMSDirection, background+MelDirection, oneLight, radiometer,
 % OLCorrectDirection(LMSDirection, background+MelDirection, oneLight, radiometer);
 % 
 % % Post-correction validation
-% OLValidateDirection(background, OLDirection_unipolar.Null(calibration), oneLight, radiometer, 'receptors', receptors, 'label','post-correction');
-% OLValidateDirection(MelDirection, background, oneLight, radiometer, 'receptors', receptors, 'label','post-correction');
-% OLValidateDirection(LMSDirection, background+MelDirection, oneLight, radiometer, 'receptors', receptors, 'label','post-correction');
-
-%% Set initial modulation params
-pulseDuration = 3;
-pulseContrast = 3;
-flickerDuration = .250;
-flickerFrequency = 25;
-flickerLag = 0;
-flickerContrast = .025;
-
-modulation = AssembleModulation_MeLMS(background, MelDirection, LMSDirection,...
-        pulseDuration, pulseContrast, flickerDuration, flickerLag, flickerFrequency, flickerContrast, receptors);
-[backgroundStarts, backgroundStops] = OLPrimaryToStartsStops(background.differentialPrimaryValues, background.calibration);
+% OLValidateDirection(background, OLDirection_unipolar.Null(calibration), oneLight, radiometer, 'receptors', receptors,'label','post-correction');
+% 
+% % Pulse at contrast levels
+% OLValidateDirection(MelDirection, background, oneLight, radiometer, 'receptors', receptors, 'label','pre-correction max contrast');
+% for c = pulseContrastLevels
+%     % Scale to receptor contrast level, validate, add to MelDirection
+%     % validations
+%     MelDirection.describe.validation = [MelDirection.describe.validation ...
+%         OLValidateDirection(ScaleToReceptorContrast(MelDirection,background,receptors,[0 0 0 c]'),...
+%         background, oneLight, radiometer, 'receptors', receptors, 'label',sprintf('post-correction %d%% contrast',c*100))];
+% end
+% 
+% % LMS at max contrast
+% OLValidateDirection(LMSDirection, background+MelDirection, oneLight, radiometer, 'receptors', receptors, 'label','post-correction max contrast');
 
 %% Unhook radiometer
 % We don't need the radiometer for now, so allow the user to unhook the
@@ -94,57 +108,82 @@ if ~simulate.radiometer
     input(sprintf('<strong>Unhook the eyepiece from the radiometer and set up for viewing. Press enter to continue</strong>\n'));
 end
 
-%% Run trial loop
-% Get gamepad
-oneLight.setMirrors(backgroundStarts, backgroundStops);
+%% Get gamepad
 gpad = GamePad;
-WaitForKeyPress;
 
-accept = false;
-while ~accept
-    % Set OneLight to background
-    oneLight.setMirrors(backgroundStarts, backgroundStops);
+%% Run trial loop
+RNGSettings = rng;
+pulseContrastPerAcquisition = repmat(pulseContrastLevels,[1 nRepeatsPulseContrastLevel]);
+pulseContrastPerAcquisition = pulseContrastPerAcquisition(randperm(numel(pulseContrastPerAcquisition)));
 
-    % Assemble stimulus for this trial
+for pulseContrast = pulseContrastPerAcquisition
+    % Set initial modulation params
+    pulseDuration = 3;
+    flickerDuration = .250;
+    flickerFrequency = 25;
+    flickerLag = 0;
+    flickerContrast = .025;
+
     modulation = AssembleModulation_MeLMS(background, MelDirection, LMSDirection,...
-        pulseDuration, pulseContrast, flickerDuration, flickerLag,flickerFrequency, flickerContrast, receptors);
+            pulseDuration, pulseContrast, flickerDuration, flickerLag, flickerFrequency, flickerContrast, receptors);
+    [backgroundStarts, backgroundStops] = OLPrimaryToStartsStops(background.differentialPrimaryValues, background.calibration);
+    
+    % Set to background, for adaptation
+    oneLight.setMirrors(backgroundStarts, backgroundStops);
+    WaitForKeyPress;
 
-    % Display stimulus
-    OLFlicker(oneLight,modulation.starts,modulation.stops,modulation.timestep, 1);
+    % Method of adjustment loop
+    accept = false;
+    while ~accept
+        % Set OneLight to background
+        oneLight.setMirrors(backgroundStarts, backgroundStops);
+
+        % Assemble stimulus for this trial
+        modulation = AssembleModulation_MeLMS(background, MelDirection, LMSDirection,...
+            pulseDuration, pulseContrast, ...
+            flickerDuration, flickerLag, flickerFrequency, flickerContrast,...
+            receptors);
+
+        % Display stimulus
+        OLFlicker(oneLight,modulation.starts,modulation.stops,modulation.timestep, 1);
+        oneLight.setMirrors(backgroundStarts, backgroundStops);
+
+        % Wait for gamepad
+        WaitForKeyPress;
+        key = gpad.getKeyEvent;
+
+        % Update params
+        switch key.charCode
+            case 'GP:LowerRightTrigger'
+                if flickerContrast < .05
+                    flickerContrast = flickerContrast + .001;
+                else
+                    beep;
+                end
+            case 'GP:LowerLeftTrigger'
+                if flickerContrast > .001
+                    flickerContrast = flickerContrast - .001;
+                else
+                    beep;
+                end
+            case 'GP:A'
+                accept = true;
+        end
+    end
     oneLight.setMirrors(backgroundStarts, backgroundStops);
     
-    % Wait for gamepad
-    WaitForKeyPress;
-    key = gpad.getKeyEvent;
-
-    % Update params
-    switch key.charCode
-        case 'GP:LowerRightTrigger'
-            if flickerContrast < .05
-                flickerContrast = flickerContrast + .001;
-            else
-                beep;
-            end
-        case 'GP:LowerLeftTrigger'
-            if flickerContrast > .005
-                flickerContrast = flickerContrast - .001;
-            else
-                beep;
-            end
-        case 'GP:A'
-            accept = true;
-    end
-end
-
-%% Validate scaled directions post acquisition
-scaledMel = ScaleToReceptorContrast(MelDirection, background, receptors, [0 0 0 pulseContrast]');
-scaledLMS = ScaleToReceptorContrast(LMSDirection, background+scaledMel, receptors, [flickerContrast flickerContrast flickerContrast 0]');
-nominalScaledMelContrast = ToDesiredReceptorContrast(scaledMel,background, receptors);
-nominalScaledLMSContrast = ToDesiredReceptorContrast(scaledLMS, background+MelDirection, receptors);
-backgroundValidation = OLValidateDirection(background, OLDirection_unipolar.Null(calibration), oneLight, radiometer, 'receptors', receptors,'label','threshold-setting');
-scaledMelValidation = OLValidateDirection(scaledMel, background, oneLight, radiometer, 'receptors', receptors, 'label','threshold-setting');
-scaledLMSValidation = OLValidateDirection(scaledLMS, background+scaledMel, oneLight, radiometer, 'receptors', receptors, 'label','threshold-setting');
-
+    % Validate scaled directions post acquisition
+    fprintf('<strong>Focus the radiometer and press any key to start measuring.</strong>\n'); WaitForKeyPress;
+    scaledMel = ScaleToReceptorContrast(MelDirection, background, receptors, [0 0 0 pulseContrast]');
+    scaledLMS = ScaleToReceptorContrast(LMSDirection, background+scaledMel, receptors, [flickerContrast flickerContrast flickerContrast 0]');
+    nominalScaledMelContrast = ToDesiredReceptorContrast(scaledMel,background, receptors);
+    nominalScaledLMSContrast = ToDesiredReceptorContrast(scaledLMS, background+MelDirection, receptors);
+    backgroundValidation = OLValidateDirection(background, OLDirection_unipolar.Null(calibration), oneLight, radiometer, 'receptors', receptors,'label','threshold-setting');
+    scaledMelValidation = OLValidateDirection(scaledMel, background, oneLight, radiometer, 'receptors', receptors, 'label','threshold-setting');
+    scaledLMSValidation = OLValidateDirection(scaledLMS, background+scaledMel, oneLight, radiometer, 'receptors', receptors, 'label','threshold-setting');
+    fprintf('<strong>Unhook the eyepiece from the radiometer and set up for viewing. Press any key to continue</strong>\n');  WaitForKeyPress;
+    
+end 
 %% Close radiometer
 if exist('radiometer','var') && ~isempty(radiometer)
     radiometer.shutDown()

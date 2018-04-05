@@ -4,8 +4,7 @@
 % We want to start with a clean slate, and set a number of parameters
 % before doing anything else.
 if exist('radiometer','var')
-    try radiometer.shutDown;
-    catch
+    try radiometer.shutDown
     end
 end
 clear all; close all; clc;
@@ -55,8 +54,8 @@ LMSDirection = OLDirectionNominalFromParams(LMSDirectionParams, calibration, 'ba
 
 % Desired contrasts
 receptors = LMSDirection.describe.directionParams.T_receptors;
-[nominalMelPulseContrast, nomMelExcitations] = ToDesiredReceptorContrast(MelDirection,background, receptors);
-[nominalMaxLMSFlickerContrast, nomLMSExcitations] = ToDesiredReceptorContrast(LMSDirection, background+MelDirection, receptors);
+nominalMaxMelContrast = ToDesiredReceptorContrast(MelDirection,background, receptors);
+nominalMaxLMSContrast = ToDesiredReceptorContrast(LMSDirection, background+MelDirection, receptors);
 
 %% Validate the directions
 % Pre-correction validation
@@ -136,9 +135,11 @@ end
 %% Validate scaled directions post acquisition
 scaledMel = ScaleToReceptorContrast(MelDirection, background, receptors, [0 0 0 pulseContrast]');
 scaledLMS = ScaleToReceptorContrast(LMSDirection, background+scaledMel, receptors, [flickerContrast flickerContrast flickerContrast 0]');
-backgroundValidation = OLValidateDirection(background, OLDirection_unipolar.Null(calibration), oneLight, radiometer, 'receptors', receptors,'label','pre-correction');
-scaledMelValidation = OLValidateDirection(scaledMel, background, oneLight, radiometer, 'receptors', receptors, 'label','pre-correction');
-LMSValidation = OLValidateDirection(scaledLMS, background+scaledMel, oneLight, radiometer, 'receptors', receptors, 'label','pre-correction');
+nominalScaledMelContrast = ToDesiredReceptorContrast(scaledMel,background, receptors);
+nominalScaledLMSContrast = ToDesiredReceptorContrast(scaledLMS, background+MelDirection, receptors);
+backgroundValidation = OLValidateDirection(background, OLDirection_unipolar.Null(calibration), oneLight, radiometer, 'receptors', receptors,'label','threshold-setting');
+scaledMelValidation = OLValidateDirection(scaledMel, background, oneLight, radiometer, 'receptors', receptors, 'label','threshold-setting');
+scaledLMSValidation = OLValidateDirection(scaledLMS, background+scaledMel, oneLight, radiometer, 'receptors', receptors, 'label','threshold-setting');
 
 %% Close radiometer
 if exist('radiometer','var') && ~isempty(radiometer)

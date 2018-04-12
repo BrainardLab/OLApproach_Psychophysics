@@ -14,6 +14,17 @@ protocol = 'RunMeLMSens';
 observerAge = 32;
 simulate = getpref(approach,'simulate'); % localhook defines what devices to simulate
 
+%% Set condition parameters 
+% Define constant params:
+pulseDuration = {4};      % s
+flickerDuration = {.250}; % s
+flickerFrequency = {25};  % Hz
+flickerContrast = {.025}; 
+
+% Define independent variables:
+pulseContrast = {0, 3};
+flickerLag = {0, 1.0};    % s
+
 %% Get calibration
 % Specify which box and calibration to use, check that everything is set up
 % correctly, and retrieve the calibration structure.
@@ -52,9 +63,6 @@ LMSDirectionParams.primaryHeadRoom = 0;
 LMSDirectionParams.modulationContrast = [.05 .05 .05];
 LMSDirection = OLDirectionNominalFromParams(LMSDirectionParams, calibration, 'background', background+MelDirection, 'observerAge', observerAge);
 
-%% Set pulse contrast levels
-pulseContrastLevels = [0 1 2 3];
-nRepeatsPulseContrastLevel = 2;
 
 %% Validate the directions
 % Desired contrasts
@@ -67,11 +75,11 @@ OLValidateDirection(background, OLDirection_unipolar.Null(calibration), oneLight
 
 % Pulse at receptor contrast levels
 OLValidateDirection(MelDirection, background, oneLight, radiometer, 'receptors', receptors, 'label','pre-correction max contrast');
-for c = pulseContrastLevels
+for c = 1:numel(pulseContrast)
     % Scale to receptor contrast level, validate, add to MelDirection
     % validations
     MelDirection.describe.validation = [MelDirection.describe.validation ...
-        OLValidateDirection(ScaleToReceptorContrast(MelDirection,background,receptors,[0 0 0 c]'),...
+        OLValidateDirection(ScaleToReceptorContrast(MelDirection,background,receptors,[0 0 0 pulseContrast{c}]'),...
         background, oneLight, radiometer, 'receptors', receptors, 'label',sprintf('pre-correction %d%% contrast',c*100))];
 end
 
@@ -111,21 +119,28 @@ end
 %% Get gamepad
 gpad = GamePad;
 
+%% Generate conditionParamsList
+% Generate conditionParamsList by crossing variables
+conditionParamsList = crossVariables(pulseDuration, flickerDuration, flickerFrequency, flickerContrast, pulseContrast, flickerLag);
+conditionParamsList = cell2struct(conditionParamsList,{'pulseDuration','flickerDuration','flickerFrequency','flickerContrast','pulseContrast','flickerLag'},2);
+
+% Repeats
+nRepeatsCondition = 2;
+conditionParamsList = repmat(conditionParamsList,[nRepeatsCondition,1]);
+
+% Shuffle
+RNGSettings = rng; % save random number generator settings
+conditionParamsList = Shuffle(conditionParamsList);
+
 %% Run trial loop
-RNGSettings = rng;
-pulseContrastPerAcquisition = repmat(pulseContrastLevels,[1 nRepeatsPulseContrastLevel]);
-pulseContrastPerAcquisition = pulseContrastPerAcquisition(randperm(numel(pulseContrastPerAcquisition)));
-
-for pulseContrast = pulseContrastPerAcquisition
-    % Set initial modulation params
-    pulseDuration = 3;
-    flickerDuration = .250;
-    flickerFrequency = 25;
-    flickerLag = 0;
-    flickerContrast = .025;
-
+sessionResults = table();
+for c = 1:numel(conditionParamsList)
+    modulationParams = conditionParamsList(c);
     modulation = AssembleModulation_MeLMS(background, MelDirection, LMSDirection,...
-            pulseDuration, pulseContrast, flickerDuration, flickerLag, flickerFrequency, flickerContrast, receptors);
+            modulationParams.pulseDuration, modulationParams.pulseContrast, ...
+            modulationParams.flickerDuration, modulationParams.flickerLag, ...
+            modulationParams.flickerFrequency, modulationParams.flickerContrast, ...
+            receptors);
     [backgroundStarts, backgroundStops] = OLPrimaryToStartsStops(background.differentialPrimaryValues, background.calibration);
     
     % Set to background, for adaptation
@@ -140,14 +155,16 @@ for pulseContrast = pulseContrastPerAcquisition
 
         % Assemble stimulus for this trial
         modulation = AssembleModulation_MeLMS(background, MelDirection, LMSDirection,...
-            pulseDuration, pulseContrast, ...
-            flickerDuration, flickerLag, flickerFrequency, flickerContrast,...
+            modulationParams.pulseDuration, modulationParams.pulseContrast, ...
+            modulationParams.flickerDuration, modulationParams.flickerLag, ...
+            modulationParams.flickerFrequency, modulationParams.flickerContrast, ...
             receptors);
 
         % Display stimulus
         OLFlicker(oneLight,modulation.starts,modulation.stops,modulation.timestep, 1);
         oneLight.setMirrors(backgroundStarts, backgroundStops);
-
+        beep;
+        
         % Wait for gamepad
         WaitForKeyPress;
         key = gpad.getKeyEvent;
@@ -155,14 +172,14 @@ for pulseContrast = pulseContrastPerAcquisition
         % Update params
         switch key.charCode
             case 'GP:LowerRightTrigger'
-                if flickerContrast < .05
-                    flickerContrast = flickerContrast + .001;
+                if modulationParams.flickerContrast < .05
+                    modulationParams.flickerContrast = modulationParams.flickerContrast + .001;
                 else
                     beep;
                 end
             case 'GP:LowerLeftTrigger'
-                if flickerContrast > .001
-                    flickerContrast = flickerContrast - .001;
+                if modulationParams.flickerContrast > .001
+                    modulationParams.flickerContrast = modulationParams.flickerContrast - .001;
                 else
                     beep;
                 end
@@ -174,8 +191,8 @@ for pulseContrast = pulseContrastPerAcquisition
     
     % Validate scaled directions post acquisition
     fprintf('<strong>Focus the radiometer and press any key to start measuring.</strong>\n'); WaitForKeyPress;
-    scaledMel = ScaleToReceptorContrast(MelDirection, background, receptors, [0 0 0 pulseContrast]');
-    scaledLMS = ScaleToReceptorContrast(LMSDirection, background+scaledMel, receptors, [flickerContrast flickerContrast flickerContrast 0]');
+    scaledMel = ScaleToReceptorContrast(MelDirection, background, receptors, [0 0 0 modulationParams.pulseContrast]');
+    scaledLMS = ScaleToReceptorContrast(LMSDirection, background+scaledMel, receptors, [modulationParams.flickerContrast modulationParams.flickerContrast modulationParams.flickerContrast 0]');
     nominalScaledMelContrast = ToDesiredReceptorContrast(scaledMel,background, receptors);
     nominalScaledLMSContrast = ToDesiredReceptorContrast(scaledLMS, background+MelDirection, receptors);
     backgroundValidation = OLValidateDirection(background, OLDirection_unipolar.Null(calibration), oneLight, radiometer, 'receptors', receptors,'label','threshold-setting');

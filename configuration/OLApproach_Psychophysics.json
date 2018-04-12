@@ -30,13 +30,13 @@
 		"hook": "",
 		"importance": "",
 		"localHookTemplate": "",
-		"name": "OneLightDriver",
+		"name": "allcomb",
 		"pathPlacement": "append",
 		"subfolder": "",
 		"toolboxRoot": "",
-		"type": "include",
+		"type": "webget",
 		"update": "",
-		"url": ""
+		"url": "https:\/\/www.mathworks.com\/matlabcentral\/mlc-downloads\/downloads\/submissions\/10064\/versions\/8\/download\/zip"
 	},
 	{
 		"flavor": "",

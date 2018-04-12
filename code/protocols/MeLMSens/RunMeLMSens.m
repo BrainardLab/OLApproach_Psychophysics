@@ -213,22 +213,24 @@ for c = 1:numel(conditionParamsList)
     oneLight.setMirrors(backgroundStarts, backgroundStops);
     
     % Validate scaled directions post acquisition
-    fprintf('<strong>Focus the radiometer and press any key to start measuring.</strong>\n'); WaitForKeyPress;
-    scaledMel = ScaleToReceptorContrast(MelDirection, background, receptors, [0 0 0 modulationParams.pulseContrast]');
-    scaledLMS = ScaleToReceptorContrast(LMSDirection, background+scaledMel, receptors, [modulationParams.flickerContrast modulationParams.flickerContrast modulationParams.flickerContrast 0]');
-    nominalScaledMelContrast = ToDesiredReceptorContrast(scaledMel,background, receptors);
-    nominalScaledLMSContrast = ToDesiredReceptorContrast(scaledLMS, background+MelDirection, receptors);
-    backgroundValidation = OLValidateDirection(background, OLDirection_unipolar.Null(calibration), oneLight, radiometer, 'receptors', receptors,'label','threshold-setting');
-    scaledMelValidation = OLValidateDirection(scaledMel, background, oneLight, radiometer, 'receptors', receptors, 'label','threshold-setting');
-    scaledLMSValidation = OLValidateDirection(scaledLMS, background+scaledMel, oneLight, radiometer, 'receptors', receptors, 'label','threshold-setting');
-    fprintf('<strong>Unhook the eyepiece from the radiometer and set up for viewing. Press any key to continue</strong>\n');  WaitForKeyPress;
+%     FlushEvents;
+%     fprintf('<strong>Focus the radiometer and press any key to start measuring.</strong>\n'); 
+%     keyboard;
+%     scaledMel = ScaleToReceptorContrast(MelDirection, background, receptors, [0 0 0 modulationParams.pulseContrast]');
+%     scaledLMS = ScaleToReceptorContrast(LMSDirection, background+scaledMel, receptors, [modulationParams.flickerContrast modulationParams.flickerContrast modulationParams.flickerContrast 0]');
+%     nominalScaledMelContrast = ToDesiredReceptorContrast(scaledMel,background, receptors);
+%     nominalScaledLMSContrast = ToDesiredReceptorContrast(scaledLMS, background+MelDirection, receptors);
+%     backgroundValidation = OLValidateDirection(background, OLDirection_unipolar.Null(calibration), oneLight, radiometer, 'receptors', receptors,'label','threshold-setting');
+%     scaledMelValidation = OLValidateDirection(scaledMel, background, oneLight, radiometer, 'receptors', receptors, 'label','threshold-setting');
+%     scaledLMSValidation = OLValidateDirection(scaledLMS, background+scaledMel, oneLight, radiometer, 'receptors', receptors, 'label','threshold-setting');
+%     fprintf('<strong>Unhook the eyepiece from the radiometer and set up for viewing. Press any key to continue</strong>\n');  WaitForKeyPress;
     
     % Save out
     acquisitionResults = struct2table(modulationParams);
     acquisitionResults.Properties.VariableNames{'pulseContrast'} = 'pulseContrastNominal';
     acquisitionResults.Properties.VariableNames{'flickerContrast'} = 'flickerContrastNominal';
-    acquisitionResults.pulseContrastActual = scaledMelValidation.contrastActual(:,1)';
-    acquisitionResults.flickerContrastActual = scaledLMSValidation.contrastActual(:,1)';
+%     acquisitionResults.pulseContrastActual = scaledMelValidation.contrastActual(:,1)';
+%     acquisitionResults.flickerContrastActual = scaledLMSValidation.contrastActual(:,1)';
     acquisitionResults.participantID = participantID;
     acquisitionResults.session = sessionName;
     acquisitionResults.date = todayDate;    

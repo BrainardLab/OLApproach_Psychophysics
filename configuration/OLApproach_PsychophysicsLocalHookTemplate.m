@@ -58,20 +58,20 @@ switch userID
 end
 
 %% Set prefs for materials and data
-setpref(approach,'MaterialsPath',fullfile(materialsBasePath));
-setpref(approach,'DataPath',fullfile(dataBasePath));
+setpref(approach,'MaterialsPath',fullfile(materialsBasePath, 'Experiments', approach));
+setpref(approach,'DataPath',fullfile(dataBasePath, 'Experiments', approach));
    
 %% Set pref to point at the code for this approach
 setpref(approach,'CodePath', fullfile(tbLocateProject(approach),'code'));
 
 %% Set the calibration file path
-setpref(approach, 'OneLightCalDataPath', fullfile(getpref(approach, 'MaterialsPath'), 'Experiments', approach, 'OneLightCalData'));
+setpref(approach, 'OneLightCalDataPath', fullfile(getpref(approach, 'MaterialsPath'), 'OneLightCalData'));
 setpref('OneLightToolbox','OneLightCalData',getpref(approach,'OneLightCalDataPath'));
 
 %% Prefs for individual protocols
 for pp = 1:length(protocols)
     % Data files base path
-    setpref(protocols{pp},'DataFilesBasePath',fullfile(getpref(approach, 'DataPath'),'Experiments',approach,protocols{pp}));
+    setpref(protocols{pp},'DataFilesBasePath',fullfile(getpref(approach, 'DataPath'),protocols{pp}));
 end
 
 %% Set simulate.

@@ -140,6 +140,21 @@ conditionParamsList = repmat(conditionParamsList,[nRepeatsCondition,1]);
 RNGSettings = rng; % save random number generator settings
 conditionParamsList = Shuffle(conditionParamsList);
 
+%% Demo/practice
+% Assemble practice modulation
+practiceModulation = AssembleModulation_MeLMS(background, MelDirection, LMSDirection,...
+    pulseDuration{1}, 0, flickerDuration{1}, 0, flickerFrequency{1},...
+    .05, receptors);
+
+% Set to background, for adaptation
+oneLight.setMirrors(backgroundStarts, backgroundStops);
+WaitForKeyPress;
+
+% Display practice modulation
+OLFlicker(oneLight,practiceModulation.starts,practiceModulation.stops,practiceModulation.timestep, 1);
+oneLight.setMirrors(backgroundStarts, backgroundStops);
+WaitForKeyPress;
+
 %% Run trial loop
 sessionResults = table();
 for c = 1:numel(conditionParamsList)

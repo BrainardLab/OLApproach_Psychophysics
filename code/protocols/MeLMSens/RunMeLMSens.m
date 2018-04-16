@@ -171,6 +171,7 @@ for c = 1:numel(conditionParamsList)
             modulationParams.flickerFrequency, modulationParams.flickerContrast, ...
             receptors);
     % Set to background, for adaptation
+    Speak('Adapting to background. Press key to continue');
     oneLight.setMirrors(backgroundStarts, backgroundStops);
     WaitForKeyPress;
 
@@ -216,6 +217,7 @@ for c = 1:numel(conditionParamsList)
                     end
                 case 'GP:A'
                     accept = true;
+                    Speak('Acquisition finished');
                     resume = true;
             end
         end

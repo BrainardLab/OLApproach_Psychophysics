@@ -193,26 +193,32 @@ for c = 1:numel(conditionParamsList)
         oneLight.setMirrors(backgroundStarts, backgroundStops);
         beep;
         
-        % Wait for gamepad
-        WaitForKeyPress;
-        key = gpad.getKeyEvent;
+        % Process response
+        resume = false;
+        while ~resume
+            WaitForKeyPress;
+            key = gpad.getKeyEvent;
 
-        % Update params
-        switch key.charCode
-            case 'GP:LowerRightTrigger'
-                if modulationParams.flickerContrast < .05
-                    modulationParams.flickerContrast = modulationParams.flickerContrast + .001;
-                else
-                    beep;
-                end
-            case 'GP:LowerLeftTrigger'
-                if modulationParams.flickerContrast > .001
-                    modulationParams.flickerContrast = modulationParams.flickerContrast - .001;
-                else
-                    beep;
-                end
-            case 'GP:A'
-                accept = true;
+            % Update params
+            switch key.charCode
+                case 'GP:LowerRightTrigger'
+                    if modulationParams.flickerContrast < .05
+                        modulationParams.flickerContrast = modulationParams.flickerContrast + .001;
+                        resume = true;
+                    else
+                        beep;
+                    end
+                case 'GP:LowerLeftTrigger'
+                    if modulationParams.flickerContrast > .001
+                        modulationParams.flickerContrast = modulationParams.flickerContrast - .001;
+                        resume = true;
+                    else
+                        beep;
+                    end
+                case 'GP:A'
+                    accept = true;
+                    resume = true;
+            end
         end
     end
     oneLight.setMirrors(backgroundStarts, backgroundStops);

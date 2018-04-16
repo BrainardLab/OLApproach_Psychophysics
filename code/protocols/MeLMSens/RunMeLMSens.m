@@ -152,6 +152,7 @@ practiceModulation = AssembleModulation_MeLMS(background, MelDirection, LMSDirec
     .05, receptors);
 
 % Set to background, for adaptation
+[backgroundStarts, backgroundStops] = OLPrimaryToStartsStops(background.differentialPrimaryValues, background.calibration);
 oneLight.setMirrors(backgroundStarts, backgroundStops);
 WaitForKeyPress;
 
@@ -169,8 +170,6 @@ for c = 1:numel(conditionParamsList)
             modulationParams.flickerDuration, modulationParams.flickerLag, ...
             modulationParams.flickerFrequency, modulationParams.flickerContrast, ...
             receptors);
-    [backgroundStarts, backgroundStops] = OLPrimaryToStartsStops(background.differentialPrimaryValues, background.calibration);
-    
     % Set to background, for adaptation
     oneLight.setMirrors(backgroundStarts, backgroundStops);
     WaitForKeyPress;

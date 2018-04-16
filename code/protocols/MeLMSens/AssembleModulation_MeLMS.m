@@ -61,7 +61,11 @@ flickerWaveform = OLPadWaveformToReference([zeros(1,t0FlickerFrame) flickerWavef
 % params (assuming that directions are generated from params)
 
 % Mel contrast
-scaledMel = ScaleToReceptorContrast(MelDirection, background, receptors, [0 0 0 pulseContrast]');
+if pulseContrast == 0
+    scaledMel = 0 .* MelDirection;
+else
+    scaledMel = ScaleToReceptorContrast(MelDirection, background, receptors, [0 0 0 pulseContrast]');
+end
 
 % LMS contrast
 scaledLMS = ScaleToReceptorContrast(LMSDirection, background+scaledMel, receptors, [flickerContrast flickerContrast flickerContrast 0]');

@@ -70,13 +70,15 @@ melDirectionParams.modulationContrast = OLUnipolarToBipolarContrast(3);
 LMSDirectionParams = OLDirectionParamsFromName('MaxLMS_bipolar_275_60_667','alternateDictionaryFunc','OLDirectionParamsDictionary_Psychophysics');
 LMSDirectionParams.primaryHeadRoom = 0;
 LMSDirectionParams.modulationContrast = [.05 .05 .05];
-LMSDirection = OLDirectionNominalFromParams(LMSDirectionParams, calibration, 'background', background+MelDirection, 'observerAge', participantAge);
+LMSDirection(4) = OLDirectionNominalFromParams(LMSDirectionParams, calibration, 'background', background+MelDirection, 'observerAge', participantAge);
+LMSDirection(1) = OLDirectionNominalFromParams(LMSDirectionParams, calibration, 'background', background, 'observerAge', participantAge);
 
 %% Validate the directions
 % Desired contrasts
-receptors = LMSDirection.describe.directionParams.T_receptors;
+receptors = LMSDirection(1).describe.directionParams.T_receptors;
 nominalMaxMelContrast = ToDesiredReceptorContrast(MelDirection,background, receptors);
-nominalMaxLMSContrast = ToDesiredReceptorContrast(LMSDirection, background+MelDirection, receptors);
+nominalMaxLMSContrastOnMel = ToDesiredReceptorContrast(LMSDirection(4), background+MelDirection, receptors);
+nominalMaxLMSContrastOnBackground = ToDesiredReceptorContrast(LMSDirection(1), background+MelDirection, receptors);
 
 % Pre-correction validation of background
 OLValidateDirection(background, OLDirection_unipolar.Null(calibration), oneLight, radiometer, 'receptors', receptors,'label','pre-correction');
@@ -91,8 +93,11 @@ for c = 1:numel(pulseContrast)
         background, oneLight, radiometer, 'receptors', receptors, 'label',sprintf('pre-correction %d%% contrast',c*100))];
 end
 
-% LMS at max contrast
-OLValidateDirection(LMSDirection, background+MelDirection, oneLight, radiometer, 'receptors', receptors, 'label','pre-correction max contrast');
+% LMS at max mel contrast
+OLValidateDirection(LMSDirection(4), background+MelDirection, oneLight, radiometer, 'receptors', receptors, 'label','pre-correction max contrast');
+
+% LMS on background
+OLValidateDirection(LMSDirection(1), background, oneLight, radiometer, 'receptors', receptors, 'label','pre-correction max contrast');
 
 %% Correct (and re-validate)
 % OLCorrectDirection(background, OLDirection_unipolar.Null(calibration), oneLight, radiometer);
@@ -142,7 +147,7 @@ conditionParamsList = Shuffle(conditionParamsList);
 
 %% Demo/practice
 % Assemble practice modulation
-practiceModulation = AssembleModulation_MeLMS(background, MelDirection, LMSDirection,...
+practiceModulation = AssembleModulation_MeLMS(background, MelDirection, LMSDirection(1),...
     pulseDuration{1}, 0, flickerDuration{1}, 0, flickerFrequency{1},...
     .05, receptors);
 
@@ -159,7 +164,7 @@ WaitForKeyPress;
 sessionResults = table();
 for c = 1:numel(conditionParamsList)
     modulationParams = conditionParamsList(c);
-    modulation = AssembleModulation_MeLMS(background, MelDirection, LMSDirection,...
+    modulation = AssembleModulation_MeLMS(background, MelDirection, LMSDirection(modulationParams.pulseContrast+1),...
             modulationParams.pulseDuration, modulationParams.pulseContrast, ...
             modulationParams.flickerDuration, modulationParams.flickerLag, ...
             modulationParams.flickerFrequency, modulationParams.flickerContrast, ...

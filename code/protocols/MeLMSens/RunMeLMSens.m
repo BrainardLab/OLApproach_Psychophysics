@@ -161,8 +161,10 @@ OLFlicker(oneLight,practiceModulation.starts,practiceModulation.stops,practiceMo
 oneLight.setMirrors(backgroundStarts, backgroundStops);
 WaitForKeyPress;
 
-%% Run trial loop
+%
 sessionResults = table();
+
+%% Run trial loop
 for c = 1:numel(conditionParamsList)
     modulationParams = conditionParamsList(c);
     modulation = AssembleModulation_MeLMS(background, MelDirection, LMSDirection(modulationParams.pulseContrast+1),...
@@ -170,6 +172,8 @@ for c = 1:numel(conditionParamsList)
             modulationParams.flickerDuration, modulationParams.flickerLag, ...
             modulationParams.flickerFrequency, modulationParams.flickerContrast, ...
             receptors);
+    acquisitionStart = mglGetSecs;
+        
     % Set to background, for adaptation
     Speak('Adapting to background. Press key to continue');
     oneLight.setMirrors(backgroundStarts, backgroundStops);
@@ -246,6 +250,8 @@ for c = 1:numel(conditionParamsList)
     acquisitionResults.participantID = participantID;
     acquisitionResults.session = sessionName;
     acquisitionResults.date = todayDate;    
+    acquisitionResults.startTime = acquisitionStart;
+    acquisitionResults.stopTime = mglGetSecs;
     sessionResults = [sessionResults; acquisitionResults];
     writetable(sessionResults,fullfile(sessionDataPath,['results-' participantID '-' sessionName '.csv']));
     save(fullfile(sessionDataPath,['data-' participantID '-' sessionName '.mat']),...

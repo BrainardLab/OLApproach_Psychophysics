@@ -1,4 +1,4 @@
-function modulation = AssembleModulation_MeLMS(background, MelDirection, LMSDirection, pulseDuration, pulseContrast, flickerDuration, flickerLag, flickerFrequency, flickerContrast, receptors)
+function modulation = AssembleModulation_MeLMS(background, MelDirection, LMSDirection, receptors, varargin)
 % Assembles trial of LMS flicker on Mel pulse
 %
 % Syntax:
@@ -7,17 +7,19 @@ function modulation = AssembleModulation_MeLMS(background, MelDirection, LMSDire
 %    Detailed explanation goes here
 %
 % Inputs:
-%    background      - 
-%    MelDirection    -
-%    LMSDirection    - 
-%    pulseDuration   - 
-%    pulseContrast   - 
-%    flickerDuration - 
-%    flickerLag      -
-%    flickerContrast - 
+%    background       - 
+%    MelDirection     -
+%    LMSDirection     - 
+%    receptors        -
+%    pulseDuration    - 
+%    pulseContrast    - 
+%    flickerDuration  - 
+%    flickerLag       -
+%    flickerFrequency - 
+%    flickerContrast  - 
 %
 % Outputs:
-%    modulation      - 
+%    modulation       - 
 %
 % Optional key/values pairs:
 %    None.
@@ -29,24 +31,37 @@ function modulation = AssembleModulation_MeLMS(background, MelDirection, LMSDire
 %    03/28/18  jv  wrote it.
 
 %% Input validation
+parser = inputParser();
+parser.addRequired('background');
+parser.addRequired('MelDirection');
+parser.addRequired('LMSDirection');
+parser.addRequired('receptors');
+parser.addOptional('pulseDuration',[]);
+parser.addOptional('pulseContrast',[]);
+parser.addOptional('flickerLag',[]);
+parser.addOptional('flickerDuration',[]);
+parser.addOptional('flickerFrequency',[]);
+parser.addOptional('flickerContrast',[]);
+parser.StructExpand = true;
+parser.parse(background, MelDirection, LMSDirection, receptors, varargin{:});
 
 %% Create pulse waveform
 pulseParams = OLWaveformParamsFromName('MaxContrastPulse');
 pulseParams.timeStep = 1/200;
-pulseParams.stimulusDuration = pulseDuration;
+pulseParams.stimulusDuration = parser.Results.pulseDuration;
 [pulseWaveform, timestep] = OLWaveformFromParams(pulseParams);
 
 %% Create cone flicker
 flickerParams = OLWaveformParamsFromName('MaxContrastSinusoid');
-flickerParams.frequency = flickerFrequency;
+flickerParams.frequency = parser.Results.flickerFrequency;
 flickerParams.timeStep = 1/200;
-flickerParams.stimulusDuration = flickerDuration;
+flickerParams.stimulusDuration = parser.Results.flickerDuration;
 flickerParams.cosineWindowIn = false;
 flickerParams.cosineWindowOut = false;
 flickerWaveform = OLWaveformFromParams(flickerParams);
 
 %% Add lag, pad flicker
-t0FlickerSecs = flickerLag;
+t0FlickerSecs = parser.Results.flickerLag;
 if pulseParams.cosineWindowIn
     t0FlickerSecs = t0FlickerSecs + pulseParams.cosineWindowDurationSecs;
 end
@@ -61,6 +76,7 @@ flickerWaveform = OLPadWaveformToReference([zeros(1,t0FlickerFrame) flickerWavef
 % params (assuming that directions are generated from params)
 
 % Mel contrast
+pulseContrast = parser.Results.pulseContrast;
 if pulseContrast == 0
     scaledMel = 0 .* MelDirection;
 else
@@ -68,6 +84,7 @@ else
 end
 
 % LMS contrast
+flickerContrast = parser.Results.flickerContrast;
 scaledLMS = ScaleToReceptorContrast(LMSDirection, background+scaledMel, receptors, [flickerContrast flickerContrast flickerContrast 0]');
 
 %% Assemble

@@ -69,13 +69,14 @@ melDirectionParams.modulationContrast = OLUnipolarToBipolarContrast(3);
 [MelDirection, background] = OLDirectionNominalFromParams(melDirectionParams, calibration, 'observerAge', participantAge);
 LMSDirectionParams = OLDirectionParamsFromName('MaxLMS_bipolar_275_60_667','alternateDictionaryFunc','OLDirectionParamsDictionary_Psychophysics');
 LMSDirectionParams.primaryHeadRoom = 0;
-LMSDirectionParams.modulationContrast = [.05 .05 .05];
+LMSDirectionParams.modulationContrast = [.06 .06 .06];
 LMSDirection(4) = OLDirectionNominalFromParams(LMSDirectionParams, calibration, 'background', background+MelDirection, 'observerAge', participantAge);
 LMSDirection(1) = OLDirectionNominalFromParams(LMSDirectionParams, calibration, 'background', background, 'observerAge', participantAge);
+receptors = LMSDirection(1).describe.directionParams.T_receptors;
+background.describe.T_receptors = receptors;
 
 %% Validate the directions
 % Desired contrasts
-receptors = LMSDirection(1).describe.directionParams.T_receptors;
 nominalMaxMelContrast = ToDesiredReceptorContrast(MelDirection,background, receptors);
 nominalMaxLMSContrastOnMel = ToDesiredReceptorContrast(LMSDirection(4), background+MelDirection, receptors);
 nominalMaxLMSContrastOnBackground = ToDesiredReceptorContrast(LMSDirection(1), background+MelDirection, receptors);
@@ -147,9 +148,8 @@ conditionParamsList = Shuffle(conditionParamsList);
 
 %% Demo/practice
 % Assemble practice modulation
-practiceModulation = AssembleModulation_MeLMS(background, MelDirection, LMSDirection(1),...
-    pulseDuration{1}, 0, flickerDuration{1}, 0, flickerFrequency{1},...
-    .05, receptors);
+practiceModulation = AssembleModulation_MeLMS(background, MelDirection, LMSDirection(1), receptors, ...
+    pulseDuration{1}, 0, 0, flickerDuration{1}, flickerFrequency{1}, .05);
 
 % Set to background, for adaptation
 [backgroundStarts, backgroundStops] = OLPrimaryToStartsStops(background.differentialPrimaryValues, background.calibration);
@@ -168,10 +168,7 @@ sessionResults = table();
 for c = 1:numel(conditionParamsList)
     modulationParams = conditionParamsList(c);
     modulation = AssembleModulation_MeLMS(background, MelDirection, LMSDirection(modulationParams.pulseContrast+1),...
-            modulationParams.pulseDuration, modulationParams.pulseContrast, ...
-            modulationParams.flickerDuration, modulationParams.flickerLag, ...
-            modulationParams.flickerFrequency, modulationParams.flickerContrast, ...
-            receptors);
+            modulationParams);
     acquisitionStart = mglGetSecs;
         
     % Set to background, for adaptation
@@ -187,10 +184,7 @@ for c = 1:numel(conditionParamsList)
 
         % Assemble stimulus for this trial
         modulation = AssembleModulation_MeLMS(background, MelDirection, LMSDirection(modulationParams.pulseContrast+1),...
-            modulationParams.pulseDuration, modulationParams.pulseContrast, ...
-            modulationParams.flickerDuration, modulationParams.flickerLag, ...
-            modulationParams.flickerFrequency, modulationParams.flickerContrast, ...
-            receptors);
+            modulationParams);
 
         % Display stimulus
         OLFlicker(oneLight,modulation.starts,modulation.stops,modulation.timestep, 1);

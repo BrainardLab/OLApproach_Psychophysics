@@ -27,7 +27,7 @@ simulate = getpref(approach,'simulate'); % localhook defines what devices to sim
 %% Get calibration
 % Specify which calibration to use, check that everything is set up
 % correctly, and retrieve the calibration structure.
-calibrationType = 'BoxDRandomizedLongCableBEyePiece2_ND01';
+calibrationType = 'BoxBRandomizedLongCableBEyePiece2_ND01';
 if (~strcmp(getpref('OneLightToolbox','OneLightCalData'),getpref(approach,'OneLightCalDataPath')))
     error('Calibration file prefs not set up as expected for an approach');
 end
@@ -39,13 +39,13 @@ observerAge = GetWithDefault('Enter <strong>Observer age</strong>',32);
 % Melanopsin isolating direction, background
 melDirectionParams = OLDirectionParamsFromName('MaxMel_unipolar_275_60_667','alternateDictionaryFunc','OLDirectionParamsDictionary_Psychophysics');
 melDirectionParams.primaryHeadRoom = 0;
-melDirectionParams.modulationContrast = OLUnipolarToBipolarContrast(3);
+melDirectionParams.modulationContrast = OLUnipolarToBipolarContrast(3.5);
 [MelDirection, MelBackground] = OLDirectionNominalFromParams(melDirectionParams, calibration, 'observerAge', observerAge);
 
 % LMS pulse, on background
 LMSPulseParams = OLDirectionParamsFromName('MaxLMS_unipolar_275_60_667','alternateDictionaryFunc','OLDirectionParamsDictionary_Psychophysics');
 LMSPulseParams.primaryHeadRoom = 0;
-LMSPulseParams.modulationContrast = [OLUnipolarToBipolarContrast(3), OLUnipolarToBipolarContrast(3), OLUnipolarToBipolarContrast(3)];
+LMSPulseParams.modulationContrast = [OLUnipolarToBipolarContrast(3.5), OLUnipolarToBipolarContrast(3.5), OLUnipolarToBipolarContrast(3.5)];
 [LMSPulseDirection, LMSBackground] = OLDirectionNominalFromParams(LMSPulseParams, calibration, 'observerAge', observerAge);
 
 % LMS flicker, on background

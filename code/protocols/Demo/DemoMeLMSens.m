@@ -34,46 +34,94 @@ end
 calibration = OLGetCalibrationStructure('CalibrationType',calibrationType,'CalibrationDate','latest');
 
 %% Create directions
-participantAge = 32;
+observerAge = GetWithDefault('Enter <strong>Observer age</strong>',32);
 
 % Melanopsin isolating direction, background
 melDirectionParams = OLDirectionParamsFromName('MaxMel_unipolar_275_60_667','alternateDictionaryFunc','OLDirectionParamsDictionary_Psychophysics');
 melDirectionParams.primaryHeadRoom = 0;
 melDirectionParams.modulationContrast = OLUnipolarToBipolarContrast(3);
-[MelDirection, background] = OLDirectionNominalFromParams(melDirectionParams, calibration, 'observerAge', participantAge);
+[MelDirection, MelBackground] = OLDirectionNominalFromParams(melDirectionParams, calibration, 'observerAge', observerAge);
 
-% LMS flicker, on background and on background+MelDirection
-LMSDirectionParams = OLDirectionParamsFromName('MaxLMS_bipolar_275_60_667','alternateDictionaryFunc','OLDirectionParamsDictionary_Psychophysics');
-LMSDirectionParams.primaryHeadRoom = 0;
-LMSDirectionParams.modulationContrast = [.05 .05 .05];
-LMSDirection(4) = OLDirectionNominalFromParams(LMSDirectionParams, calibration, 'background', background+MelDirection, 'observerAge', participantAge);
-LMSDirection(1) = OLDirectionNominalFromParams(LMSDirectionParams, calibration, 'background', background, 'observerAge', participantAge);
+% LMS pulse, on background
+LMSPulseParams = OLDirectionParamsFromName('MaxLMS_unipolar_275_60_667','alternateDictionaryFunc','OLDirectionParamsDictionary_Psychophysics');
+LMSPulseParams.primaryHeadRoom = 0;
+LMSPulseParams.modulationContrast = [OLUnipolarToBipolarContrast(3), OLUnipolarToBipolarContrast(3), OLUnipolarToBipolarContrast(3)];
+[LMSPulseDirection, LMSBackground] = OLDirectionNominalFromParams(LMSPulseParams, calibration, 'observerAge', observerAge);
+
+% LMS flicker, on background
+LMSFlickerParams = OLDirectionParamsFromName('MaxLMS_bipolar_275_60_667','alternateDictionaryFunc','OLDirectionParamsDictionary_Psychophysics');
+LMSFlickerParams.primaryHeadRoom = 0;
+LMSFlickerParams.modulationContrast = [.05 .05 .05];
+LMSFlickerDirection(1) = OLDirectionNominalFromParams(LMSFlickerParams, calibration, 'background', MelBackground, 'observerAge', observerAge);
+
+% LMS flicker, on background+MelDirection
+LMSFlickerDirection(4) = OLDirectionNominalFromParams(LMSFlickerParams, calibration, 'background', MelBackground+MelDirection, 'observerAge', observerAge);
 
 % Retrieve the receptors
-receptors = LMSDirection(4).describe.directionParams.T_receptors;
-
-%% Set modulation parameters 
-% Define constant params:
-pulseDuration = 4;      % s
-flickerParams.flickerDuration = GetWithDefault('>> Enter <strong>LMS flicker duration</strong>',.5); % s
-flickerParams.flickerFrequency = GetWithDefault('>> Enter <strong>LMS flicker frequency</strong>',5);  % Hz
-flickerParams.flickerContrast = GetWithDefault('>> Enter <strong>LMS flicker contrast</strong>',.05);
-
-%% Assemble modulations
-modulation(1) = AssembleModulation_MeLMS(background,MelDirection,LMSDirection(1),receptors,2,0,0,flickerParams);
-modulation(2) = AssembleModulation_MeLMS(background,MelDirection,LMSDirection(4),receptors,pulseDuration,3,0,flickerParams);
-modulation(3) = AssembleModulation_MeLMS(background,MelDirection,LMSDirection(4),receptors,pulseDuration,3,1,flickerParams);
-[backgroundStarts, backgroundStops] = OLPrimaryToStartsStops(background.differentialPrimaryValues, background.calibration);
+receptors = LMSFlickerDirection(4).describe.directionParams.T_receptors;
 
 %% Display modulations
 oneLight = OneLight('simulate',simulate.oneLight);
-for i = 1:numel(modulation)
-    % Set to background, for adaptation
-    oneLight.setMirrors(backgroundStarts, backgroundStops);
-    WaitForKeyPress;
 
-    % Display stimulus
-    Beeper;
-    OLFlicker(oneLight,modulation(i).starts,modulation(i).stops,modulation(i).timestep, 1);
-    oneLight.setMirrors(backgroundStarts, backgroundStops);
+nextAcquisition = true;
+while nextAcquisition
+    %% Set modulation parameters 
+    % Define constant params:
+    pulseDuration = GetWithDefault('Enter <strong>Pulse duration</strong>',4);  % s
+    flickerParams.flickerDuration = GetWithDefault('Enter <strong>LMS flicker duration</strong>',.5);  % s
+    flickerParams.flickerFrequency = GetWithDefault('Enter <strong>LMS flicker frequency</strong>',5); % Hz
+    flickerParams.flickerContrast = GetWithDefault('Enter <strong>LMS flicker contrast</strong>',.05);
+
+    %% Assemble modulations
+    pulseWaveformParams = OLWaveformParamsFromName('MaxContrastPulse');
+    pulseWaveformParams.stimulusDuration = pulseDuration;
+    pulseWaveform = OLWaveformFromParams(pulseWaveformParams);
+
+    modulation(1) = OLAssembleModulation([LMSBackground, LMSPulseDirection],[ones(1,length(pulseWaveform)); pulseWaveform]);
+    modulation(2) = OLAssembleModulation([MelBackground, MelDirection],[ones(1,length(pulseWaveform)); pulseWaveform]);
+    modulation(3) = AssembleModulation_MeLMS(MelBackground,MelDirection,LMSFlickerDirection(1),receptors,2,0,0,flickerParams);
+    modulation(4) = AssembleModulation_MeLMS(MelBackground,MelDirection,LMSFlickerDirection(4),receptors,pulseDuration,3,0,flickerParams);
+    modulation(5) = AssembleModulation_MeLMS(MelBackground,MelDirection,LMSFlickerDirection(4),receptors,pulseDuration,3,1,flickerParams);
+    [MelBackgroundStarts, MelBackgroundStops] = OLPrimaryToStartsStops(MelBackground.differentialPrimaryValues, MelBackground.calibration);
+    [LMSBackgroundStarts, LMSBackgroundStops] = OLPrimaryToStartsStops(LMSBackground.differentialPrimaryValues, LMSBackground.calibration);
+
+    %% Keep showing modulations
+    nextModulation = true;
+    while nextModulation
+        % Select modulation
+        availableModulations = {'LMS pulse',...
+            'MelPulse',...
+            'LMS flicker on background',...
+            'LMS flicker on Mel pulse (immediate)',...
+            'LMS flicker on Mel pulse (1s in)',...
+        };
+        fprintf('<strong>Available modulations:</strong>\n');
+        for i = 1:numel(availableModulations)
+            fprintf('\t[%i] %s\n',i,availableModulations{i})
+        end
+        modulationNo = GetWithDefault('Choose modulation number:',1);
+
+        % Adapt to background
+        if modulationNo == 1
+            oneLight.setMirrors(LMSBackgroundStarts, LMSBackgroundStops);
+        else
+            oneLight.setMirrors(MelBackgroundStarts, MelBackgroundStops);
+        end
+        WaitForKeyPress;
+
+        % Display stimulus
+        Beeper;
+        OLFlicker(oneLight,modulation(modulationNo).starts,modulation(modulationNo).stops,1/200, 1);
+        if modulationNo == 1
+            oneLight.setMirrors(LMSBackgroundStarts, LMSBackgroundStops);
+        else
+            oneLight.setMirrors(MelBackgroundStarts, MelBackgroundStops);
+        end
+        
+        % Get response
+        key = WaitForKeyPress;
+        if key == 'q'
+            nextModulation = false;
+        end        
+    end
 end

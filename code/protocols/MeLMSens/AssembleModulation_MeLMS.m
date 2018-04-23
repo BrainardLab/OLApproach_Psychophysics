@@ -1,5 +1,5 @@
 function modulation = AssembleModulation_MeLMS(background, MelDirection, LMSDirection, receptors, varargin)
-% Assembles trial of LMS flicker on Mel pulse
+% Assembles modulation of LMS flicker on Mel pulse
 %
 % Syntax:
 %
@@ -89,6 +89,5 @@ scaledLMS = ScaleToReceptorContrast(LMSDirection, background+scaledMel, receptor
 
 %% Assemble
 modulation = OLAssembleModulation([background, scaledMel, scaledLMS],[ones(1,length(pulseWaveform)); pulseWaveform; flickerWaveform]);
-modulation.timestep = 1/200;
 
 end

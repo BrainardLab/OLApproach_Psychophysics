@@ -60,26 +60,29 @@ LMSFlickerDirection(4) = OLDirectionNominalFromParams(LMSFlickerParams, calibrat
 % Retrieve the receptors
 receptors = LMSFlickerDirection(4).describe.directionParams.T_receptors;
 
-%% Validate, correct
-% Open radiometer
+%% Open radiometer, onelight
 if ~simulate.radiometer
     radiometer = OLOpenSpectroRadiometerObj('PR-670');
 else
     radiometer = [];
 end
-
-% Pre-correction validations
-OLValidateDirection(MelBackground, OLDirection_unipolar.Null(calibration), oneLight, radiometer, 'receptors', receptors,'label','pre-correction');
-OLValidateDirection(MelDirection, MelBackground, oneLight, radiometer, 'receptors', receptors,'label','pre-correction');
-OLValidateDirection(LMSBackground, OLDirection_unipolar.Null(calibration), oneLight, radiometer, 'receptors', receptors,'label','pre-correction');
-OLValidateDirection(LMSPulseDirection, LMSBackground, oneLight, radiometer, 'receptors', receptors,'label','pre-correction');
-OLValidateDirection(LMSFlickerDirection(1), MelBackground, oneLight, radiometer, 'receptors', receptors,'label','pre-correction');
-OLValidateDirection(LMSFlickerDirection(2), MelBackground+MelDirection, oneLight, radiometer, 'receptors', receptors,'label','pre-correction');
-
-
-%% Display modulations
 oneLight = OneLight('simulate',simulate.oneLight);
 
+%% Pre-correction validations
+OLValidateDirection(MelDirection, MelBackground, oneLight, radiometer, 'receptors', receptors,'label','pre-correction');
+OLValidateDirection(LMSPulseDirection, LMSBackground, oneLight, radiometer, 'receptors', receptors,'label','pre-correction');
+OLValidateDirection(LMSFlickerDirection(1), MelBackground, oneLight, radiometer, 'receptors', receptors,'label','pre-correction');
+OLValidateDirection(LMSFlickerDirection(4), MelBackground+MelDirection, oneLight, radiometer, 'receptors', receptors,'label','pre-correction');
+
+%% Correct
+
+%% Post-correction validations
+OLValidateDirection(MelDirection, MelBackground, oneLight, radiometer, 'receptors', receptors,'label','post-correction');
+OLValidateDirection(LMSPulseDirection, LMSBackground, oneLight, radiometer, 'receptors', receptors,'label','post-correction');
+OLValidateDirection(LMSFlickerDirection(1), MelBackground, oneLight, radiometer, 'receptors', receptors,'label','post-correction');
+OLValidateDirection(LMSFlickerDirection(4), MelBackground+MelDirection, oneLight, radiometer, 'receptors', receptors,'label','post-correction');
+
+%% Display modulations
 nextAcquisition = true;
 while nextAcquisition
     %% Set modulation parameters 

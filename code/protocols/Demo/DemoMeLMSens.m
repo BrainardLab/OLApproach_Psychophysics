@@ -58,11 +58,12 @@ LMSPulseParams.modulationContrast = [OLUnipolarToBipolarContrast(3.5), OLUnipola
 % 5% LMS flicker, on MelBackground
 LMSFlickerParams = OLDirectionParamsFromName('MaxLMS_bipolar_275_60_667','alternateDictionaryFunc','OLDirectionParamsDictionary_Psychophysics');
 LMSFlickerParams.primaryHeadRoom = 0;
-LMSFlickerParams.modulationContrast = [.05 .05 .05];
+LMSFlickerParams.modulationContrast = [.03 .03 .03];
 LMSFlickerDirection(1) = OLDirectionNominalFromParams(LMSFlickerParams, calibration, 'background', MelBackground, 'observerAge', observerAge);
 
 % 5% LMS flicker, on MelBackground+MelDirection
-LMSFlickerDirection(4) = OLDirectionNominalFromParams(LMSFlickerParams, calibration, 'background', MelBackground+NominalMelDirection, 'observerAge', observerAge);
+scaledMelDirection = NominalMelDirection.ScaleToReceptorContrast(MelBackground,receptors,[0; 0; 0; 3]);
+LMSFlickerDirection(4) = OLDirectionNominalFromParams(LMSFlickerParams, calibration, 'background', MelBackground+scaledMelDirection, 'observerAge', observerAge);
 
 % Retrieve the receptors
 receptors = MelNoPenumbralDirection.describe.directionParams.T_receptors;
@@ -78,17 +79,18 @@ oneLight = OneLight('simulate',simulate.oneLight);
 %% Pre-correction validations
 OLValidateDirection(NominalMelDirection, MelBackground, oneLight, radiometer, 'receptors', receptors,'label','pre-correction');
 OLValidateDirection(PenumbralDirection, PenumbralBackground, oneLight, radiometer, 'receptors', receptors,'label','pre-correction');
-OLValidateDirection(MelDirectionNoPenumbral, MelNoPenumbralBackground, oneLight, radiometer, 'receptors', receptors,'label','pre-correction');
+OLValidateDirection(MelNoPenumbralDirection, MelNoPenumbralBackground, oneLight, radiometer, 'receptors', receptors,'label','pre-correction');
 OLValidateDirection(LMSPulseDirection, LMSBackground, oneLight, radiometer, 'receptors', receptors,'label','pre-correction');
-OLValidateDirection(LMSFlickerDirection(1), MelBackground, oneLight, radiometer, 'receptors', receptors,'label','pre-correction');
-OLValidateDirection(LMSFlickerDirection(4), MelBackground+NominalMelDirection, oneLight, radiometer, 'receptors', receptors,'label','pre-correction');
-scaledMelDirection = NominalMelDirection.ScaleToReceptorContrast(MelBackground,receptors,[0; 0; 0; 3.5]);
 OLValidateDirection(scaledMelDirection, MelBackground, oneLight, radiometer, 'receptors', receptors, 'label', 'pre-correction');
+OLValidateDirection(LMSFlickerDirection(1), MelBackground, oneLight, radiometer, 'receptors', receptors,'label','pre-correction');
+OLValidateDirection(LMSFlickerDirection(4), MelBackground+scaledMelDirection, oneLight, radiometer, 'receptors', receptors,'label','pre-correction');
 
 %% Correct
 correctedMelDirection = NominalMelDirection.copy();
+correctedMelDirection.describe.photoreceptorClasses = correctedMelDirection.describe.directionParams.photoreceptorClasses;
+correctedMelDirection.describe.T_receptors = correctedMelDirection.describe.directionParams.T_receptors;
 correctedMelBackground = MelBackground.copy();
-OLCorrectDirection(correctedMelDirection, correctedMelBackground, oneLight, radiometer);
+OLCorrectDirection(correctedMelDirection, correctedMelBackground, oneLight, radiometer, 'legacyMode', true, 'smoothness', .1);
 
 %% Post-correction validations
 OLValidateDirection(correctedMelDirection, correctedMelBackground, oneLight, radiometer, 'receptors', receptors,'label','post-correction');
@@ -105,20 +107,23 @@ while nextAcquisition
 
     %% Assemble modulations
     pulseWaveformParams = OLWaveformParamsFromName('MaxContrastPulse');
+    pulseWaveformParams.timeStep = 1/200;
     pulseWaveformParams.stimulusDuration = pulseDuration;
     pulseWaveform = OLWaveformFromParams(pulseWaveformParams);
 
     modulation(1) = OLAssembleModulation([LMSBackground, LMSPulseDirection],[ones(1,length(pulseWaveform)); pulseWaveform]);
     modulation(2) = OLAssembleModulation([MelBackground, NominalMelDirection],[ones(1,length(pulseWaveform)); pulseWaveform]);
     modulation(3) = OLAssembleModulation([MelBackground, scaledMelDirection],[ones(1,length(pulseWaveform)); pulseWaveform]);
-    modulation(4) = OLAssembleModulation([MelNoPenumbralBackground, MelDirectionNoPenumbral],[ones(1,length(pulseWaveform)); pulseWaveform]);
-    modulation(5) = OLAssembleModulation([correctedMelBackground, corretedMelDirection],[ones(1,length(pulseWaveform)); pulseWaveform]);
-    modulation(6) = AssembleModulation_MeLMS(MelBackground,NominalMelDirection,LMSFlickerDirection(1),receptors,2,0,0,flickerParams);
-    modulation(7) = AssembleModulation_MeLMS(MelBackground,NominalMelDirection,LMSFlickerDirection(4),receptors,pulseDuration,3,0,flickerParams);
-    modulation(8) = AssembleModulation_MeLMS(MelBackground,NominalMelDirection,LMSFlickerDirection(4),receptors,pulseDuration,3,1,flickerParams);
+    modulation(4) = OLAssembleModulation([MelNoPenumbralBackground, MelNoPenumbralDirection],[ones(1,length(pulseWaveform)); pulseWaveform]);
+    modulation(5) = OLAssembleModulation([correctedMelBackground, correctedMelDirection],[ones(1,length(pulseWaveform)); pulseWaveform]);
+    %modulation(6) = AssembleModulation_MeLMS(MelBackground,scaledMelDirection,LMSFlickerDirection(1),receptors,2,0,0,flickerParams);
+    %modulation(7) = AssembleModulation_MeLMS(MelBackground,scaledMelDirection,LMSFlickerDirection(4),receptors,pulseDuration,3,0,flickerParams);
+    %modulation(8) = AssembleModulation_MeLMS(MelBackground,scaledMelDirection,LMSFlickerDirection(4),receptors,pulseDuration,3,1,flickerParams);
     [MelBackgroundStarts, MelBackgroundStops] = OLPrimaryToStartsStops(MelBackground.differentialPrimaryValues, MelBackground.calibration);
     [LMSBackgroundStarts, LMSBackgroundStops] = OLPrimaryToStartsStops(LMSBackground.differentialPrimaryValues, LMSBackground.calibration);
-
+    [MelNoPenumbralBackgroundStarts, MelNoPenumbralBackgroundStops] = OLPrimaryToStartsStops(MelNoPenumbralBackground.differentialPrimaryValues, LMSBackground.calibration);
+    [correctedMelBackgroundStarts, correctedMelBackgroundStops] = OLPrimaryToStartsStops(correctedMelBackground.differentialPrimaryValues, LMSBackground.calibration);
+   
     %% Keep showing modulations
     nextModulation = true;
     while nextModulation
@@ -139,10 +144,15 @@ while nextAcquisition
         modulationNo = GetWithDefault('Choose modulation number:',1);
 
         % Adapt to background
-        if modulationNo == 1
-            oneLight.setMirrors(LMSBackgroundStarts, LMSBackgroundStops);
-        else
-            oneLight.setMirrors(MelBackgroundStarts, MelBackgroundStops);
+        switch modulationNo
+            case 1
+                oneLight.setMirrors(LMSBackgroundStarts, LMSBackgroundStops);
+            case {2, 3}
+                oneLight.setMirrors(MelBackgroundStarts, MelBackgroundStops);
+            case 4
+                oneLight.setMirrors(MelNoPenumbralBackgroundStarts, MelNoPenumbralBackgroundStops);
+            case 5
+                oneLight.setMirrors(correctedMelBackgroundStarts, correctedMelBackgroundStops);
         end
         WaitForKeyPress;
 
@@ -157,7 +167,7 @@ while nextAcquisition
         
         % Get response
         key = WaitForKeyPress;
-        if key == 'q'
+        if ischar(key) && key == 'q'
             nextModulation = false;
         end        
     end

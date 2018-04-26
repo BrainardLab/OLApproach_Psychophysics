@@ -86,12 +86,12 @@ scaledMelDirection = NominalMelDirection.ScaleToReceptorContrast(MelBackground,r
 OLValidateDirection(scaledMelDirection, MelBackground, oneLight, radiometer, 'receptors', receptors, 'label', 'pre-correction');
 
 %% Correct
+correctedMelDirection = NominalMelDirection.copy();
+correctedMelBackground = MelBackground.copy();
+OLCorrectDirection(correctedMelDirection, correctedMelBackground, oneLight, radiometer);
 
 %% Post-correction validations
-OLValidateDirection(MelDirection, MelBackground, oneLight, radiometer, 'receptors', receptors,'label','post-correction');
-OLValidateDirection(LMSPulseDirection, LMSBackground, oneLight, radiometer, 'receptors', receptors,'label','post-correction');
-OLValidateDirection(LMSFlickerDirection(1), MelBackground, oneLight, radiometer, 'receptors', receptors,'label','post-correction');
-OLValidateDirection(LMSFlickerDirection(4), MelBackground+MelDirection, oneLight, radiometer, 'receptors', receptors,'label','post-correction');
+OLValidateDirection(correctedMelDirection, correctedMelBackground, oneLight, radiometer, 'receptors', receptors,'label','post-correction');
 
 %% Display modulations
 nextAcquisition = true;

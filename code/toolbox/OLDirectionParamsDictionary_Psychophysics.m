@@ -39,8 +39,8 @@ dictionary = containers.Map();
 % unipolar contrast step up relative to the background.
 params = OLDirectionParams_Unipolar;
 params.baseName = 'MaxMel';
-params.primaryHeadRoom = 0.01;
-params.baseModulationContrast = 2/3;
+params.primaryHeadRoom = 0;
+params.baseModulationContrast = OLUnipolarToBipolarContrast(4);
 params.fieldSizeDegrees = 27.5;
 params.pupilDiameterMm = 6.0;
 params.photoreceptorClasses = {'LConeTabulatedAbsorbance','MConeTabulatedAbsorbance','SConeTabulatedAbsorbance','Melanopsin'};
@@ -49,6 +49,32 @@ params.whichReceptorsToIsolate = [4];
 params.whichReceptorsToIgnore = [];
 params.whichReceptorsToMinimize = [];
 params.backgroundName = 'MelanopsinDirected_275_60_667';
+params.name = OLDirectionNameFromParams(params);
+if OLDirectionParamsValidate(params)
+    % All validations OK. Add entry to the dictionary.
+    dictionary(params.name) = params;
+end
+
+%% MaxMelNoPenumbral_unipolar_275_60_667
+% Direction for maximum unipolar contrast melanopsin step
+%   Field size: 27.5 deg
+%   Pupil diameter: 6 mm
+%   bipolar contrast: 66.7%
+%
+% Bipolar contrast is specified to generate, but the result is a 400% 
+% unipolar contrast step up relative to the background.
+params = OLDirectionParams_Unipolar;
+params.baseName = 'MaxMelNoPenumbral';
+params.primaryHeadRoom = 0;
+params.baseModulationContrast = OLUnipolarToBipolarContrast(4);
+params.fieldSizeDegrees = 27.5;
+params.pupilDiameterMm = 6.0;
+params.photoreceptorClasses = {'LConeTabulatedAbsorbance','MConeTabulatedAbsorbance','SConeTabulatedAbsorbance','Melanopsin', 'LConeTabulatedAbsorbancePenumbral', 'MConeTabulatedAbsorbancePenumbral', 'SConeTabulatedAbsorbancePenumbral'};
+params.modulationContrast = [params.baseModulationContrast];
+params.whichReceptorsToIsolate = [4];
+params.whichReceptorsToIgnore = [];
+params.whichReceptorsToMinimize = [];
+params.backgroundName = 'MelanopsinDirectedNoPenumbral_275_60_667';
 params.name = OLDirectionNameFromParams(params);
 if OLDirectionParamsValidate(params)
     % All validations OK. Add entry to the dictionary.
@@ -106,5 +132,30 @@ if OLDirectionParamsValidate(params)
     % All validations OK. Add entry to the dictionary.
     dictionary(params.name) = params;
 end
+
+%% Penumbral_unipolar_275_60_667
+% Direction for penumbral contrast step
+%   Field size: 27.5 deg
+%   Pupil diameter: 6 mm -- for use with 6 mm artificial pupil with
+%   pupillometry
+%   bipolar contrast: 66.7% 
+params = OLDirectionParams_Unipolar;
+params.baseName = 'Penumbral';
+params.primaryHeadRoom = 0.0;
+params.baseModulationContrast = OLUnipolarToBipolarContrast(4);
+params.fieldSizeDegrees = 27.5;
+params.pupilDiameterMm = 6.0;
+params.photoreceptorClasses = {'LConeTabulatedAbsorbance','MConeTabulatedAbsorbance','SConeTabulatedAbsorbance','Melanopsin', 'LConeTabulatedAbsorbancePenumbral', 'MConeTabulatedAbsorbancePenumbral', 'SConeTabulatedAbsorbancePenumbral'};
+params.modulationContrast = [params.baseModulationContrast params.baseModulationContrast params.baseModulationContrast];
+params.whichReceptorsToIsolate = [5 6 7];
+params.whichReceptorsToIgnore = [];
+params.whichReceptorsToMinimize = [];
+params.backgroundName = 'PenumbralDirected_275_60_667';
+params.name = OLDirectionNameFromParams(params);
+if OLDirectionParamsValidate(params)
+    % All validations OK. Add entry to the dictionary.
+    dictionary(params.name) = params;
+end
+
 
 end

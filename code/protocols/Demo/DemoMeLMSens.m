@@ -36,29 +36,36 @@ calibration = OLGetCalibrationStructure('CalibrationType',calibrationType,'Calib
 %% Create directions
 observerAge = GetWithDefault('Enter <strong>Observer age</strong>',32);
 
-% Melanopsin isolating direction, background
+% 400% Melanopsin isolating direction, background
 melDirectionParams = OLDirectionParamsFromName('MaxMel_unipolar_275_60_667','alternateDictionaryFunc','OLDirectionParamsDictionary_Psychophysics');
-melDirectionParams.primaryHeadRoom = 0;
-melDirectionParams.modulationContrast = OLUnipolarToBipolarContrast(3.5);
-[MelDirection, MelBackground] = OLDirectionNominalFromParams(melDirectionParams, calibration, 'observerAge', observerAge);
+melDirectionParams.modulationContrast = OLUnipolarToBipolarContrast(4);
+[NominalMelDirection, MelBackground] = OLDirectionNominalFromParams(melDirectionParams, calibration, 'observerAge', observerAge, 'alternateBackgroundDictionaryFunc', 'OLBackgroundParamsDictionary_Psychophysics');
 
-% LMS pulse, on background
+% 400% Penumbral direction, background
+penumbralDirectionParams = OLDirectionParamsFromName('Penumbral_unipolar_275_60_667', 'alternateDictionaryFunc', 'OLDirectionParamsDictionary_Psychophysics');
+[PenumbralDirection, PenumbralBackground] = OLDirectionNominalFromParams(penumbralDirectionParams, calibration, 'observerAge', observerAge, 'alternateBackgroundDictionaryFunc', 'OLBackgroundParamsDictionary_Psychophysics');
+
+% 400% Melanopsin isolating direction, no penumbral cones, background
+melNoPenumbralDirectionParams = OLDirectionParamsFromName('MaxMel_unipolar_275_60_667','alternateDictionaryFunc','OLDirectionParamsDictionary_Psychophysics');
+[MelNoPenumbralDirection, MelNoPenumbralBackground] = OLDirectionNominalFromParams(melNoPenumbralDirectionParams, calibration, 'observerAge', observerAge, 'alternateBackgroundDictionaryFunc', 'OLBackgroundParamsDictionary_Psychophysics');
+
+% 400% LMS pulse, on background
 LMSPulseParams = OLDirectionParamsFromName('MaxLMS_unipolar_275_60_667','alternateDictionaryFunc','OLDirectionParamsDictionary_Psychophysics');
 LMSPulseParams.primaryHeadRoom = 0;
 LMSPulseParams.modulationContrast = [OLUnipolarToBipolarContrast(3.5), OLUnipolarToBipolarContrast(3.5), OLUnipolarToBipolarContrast(3.5)];
 [LMSPulseDirection, LMSBackground] = OLDirectionNominalFromParams(LMSPulseParams, calibration, 'observerAge', observerAge);
 
-% LMS flicker, on background
+% 5% LMS flicker, on MelBackground
 LMSFlickerParams = OLDirectionParamsFromName('MaxLMS_bipolar_275_60_667','alternateDictionaryFunc','OLDirectionParamsDictionary_Psychophysics');
 LMSFlickerParams.primaryHeadRoom = 0;
 LMSFlickerParams.modulationContrast = [.05 .05 .05];
 LMSFlickerDirection(1) = OLDirectionNominalFromParams(LMSFlickerParams, calibration, 'background', MelBackground, 'observerAge', observerAge);
 
-% LMS flicker, on background+MelDirection
-LMSFlickerDirection(4) = OLDirectionNominalFromParams(LMSFlickerParams, calibration, 'background', MelBackground+MelDirection, 'observerAge', observerAge);
+% 5% LMS flicker, on MelBackground+MelDirection
+LMSFlickerDirection(4) = OLDirectionNominalFromParams(LMSFlickerParams, calibration, 'background', MelBackground+NominalMelDirection, 'observerAge', observerAge);
 
 % Retrieve the receptors
-receptors = LMSFlickerDirection(4).describe.directionParams.T_receptors;
+receptors = MelNoPenumbralDirection.describe.directionParams.T_receptors;
 
 %% Open radiometer, onelight
 if ~simulate.radiometer
@@ -69,10 +76,14 @@ end
 oneLight = OneLight('simulate',simulate.oneLight);
 
 %% Pre-correction validations
-OLValidateDirection(MelDirection, MelBackground, oneLight, radiometer, 'receptors', receptors,'label','pre-correction');
+OLValidateDirection(NominalMelDirection, MelBackground, oneLight, radiometer, 'receptors', receptors,'label','pre-correction');
+OLValidateDirection(PenumbralDirection, PenumbralBackground, oneLight, radiometer, 'receptors', receptors,'label','pre-correction');
+OLValidateDirection(MelDirectionNoPenumbral, MelNoPenumbralBackground, oneLight, radiometer, 'receptors', receptors,'label','pre-correction');
 OLValidateDirection(LMSPulseDirection, LMSBackground, oneLight, radiometer, 'receptors', receptors,'label','pre-correction');
 OLValidateDirection(LMSFlickerDirection(1), MelBackground, oneLight, radiometer, 'receptors', receptors,'label','pre-correction');
-OLValidateDirection(LMSFlickerDirection(4), MelBackground+MelDirection, oneLight, radiometer, 'receptors', receptors,'label','pre-correction');
+OLValidateDirection(LMSFlickerDirection(4), MelBackground+NominalMelDirection, oneLight, radiometer, 'receptors', receptors,'label','pre-correction');
+scaledMelDirection = NominalMelDirection.ScaleToReceptorContrast(MelBackground,receptors,[0; 0; 0; 3.5]);
+OLValidateDirection(scaledMelDirection, MelBackground, oneLight, radiometer, 'receptors', receptors, 'label', 'pre-correction');
 
 %% Correct
 

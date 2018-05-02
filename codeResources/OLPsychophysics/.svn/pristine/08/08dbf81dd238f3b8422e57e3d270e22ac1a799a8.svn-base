@@ -1,0 +1,35 @@
+% OLPsychophysics-LMSMelanopsinHighContrastSteps-A.cfg
+%
+% 12/21/2015     ms      Created.
+
+% Calibration
+CalibrationType:s:BoxARandomizedLongCableBEyePiece1_ND06:Type of calibration 
+
+% Timing information
+DurationSecsFrame:d:1/128:Number ms of each sample time
+DurationSecsPreStim:d:1:Number of seconds before stimulus
+DurationSecsInterval:d:5.5:Number of seconds for interval
+DurationSecsISIStim:d:1:Number of seconds after stimulus
+DurationSecsPostStim:d:0.5:Number of seconds after stimulus
+DurationSecsResponseInterv:d:4:Number of seconds after stimulus
+DurationSecsCosineWindow:d:0.25:Number of seconds of cosine window
+
+% Trial information
+NTrialsPerBlock:d:16:Number of trials
+NBlocks:d:9:Number of blocks
+BlockOrder:d:[1 1 1 3 3 2 2 1 2]:Order of block types
+
+% Stimulus information
+NTrialTypes:d:3:Number of different modulations
+NVersionsPerStimulusType:d:5:Number of different stimulus types
+NNoiseModulationTypes:d:2:Number of different noise types
+StimulusModulationTypes:s:LightFlux,LMSDirected,MelanopsinDirectedPenumbralIgnore:Modulation directions
+StimulusModulationContrast:d:[1 1 1]:Scalar to scale the modulation primaries by
+NoiseModulationTypes:s:LMSDirectedNoise,LMinusMDirectedNoise
+NoiseModulationContrast:d:[1 1 1]:Scalar to scale the noise primaries by
+NoiseModulationFrequencyHz:d:8:Frequency for digital cone noise
+NoiseModulationDiscreteStates:d:11:Number of discrete noise states
+
+% 
+DoDarkAdaptation:d:0
+DoBackgroundAdaptation:d:0

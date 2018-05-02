@@ -1,0 +1,26 @@
+% OLPsychophysics-LMSMelanopsinHighContrastSteps-A.cfg
+%
+% 12/21/2015     ms      Created.
+
+% Calibration
+CalibrationType:s:BoxARandomizedLongCableBEyePiece1_ND10:Type of calibration 
+
+% Timing information
+DurationSecsFrame:d:1/128:Number ms of each sample time
+DurationSecsPreStim:d:4:Number of seconds before stimulus
+DurationSecsInterval:d:0.25:Number of seconds for interval
+DurationSecsISIStim:d:0.5:Number of seconds after stimulus
+DurationSecsPostStim:d:0.5:Number of seconds after stimulus
+DurationSecsResponseInterv:d:2:Number of seconds after stimulus
+DurationSecsCosineWindow:d:0.025:Number of seconds of cosine window
+
+% Trial information
+NTrials:d:40:Number of trials
+
+% Stimulus information
+NTrialTypes:d:1:Number of different modulations
+NFrequencies:d:1:Number of frequencies
+frequencies:d:[32]:Frequencies
+BackgroundShiftTypes:s:LightFluxStepHalfOn:Background shift type
+StimulusModulationTypes:s:LightFluxHalfOn:Modulation direction
+StimulusModulationContrast:d:[1]:Scalar to scale the modulation primaries by

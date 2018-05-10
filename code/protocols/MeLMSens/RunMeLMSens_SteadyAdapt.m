@@ -82,7 +82,7 @@ if exist('radiometer','var') && ~isempty(radiometer)
 end
 
 %% Close OneLight
-shutdown = input('<strong>Shutdown OneLight? [Y/N]</strong>','s');
+shutdown = input('<strong>Shutdown OneLight? [Y/N]</strong>>> ','s');
 if upper(shutdown) == 'Y'
     oneLight.shutdown()
 end

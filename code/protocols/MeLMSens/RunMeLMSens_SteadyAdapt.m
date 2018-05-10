@@ -10,7 +10,7 @@ end
 clear all; close all; clc;
 
 approach = 'OLApproach_Psychophysics';
-protocol = 'MeLMSens_SteadyAdapt';
+protocol = 'MeLMSens';
 simulate = getpref(approach,'simulate'); % localhook defines what devices to simulate
 
 %% Set output path
@@ -89,7 +89,8 @@ end
 %% Map response to some action
 %  Depending on which key-response was given, map to some action
 keyBindings = containers.Map();
-keyBindings('Q') = 0;
+keyBindings('Q') = 'abort';
+keyBindings('ESCAPE') = 'abort';
 keyBindings('GP:LOWERLEFTTRIGGER') = [1 0];
 keyBindings('GP:LOWERRIGHTTRIGGER') = [0 1];
 
@@ -141,7 +142,7 @@ for ntrial = 1:NTrialsPerStaircase % loop over trial numbers
             end
         end
         response = keyBindings(responseKey);
-        if ischar(response) && response == 'ESCAPE'
+        if ischar(response) && strcmp(response,'abort')
             break; % TODO
         end
 

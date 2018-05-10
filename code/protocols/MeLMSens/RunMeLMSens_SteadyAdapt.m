@@ -26,11 +26,8 @@ mkdir(sessionDataPath);
 %% Get calibration
 % Specify which box and calibration to use, check that everything is set up
 % correctly, and retrieve the calibration structure.
-boxName = 'BoxD';
-calibrationType = 'BoxDRandomizedLongCableBEyePiece2_ND01';
-if (~strcmp(getpref('OneLightToolbox','OneLightCalData'),getpref(approach,'OneLightCalDataPath')))
-    error('Calibration file prefs not set up as expected for an approach');
-end
+boxName = 'BoxB';
+calibrationType = 'BoxBRandomizedLongCableBEyePiece2_ND01';
 calibration = OLGetCalibrationStructure('CalibrationType',calibrationType,'CalibrationDate','latest');
 
 %% Open the OneLight

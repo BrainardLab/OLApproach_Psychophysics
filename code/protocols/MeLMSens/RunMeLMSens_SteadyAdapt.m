@@ -101,7 +101,7 @@ flickerDuration = .5;
 flickerWaveform = sinewave(flickerDuration,samplingFq,flickerFrequency);
 
 %% Show adaptation spectrum for adaptation period (preceding any trials)
-OLShowDirection(background, oneLight);
+OLAdaptToDirection(background, oneLight, minutes(5));
 
 %% Run trials
 for ntrial = 1:NTrialsPerStaircase % loop over trial numbers

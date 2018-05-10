@@ -98,52 +98,8 @@ classdef Acquisition_FlickerSensitivity_2IFC < handle
                         % Get contrast value                    
                         flickerContrast = getCurrentValue(obj.staircases{k});
 
-                        % Assemble modulations
-                        scaledDirection = obj.direction.ScaleToReceptorContrast(obj.background, obj.receptors, [flickerContrast, flickerContrast, flickerContrast, 0]');
-                        
-                        targetModulation = OLAssembleModulation([obj.background, scaledDirection],...
-                            [ones(1,length(obj.flickerWaveform)); obj.flickerWaveform]);
-                        
-                        referenceModulation = OLAssembleModulation(obj.background,...
-                            ones([1,length(obj.flickerWaveform)]));
-
-                        % Determine which interval (1 or 2) will have flicker
-                        targetPresent = logical([0 0]);
-                        targetInterval = randi(length(targetPresent));
-                        targetPresent(targetInterval) = true;
-
-                        % Assemble trial
-                        modulations = repmat(referenceModulation,[length(targetPresent),1]);
-                        modulations(targetPresent) = targetModulation;
-
-                        % Show modulations
-                        for m = 1:length(modulations)
-                            mglWaitSecs(obj.ISI);
-                            Beeper;
-                            OLFlicker(oneLight, modulations(m).starts, modulations(m).stops, 1/obj.samplingFq,1);
-                            OLShowDirection(obj.background, oneLight);
-                        end
-
-                        % Response
-                        % Get response from GamePad, but also listen to keyboard
-                        while true
-                            responseKey = upper(WaitForKeyChar);
-                            if any(strcmp(responseKey,obj.keyBindings.keys()))
-                                break;
-                            end
-                        end
-                        response = obj.keyBindings(responseKey);
-
-                        if ischar(response) && strcmp(response,'abort')
-                            % User wants to abort
-                            abort = true;
-                            correct = false;
-                        else
-                            abort = false;
-
-                            % Correct? Compare response
-                            correct = all(response == targetPresent);
-                        end
+                        % Run trial
+                        [correct, abort] = obj.runTrial(flickerContrast, oneLight);
 
                         % Update modulation parameters, according to staircase
                         obj.staircases{k} = updateForTrial(obj.staircases{k}, flickerContrast, correct);
@@ -153,6 +109,52 @@ classdef Acquisition_FlickerSensitivity_2IFC < handle
             if abort
                 throw(MException('OLApproach_PsychophysicsEngine:UserAbort', ...
                       'User aborted acquisition.'));
+            end
+        end
+        
+        function [correct, abort] = runTrial(obj, flickerContrast, oneLight)
+            %% Assemble trial 
+            % Assemble modulations
+            scaledDirection = obj.direction.ScaleToReceptorContrast(obj.background, obj.receptors, [flickerContrast, flickerContrast, flickerContrast, 0]');
+            targetModulation = OLAssembleModulation([obj.background, scaledDirection],[ones(1,length(obj.flickerWaveform)); obj.flickerWaveform]);
+            referenceModulation = OLAssembleModulation(obj.background, ones([1,length(obj.flickerWaveform)]));
+
+            % Determine which interval (1 or 2) will have flicker
+            targetPresent = logical([0 0]);
+            targetInterval = randi(length(targetPresent));
+            targetPresent(targetInterval) = true;
+            
+            % Assemble trial
+            modulations = repmat(referenceModulation,[length(targetPresent),1]);
+            modulations(targetPresent) = targetModulation;
+            
+            %% Show modulations
+            for m = 1:length(modulations)
+                mglWaitSecs(obj.ISI);
+                Beeper;
+                OLFlicker(oneLight, modulations(m).starts, modulations(m).stops, 1/obj.samplingFq,1);
+                OLShowDirection(obj.background, oneLight);
+            end
+            
+            %% Response
+            %  Get response from GamePad, but also listen to keyboard
+            while true
+                responseKey = upper(WaitForKeyChar);
+                if any(strcmp(responseKey,obj.keyBindings.keys()))
+                    break;
+                end
+            end
+            response = obj.keyBindings(responseKey);
+            
+            if ischar(response) && strcmpi(response,'abort')
+                % User wants to abort
+                abort = true;
+                correct = false;
+            else
+                abort = false;
+                
+                % Correct? Compare response
+                correct = all(response == targetPresent);
             end
         end
     end

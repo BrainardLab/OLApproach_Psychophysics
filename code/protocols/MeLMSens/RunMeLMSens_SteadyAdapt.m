@@ -60,104 +60,20 @@ LMSDirectionParams = OLDirectionParamsFromName('MaxLMS_bipolar_275_60_667','alte
 LMSDirectionParams.primaryHeadRoom = 0;
 LMSDirectionParams.modulationContrast = [.05 .05 .05];
 
-%% Run acquisition
+%% Setup acquisition
 % Set directons parameters
-background = MelBackground;
-direction = OLDirectionNominalFromParams(LMSDirectionParams, calibration, 'background', background, 'observerAge', participantAge);
+acquisition = Acquisition_FlickerSensitivity_2IFC(...
+    OLDirectionNominalFromParams(LMSDirectionParams, calibration, 'background', MelBackground, 'observerAge', participantAge),...
+    MelBackground,...
+    receptors);
 
-% Set staircase parameters
-staircaseType = 'standard';
-contrastStep = 0.005;
-maxContrast = 0.05;
-minContrast = contrastStep;
-contrastLevels = (0:contrastStep:maxContrast);
-NTrialsPerStaircase = 40;
-NInterleavedStaircases = 3;
-stepSizes = [4*contrastStep 2*contrastStep contrastStep];
-nUps = [3 2 1];
-nDowns = [1 1 1];
+%% Run acquisition
+acquisition.initializeStaircases();
+acquisition.runAcquisition(oneLight);
 
-%% Initialize staircases
-rngSettings = rng('default');
-for k = 1:NInterleavedStaircases
-    initialGuess = randsample(contrastLevels,1);
-    staircases(k) = Staircase(staircaseType,initialGuess, ...
-        'StepSizes', stepSizes, 'NUp', nUps(k), 'NDown', nDowns(k), ...
-        'MaxValue', maxContrast, 'MinValue', minContrast);    
-end
-
-%% Map response to some action
-%  Depending on which key-response was given, map to some action
-keyBindings = containers.Map();
-keyBindings('Q') = 'abort';
-keyBindings('ESCAPE') = 'abort';
-keyBindings('GP:LOWERLEFTTRIGGER') = [1 0];
-keyBindings('GP:LOWERRIGHTTRIGGER') = [0 1];
-
-%% Assemble flicker waveform
-samplingFq = 200;
-flickerFrequency = 5;
-flickerDuration = .5;
-flickerWaveform = sinewave(flickerDuration,samplingFq,flickerFrequency);
-
-%% Show adaptation spectrum for adaptation period (preceding any trials)
-OLAdaptToDirection(background, oneLight, minutes(5));
-
-%% Run trials
-for ntrial = 1:NTrialsPerStaircase % loop over trial numbers
-    for k = Shuffle(1:NInterleavedStaircases) % loop over staircases, in randomized order
-        %% Assemble modulations
-        % Get contrast value
-        flickerContrast = getCurrentValue(staircases(k));
-
-        % Assemble flicker primaryWaveform
-        direction = direction.ScaleToReceptorContrast(background, receptors, [flickerContrast, flickerContrast, flickerContrast, 0]');
-
-        % Determine which interval (1 or 2) will have flicker
-        targetPresent = logical([0 0]);
-        targetInterval = randi(length(targetPresent));
-        targetPresent(targetInterval) = true;
-
-        % Assemble modulations
-        targetModulation = OLAssembleModulation([background, direction],[ones(1,length(flickerWaveform)); flickerWaveform]);
-        referenceModulation = OLAssembleModulation(background, ones([1,length(flickerWaveform)]));
-        modulations = repmat(referenceModulation,[length(targetPresent),1]);
-        modulations(targetPresent) = targetModulation;
-
-        %% Show modulations
-        ISI = .5;
-        for m = 1:length(modulations)
-            mglWaitSecs(ISI);
-            Beeper;
-            OLFlicker(oneLight, modulations(m).starts, modulations(m).stops, 1/samplingFq,1);
-            OLShowDirection(background, oneLight);
-        end
-
-        %% Response
-        %  Get response from GamePad, but also listen to keyboard
-        while true
-            responseKey = upper(WaitForKeyChar);
-            if any(strcmp(responseKey,keyBindings.keys()))
-                break;
-            end
-        end
-        response = keyBindings(responseKey);
-        if ischar(response) && strcmp(response,'abort')
-            break; % TODO
-        end
-
-        %% Correct? Compare response
-        correct = all(response == targetPresent);
-
-        %% Update modulation parameters, according to staircase
-        staircases(k) = updateForTrial(staircases(k), flickerContrast, correct);
-              
-    end
-end
-
-%% Get threshold estimate
-for k = 1:NInterleavedStaircases
-    thresholds(k) = [getThresholdEstimate(staircases(k))];
+% Get threshold estimate
+for k = 1:acquisition.NInterleavedStaircases
+    thresholds(k) = [getThresholdEstimate(acquisition.staircases{k})];
 end
     
 %% Close radiometer

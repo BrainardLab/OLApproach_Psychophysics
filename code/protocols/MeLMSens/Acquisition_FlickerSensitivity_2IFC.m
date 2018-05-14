@@ -113,7 +113,9 @@ classdef Acquisition_FlickerSensitivity_2IFC < handle
             obj.flickerWaveform = sinewave(obj.flickerDuration,obj.samplingFq,obj.flickerFrequency);
             
             % Adapt
-            %obj.showAdaptation(oneLight);
+            Speak('Press key to start adaptation',[],230);
+            WaitForKeyChar;
+            obj.showAdaptation(oneLight);
             
             % Run trials
             abort = false;
@@ -154,6 +156,7 @@ classdef Acquisition_FlickerSensitivity_2IFC < handle
             modulations(targetPresent) = targetModulation;
             
             %% Show modulations
+            OLShowDirection(obj.background, oneLight);
             for m = 1:length(modulations)
                 mglWaitSecs(obj.ISI);
                 Beeper;

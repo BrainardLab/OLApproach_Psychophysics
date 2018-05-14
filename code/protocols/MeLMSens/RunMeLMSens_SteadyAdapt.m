@@ -48,32 +48,73 @@ else
 end
 
 %% Create directions
-% Melanopsin isolating direction, directed background
-melDirectionParams = OLDirectionParamsFromName('MaxMel_unipolar_275_60_667','alternateDictionaryFunc','OLDirectionParamsDictionary_Psychophysics');
-melDirectionParams.primaryHeadRoom = 0;
-melDirectionParams.modulationContrast = OLUnipolarToBipolarContrast(3.5);
-[MelDirection, MelBackground] = OLDirectionNominalFromParams(melDirectionParams, calibration, 'observerAge', participantAge);
+% Melanopsin directed direction, background
+MelDirectionParams = OLDirectionParamsFromName('MaxMel_unipolar_275_60_667','alternateDictionaryFunc','OLDirectionParamsDictionary_Psychophysics');
+MelDirectionParams.primaryHeadRoom = 0;
+MelDirectionParams.modulationContrast = OLUnipolarToBipolarContrast(3.5);
+[MelDirection, MelBackground] = OLDirectionNominalFromParams(MelDirectionParams, calibration, 'observerAge', participantAge);
 receptors = MelDirection.describe.directionParams.T_receptors;
 
-% LMS flicker direction, on background and background+MelDirection
-LMSDirectionParams = OLDirectionParamsFromName('MaxLMS_bipolar_275_60_667','alternateDictionaryFunc','OLDirectionParamsDictionary_Psychophysics');
+% LMS-step directed direction, background
+LMSDirectionParams = OLDirectionParamsFromName('MaxLMS_unipolar_275_60_667','alternateDictionaryFunc','OLDirectionParamsDictionary_Psychophysics');
 LMSDirectionParams.primaryHeadRoom = 0;
-LMSDirectionParams.modulationContrast = [.05 .05 .05];
+LMSDirectionParams.modulationContrast = OLUnipolarToBipolarContrast([3.5 3.5 3.5]);
+[LMSDirection, LMSBackground] = OLDirectionNominalFromParams(LMSDirectionParams, calibration, 'observerAge', participantAge);
+receptors = LMSDirection.describe.directionParams.T_receptors;
 
-%% Setup acquisition
-% Set directons parameters
-acquisition = Acquisition_FlickerSensitivity_2IFC(...
-    OLDirectionNominalFromParams(LMSDirectionParams, calibration, 'background', MelBackground, 'observerAge', participantAge),...
+% LMS flicker direction, on background and background+MelDirection
+FlickerDirectionParams = OLDirectionParamsFromName('MaxLMS_bipolar_275_60_667','alternateDictionaryFunc','OLDirectionParamsDictionary_Psychophysics');
+FlickerDirectionParams.primaryHeadRoom = 0;
+FlickerDirectionParams.modulationContrast = [.05 .05 .05];
+
+%% Validations
+% TODO
+
+%% Corrections, re-validations
+% TODO
+
+%% Setup acquisitions
+% Low Mel
+acquisitions(1) = Acquisition_FlickerSensitivity_2IFC(...
     MelBackground,...
-    receptors);
+    OLDirectionNominalFromParams(FlickerDirectionParams, calibration, 'background', MelBackground, 'observerAge', participantAge),...
+    receptors,...
+    'name',"Mel_low");
 
-%% Run acquisition
-acquisition.initializeStaircases();
-acquisition.runAcquisition(oneLight);
+% High Mel
+acquisitions(2) = Acquisition_FlickerSensitivity_2IFC(...
+    MelBackground+MelDirection,...
+    OLDirectionNominalFromParams(FlickerDirectionParams, calibration, 'background', MelBackground+MelDirection, 'observerAge', participantAge),...
+    receptors,...
+    'name',"Mel_high");
 
-% Get threshold estimate
-for k = 1:acquisition.NInterleavedStaircases
-    thresholds(k) = [getThresholdEstimate(acquisition.staircases{k})];
+% Low LMS
+acquisitions(3) = Acquisition_FlickerSensitivity_2IFC(...
+    LMSBackground,...
+    OLDirectionNominalFromParams(FlickerDirectionParams, calibration, 'background', LMSBackground, 'observerAge', participantAge),...
+    receptors,...
+    'name',"LMS_low");
+
+% High LMS
+acquisitions(4) = Acquisition_FlickerSensitivity_2IFC(...
+    LMSBackground+LMSDirection,...
+    OLDirectionNominalFromParams(FlickerDirectionParams, calibration, 'background', LMSBackground+LMSDirection, 'observerAge', participantAge),...
+    receptors,...
+    'name',"LMS_high");
+
+%% Run acquisitions
+rngSettings = rng;
+acquisitions = Shuffle(acquisitions);
+
+for acquisition = acquisitions
+    fprintf('Running acquisition %s...\n',acquisition.name)
+    acquisition.initializeStaircases();
+    acquisition.runAcquisition(oneLight);
+
+    % Get threshold estimate
+    for k = 1:acquisition.NInterleavedStaircases
+        acquisition.thresholds(k) = [getThresholdEstimate(acquisition.staircases{k})];
+    end
 end
     
 %% Close radiometer

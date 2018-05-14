@@ -3,6 +3,12 @@ classdef Acquisition_FlickerSensitivity_2IFC < handle
     %
     %   Detailed explanation goes here
     
+    %% Descriptors
+    properties
+        name;
+        describe;
+    end
+    
     %% Directions
     properties
         background;
@@ -49,8 +55,26 @@ classdef Acquisition_FlickerSensitivity_2IFC < handle
     
     %% Methods
     methods
-        function obj = Acquisition_FlickerSensitivity_2IFC(direction, background, receptors)
+        function obj = Acquisition_FlickerSensitivity_2IFC(background, direction, receptors, varargin)
             %% Constructor
+            
+            %% Input validation
+            parser = inputParser;
+            parser.addRequired('background',@(x) isa(x,'OLDirection_unipolar'));
+            parser.addRequired('direction',@(x) isa(x,'OLDirection_bipolar'));
+            parser.addRequired('receptors',@(x) isa(x,'SSTReceptor') || isnumeric(x));
+            parser.addParameter('name',"",@(x) ischar(x) || isstring(x));
+            parser.addParameter('describe',struct(),@isstruct);
+            
+            parser.parse(background,direction,receptors,varargin{:});
+            
+            %% Assign properties
+            % Name, describe
+            obj.name = parser.Results.name;
+            obj.describe = parser.Results.describe;
+            obj.describe.name = obj.name;
+            
+            % Direction-related
             obj.background = background;
             obj.direction = direction;
             obj.receptors = receptors;

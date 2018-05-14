@@ -33,6 +33,7 @@ classdef Acquisition_FlickerSensitivity_2IFC < handle
     %% Staircase related properties
     properties 
         staircases;
+        thresholds;
         
         % Staircase parameters
         staircaseType = 'standard';

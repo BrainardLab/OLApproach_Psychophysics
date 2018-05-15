@@ -49,26 +49,39 @@ end
 
 %% Create directions
 % Melanopsin directed direction, background
+Null = OLDirection_unipolar.Null(calibration);
 MelDirectionParams = OLDirectionParamsFromName('MaxMel_unipolar_275_60_667','alternateDictionaryFunc','OLDirectionParamsDictionary_Psychophysics');
 MelDirectionParams.primaryHeadRoom = 0;
 MelDirectionParams.modulationContrast = OLUnipolarToBipolarContrast(3.5);
-[MelDirection, MelBackground] = OLDirectionNominalFromParams(MelDirectionParams, calibration, 'observerAge', participantAge);
-receptors = MelDirection.describe.directionParams.T_receptors;
+[MelStep, Mel_low] = OLDirectionNominalFromParams(MelDirectionParams, calibration, 'observerAge', participantAge);
+Mel_high = Mel_low + MelStep;
+receptors = MelStep.describe.directionParams.T_receptors;
 
 % LMS-step directed direction, background
 LMSDirectionParams = OLDirectionParamsFromName('MaxLMS_unipolar_275_60_667','alternateDictionaryFunc','OLDirectionParamsDictionary_Psychophysics');
 LMSDirectionParams.primaryHeadRoom = 0;
 LMSDirectionParams.modulationContrast = OLUnipolarToBipolarContrast([3.5 3.5 3.5]);
-[LMSDirection, LMSBackground] = OLDirectionNominalFromParams(LMSDirectionParams, calibration, 'observerAge', participantAge);
-receptors = LMSDirection.describe.directionParams.T_receptors;
+[LMSStep, LMS_low] = OLDirectionNominalFromParams(LMSDirectionParams, calibration, 'observerAge', participantAge);
+LMS_high = LMS_low + LMSStep;
 
-% LMS flicker direction, on background and background+MelDirection
+% LMS flicker directions
 FlickerDirectionParams = OLDirectionParamsFromName('MaxLMS_bipolar_275_60_667','alternateDictionaryFunc','OLDirectionParamsDictionary_Psychophysics');
 FlickerDirectionParams.primaryHeadRoom = 0;
 FlickerDirectionParams.modulationContrast = [.05 .05 .05];
+FlickerDirection_Mel_low = OLDirectionNominalFromParams(FlickerDirectionParams, calibration, 'background', Mel_low, 'observerAge', participantAge);
+FlickerDirection_Mel_high = OLDirectionNominalFromParams(FlickerDirectionParams, calibration, 'background', Mel_high, 'observerAge', participantAge);
+FlickerDirection_LMS_low = OLDirectionNominalFromParams(FlickerDirectionParams, calibration, 'background', LMS_low, 'observerAge', participantAge);
+FlickerDirection_LMS_high = OLDirectionNominalFromParams(FlickerDirectionParams, calibration, 'background', LMS_high, 'observerAge', participantAge);
 
 %% Validations
-% TODO
+input('<strong>Focus the radiometer and press any key to pause 3 seconds and start measuring.</strong>\n'); pause(3);
+validations = containers.Map();
+validations('Mel_lowhigh') = OLValidateDirection(Mel_high, Mel_low, oneLight, radiometer, 'receptors', receptors);
+validations('LMS_lowhigh')  = OLValidateDirection(LMS_high, LMS_low, oneLight, radiometer, 'receptors', receptors);
+validations('Flicker_Mel_low') = OLValidateDirection(FlickerDirection_Mel_low, Mel_low, oneLight, radiometer, 'receptors', receptors);
+validations('Flicker_Mel_high') = OLValidateDirection(FlickerDirection_Mel_high, Mel_high, oneLight, radiometer, 'receptors', receptors);
+validations('Flicker_LMS_low') = OLValidateDirection(FlickerDirection_LMS_low, LMS_low, oneLight, radiometer, 'receptors', receptors);
+validations('Flicker_LMS_high') = OLValidateDirection(FlickerDirection_LMS_high, LMS_high, oneLight, radiometer, 'receptors', receptors);
 
 %% Corrections, re-validations
 % TODO
@@ -76,33 +89,35 @@ FlickerDirectionParams.modulationContrast = [.05 .05 .05];
 %% Setup acquisitions
 % Low Mel
 acquisitions(1) = Acquisition_FlickerSensitivity_2IFC(...
-    MelBackground,...
-    OLDirectionNominalFromParams(FlickerDirectionParams, calibration, 'background', MelBackground, 'observerAge', participantAge),...
+    Mel_low,...
+    FlickerDirection_Mel_low,...
     receptors,...
     'name',"Mel_low");
 
 % High Mel
 acquisitions(2) = Acquisition_FlickerSensitivity_2IFC(...
-    MelBackground+MelDirection,...
-    OLDirectionNominalFromParams(FlickerDirectionParams, calibration, 'background', MelBackground+MelDirection, 'observerAge', participantAge),...
+    Mel_high,...
+    FlickerDirection_Mel_high,...
     receptors,...
     'name',"Mel_high");
 
 % Low LMS
 acquisitions(3) = Acquisition_FlickerSensitivity_2IFC(...
-    LMSBackground,...
-    OLDirectionNominalFromParams(FlickerDirectionParams, calibration, 'background', LMSBackground, 'observerAge', participantAge),...
+    LMS_low,...
+    FlickerDirection_LMS_low,...
     receptors,...
     'name',"LMS_low");
 
 % High LMS
 acquisitions(4) = Acquisition_FlickerSensitivity_2IFC(...
-    LMSBackground+LMSDirection,...
-    OLDirectionNominalFromParams(FlickerDirectionParams, calibration, 'background', LMSBackground+LMSDirection, 'observerAge', participantAge),...
+    LMS_high,...
+    FlickerDirection_LMS_high,...
     receptors,...
     'name',"LMS_high");
 
 %% Run acquisitions
+sessionResults = table();
+
 rngSettings = rng;
 acquisitions = Shuffle(acquisitions);
 
@@ -113,18 +128,32 @@ for acquisition = acquisitions
 
     % Get threshold estimate
     for k = 1:acquisition.NInterleavedStaircases
-        acquisition.thresholds(k) = [getThresholdEstimate(acquisition.staircases{k})];
+        acquisition.thresholds(k) = getThresholdEstimate(acquisition.staircases{k});
     end
+    
+    % Validate contrast at threshold
+    desiredContrast = [1 1 1 0]' * mean(acquisition.thresholds);
+    scaledDirection = acquisition.direction.ScaleToReceptorContrast(acquisition.background, receptors, desiredContrast);
+    [acquisition.validationAtThreshold, ~, ~, validationContrast] = OLValidateDirection(scaledDirection,acquisition.background, oneLight, 'receptors', receptors);
+    acquisition.validatedContrastAtThreshold = validationContrast.actual;
+    
+    % Collect results
+    acquisitionResults.condition = acquisition.name;
+    acquisitionResults.contrast = acquisition.validatedContrastAtThreshold;
+    save(fullfile(sessionDataPath,sprintf('data-%s-%s-%s',participantID,sessionName,acquisition.name)),'acquisition');
+    
+    sessionResults = [sessionResults struct2table(acquisitionResults)];
+    writetable(sessionResults,fullfile(sessionDataPath,['results-' participantID '-' sessionName '.csv']));
 end
     
 %% Close radiometer
 if exist('radiometer','var') && ~isempty(radiometer)
-    radiometer.shutDown()
+    radiometer.shutDown();
 end
 
 %% Close OneLight
 shutdown = input('<strong>Shutdown OneLight? [Y/N]</strong>>> ','s');
 if upper(shutdown) == 'Y'
-    oneLight.shutdown()
+    oneLight.shutdown();
 end
 oneLight.close();

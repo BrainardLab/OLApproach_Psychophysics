@@ -14,6 +14,10 @@ classdef Acquisition_FlickerSensitivity_2IFC < handle
         background;
         direction;
         receptors;
+        
+        % Post-validation
+        validationAtThreshold;
+        validatedContrastAtThreshold;
     end
     
     %% Timing related properties
@@ -27,7 +31,6 @@ classdef Acquisition_FlickerSensitivity_2IFC < handle
         samplingFq = 200;
         flickerFrequency = 5;
         flickerDuration = .5;
-
     end
       
     %% Staircase related properties

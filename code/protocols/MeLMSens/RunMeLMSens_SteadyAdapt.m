@@ -76,8 +76,8 @@ FlickerDirection_LMS_high = OLDirectionNominalFromParams(FlickerDirectionParams,
 %% Validations
 input('<strong>Focus the radiometer and press any key to pause 3 seconds and start measuring.</strong>\n'); pause(3);
 validations = containers.Map();
-validations('Mel_lowhigh') = OLValidateDirection(Mel_high, Mel_low, oneLight, radiometer, 'receptors', receptors);
-validations('LMS_lowhigh')  = OLValidateDirection(LMS_high, LMS_low, oneLight, radiometer, 'receptors', receptors);
+validations('Mel_lowhigh') = OLValidateDirection(MelStep, Mel_low, oneLight, radiometer, 'receptors', receptors);
+validations('LMS_lowhigh')  = OLValidateDirection(LMSStep, LMS_low, oneLight, radiometer, 'receptors', receptors);
 validations('Flicker_Mel_low') = OLValidateDirection(FlickerDirection_Mel_low, Mel_low, oneLight, radiometer, 'receptors', receptors);
 validations('Flicker_Mel_high') = OLValidateDirection(FlickerDirection_Mel_high, Mel_high, oneLight, radiometer, 'receptors', receptors);
 validations('Flicker_LMS_low') = OLValidateDirection(FlickerDirection_LMS_low, LMS_low, oneLight, radiometer, 'receptors', receptors);
@@ -115,17 +115,19 @@ acquisitions(4) = Acquisition_FlickerSensitivity_2IFC(...
     receptors,...
     'name',"LMS_high");
 
-%% Run acquisitions
+% Combine
 sessionResults = table();
-
 rngSettings = rng;
 acquisitions = Shuffle(acquisitions);
 
+%% Run
 for acquisition = acquisitions
     fprintf('Running acquisition %s...\n',acquisition.name)
     acquisition.initializeStaircases();
     acquisition.runAcquisition(oneLight);
-
+    fprintf('Acquisition complete.\n'); Speak('Acquisition complete.',[],230);
+    input('<strong>Focus the radiometer and press any key to pause 3 seconds and start measuring.</strong>\n'); pause(3);
+    
     % Get threshold estimate
     for k = 1:acquisition.NInterleavedStaircases
         acquisition.thresholds(k) = getThresholdEstimate(acquisition.staircases{k});
@@ -134,15 +136,19 @@ for acquisition = acquisitions
     % Validate contrast at threshold
     desiredContrast = [1 1 1 0]' * mean(acquisition.thresholds);
     scaledDirection = acquisition.direction.ScaleToReceptorContrast(acquisition.background, receptors, desiredContrast);
-    [acquisition.validationAtThreshold, ~, ~, validationContrast] = OLValidateDirection(scaledDirection,acquisition.background, oneLight, 'receptors', receptors);
-    acquisition.validatedContrastAtThreshold = validationContrast.actual;
+    [acquisition.validationAtThreshold, ~, ~, validationContrast] = OLValidateDirection(scaledDirection,acquisition.background, oneLight, radiometer, 'receptors', receptors);
+    acquisition.validatedContrastAtThreshold = validationContrast.actual(:,[1 3]);
     
     % Collect results
     acquisitionResults.condition = acquisition.name;
-    acquisitionResults.contrast = acquisition.validatedContrastAtThreshold;
+    acquisitionResults.Lcontrast = acquisition.validatedContrastAtThreshold(1,:);
+    acquisitionResults.Mcontrast = acquisition.validatedContrastAtThreshold(1,:);
+    acquisitionResults.Scontrast = acquisition.validatedContrastAtThreshold(1,:);
+    acquisitionResults.Melcontrast = acquisition.validatedContrastAtThreshold(1,:);
+
     save(fullfile(sessionDataPath,sprintf('data-%s-%s-%s',participantID,sessionName,acquisition.name)),'acquisition');
     
-    sessionResults = [sessionResults struct2table(acquisitionResults)];
+    sessionResults = [sessionResults; struct2table(acquisitionResults)];
     writetable(sessionResults,fullfile(sessionDataPath,['results-' participantID '-' sessionName '.csv']));
 end
     

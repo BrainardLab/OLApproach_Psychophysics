@@ -43,7 +43,7 @@ while true
         key = keyKeyBoard;
         break;
     end
-    if ~isempty(keyGamePad)
+    if exist(keyGamePad,'var') && ~isempty(keyGamePad)
         key = keyGamePad;
         break;
     end

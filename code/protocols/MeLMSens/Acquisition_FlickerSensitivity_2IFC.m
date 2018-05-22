@@ -17,7 +17,8 @@ classdef Acquisition_FlickerSensitivity_2IFC < handle
         
         % Post-validation
         validationAtThreshold;
-        validatedContrastAtThreshold;
+        validatedContrastAtThresholdPos;
+        validatedContrastAtThresholdNeg;        
     end
     
     %% Timing related properties

@@ -136,19 +136,29 @@ for acquisition = acquisitions
     % Validate contrast at threshold
     desiredContrast = [1 1 1 0]' * mean(acquisition.thresholds);
     scaledDirection = acquisition.direction.ScaleToReceptorContrast(acquisition.background, receptors, desiredContrast);
-    [acquisition.validationAtThreshold, ~, ~, validationContrast] = OLValidateDirection(scaledDirection,acquisition.background, oneLight, radiometer, 'receptors', receptors);
-    acquisition.validatedContrastAtThreshold = validationContrast.actual(:,[1 3]);
+    for v = 1:5
+        [validationAtThreshold, ~, ~, validationContrast] = OLValidateDirection(scaledDirection,acquisition.background, oneLight, radiometer, 'receptors', receptors);
+        acquisition.validationAtThreshold = [acquisition.validationAtThreshold, validationAtThreshold];
+        acquisition.validatedContrastAtThresholdPos = [acquisition.validatedContrastAtThresholdPos, validationContrast.actual(:,1)];
+        acquisition.validatedContrastAtThresholdNeg = [acquisition.validatedContrastAtThresholdNeg, validationContrast.actual(:,3)];
+    end
     
+    % Save acquisition
+    save(fullfile(sessionDataPath,sprintf('data-%s-%s-%s',participantID,sessionName,acquisition.name)),'acquisition');
+
     % Collect results
     acquisitionResults.condition = acquisition.name;
-    acquisitionResults.Lcontrast = acquisition.validatedContrastAtThreshold(1,:);
-    acquisitionResults.Mcontrast = acquisition.validatedContrastAtThreshold(1,:);
-    acquisitionResults.Scontrast = acquisition.validatedContrastAtThreshold(1,:);
-    acquisitionResults.Melcontrast = acquisition.validatedContrastAtThreshold(1,:);
+    acquisitionResults.medianLcontrast = median(max(abs([acquisition.validatedContrastAtThresholdPos(1,:); acquisition.validatedContrastAtThresholdNeg(1,:)])));
+    acquisitionResults.medianMcontrast = median(max(abs([acquisition.validatedContrastAtThresholdPos(2,:); acquisition.validatedContrastAtThresholdNeg(2,:)])));
+    acquisitionResults.medianScontrast = median(max(abs([acquisition.validatedContrastAtThresholdPos(3,:); acquisition.validatedContrastAtThresholdNeg(3,:)])));
+    acquisitionResults.medianMelcontrast = median(max(abs([acquisition.validatedContrastAtThresholdPos(4,:); acquisition.validatedContrastAtThresholdNeg(4,:)])));
 
-    save(fullfile(sessionDataPath,sprintf('data-%s-%s-%s',participantID,sessionName,acquisition.name)),'acquisition');
-    
     sessionResults = [sessionResults; struct2table(acquisitionResults)];
+    if exist(fullfile(sessionDataPath,['results-' participantID '-' sessionName '.csv']),'file')
+        sessionResults = readtable(fullfile(sessionDataPath,['results-' participantID '-' sessionName '.csv']));
+    else
+        sessionResults = table();
+    end
     writetable(sessionResults,fullfile(sessionDataPath,['results-' participantID '-' sessionName '.csv']));
 end
     

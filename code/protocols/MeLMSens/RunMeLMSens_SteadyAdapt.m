@@ -39,7 +39,7 @@ oneLight = OneLight('simulate',simulate.oneLight); drawnow;
 if ~simulate.radiometer
     oneLight.setAll(true);
     commandwindow;
-    input('<strong>Focus the radiometer and press enter to pause 3 seconds and start measuring.</strong>\n');
+    input('<strong>Turn on radiometer and connect to USB; press any key to connect to radiometer</strong>\n');
     oneLight.setAll(false);
     pause(3);
     radiometer = OLOpenSpectroRadiometerObj('PR-670');
@@ -74,7 +74,7 @@ FlickerDirection_LMS_low = OLDirectionNominalFromParams(FlickerDirectionParams, 
 FlickerDirection_LMS_high = OLDirectionNominalFromParams(FlickerDirectionParams, calibration, 'background', LMS_high, 'observerAge', participantAge);
 
 %% Validations
-input('<strong>Focus the radiometer and press any key to pause 3 seconds and start measuring.</strong>\n'); pause(3);
+input('<strong>Place eyepiece in radiometer, and press any key to start measuring.</strong>\n'); pause(5);
 validations = containers.Map();
 validations('Mel_lowhigh') = OLValidateDirection(MelStep, Mel_low, oneLight, radiometer, 'receptors', receptors);
 validations('LMS_lowhigh')  = OLValidateDirection(LMSStep, LMS_low, oneLight, radiometer, 'receptors', receptors);
@@ -126,7 +126,7 @@ for acquisition = acquisitions
     acquisition.initializeStaircases();
     acquisition.runAcquisition(oneLight);
     fprintf('Acquisition complete.\n'); Speak('Acquisition complete.',[],230);
-    input('<strong>Focus the radiometer and press any key to pause 3 seconds and start measuring.</strong>\n'); pause(3);
+    input('<strong>Place eyepiece in radiometer, and press any key to start measuring.</strong>\n'); pause(3);
     
     % Get threshold estimate
     for k = 1:acquisition.NInterleavedStaircases

@@ -153,12 +153,12 @@ for acquisition = acquisitions
     acquisitionResults.medianScontrast = median(max(abs([acquisition.validatedContrastAtThresholdPos(3,:); acquisition.validatedContrastAtThresholdNeg(3,:)])));
     acquisitionResults.medianMelcontrast = median(max(abs([acquisition.validatedContrastAtThresholdPos(4,:); acquisition.validatedContrastAtThresholdNeg(4,:)])));
 
-    sessionResults = [sessionResults; struct2table(acquisitionResults)];
     if exist(fullfile(sessionDataPath,['results-' participantID '-' sessionName '.csv']),'file')
         sessionResults = readtable(fullfile(sessionDataPath,['results-' participantID '-' sessionName '.csv']));
     else
         sessionResults = table();
     end
+    sessionResults = [sessionResults; struct2table(acquisitionResults)];
     writetable(sessionResults,fullfile(sessionDataPath,['results-' participantID '-' sessionName '.csv']));
 end
     

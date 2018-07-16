@@ -47,41 +47,19 @@ else
     radiometer = [];
 end
 
-%% Create directions
-% Melanopsin directed direction, background
-Null = OLDirection_unipolar.Null(calibration);
-MelDirectionParams = OLDirectionParamsFromName('MaxMel_unipolar_275_60_667','alternateDictionaryFunc','OLDirectionParamsDictionary_Psychophysics');
-MelDirectionParams.primaryHeadRoom = 0;
-MelDirectionParams.modulationContrast = OLUnipolarToBipolarContrast(3.5);
-[MelStep, Mel_low] = OLDirectionNominalFromParams(MelDirectionParams, calibration, 'observerAge', participantAge);
-Mel_high = Mel_low + MelStep;
-receptors = MelStep.describe.directionParams.T_receptors;
-
-% LMS-step directed direction, background
-LMSDirectionParams = OLDirectionParamsFromName('MaxLMS_unipolar_275_60_667','alternateDictionaryFunc','OLDirectionParamsDictionary_Psychophysics');
-LMSDirectionParams.primaryHeadRoom = 0;
-LMSDirectionParams.modulationContrast = OLUnipolarToBipolarContrast([3.5 3.5 3.5]);
-[LMSStep, LMS_low] = OLDirectionNominalFromParams(LMSDirectionParams, calibration, 'observerAge', participantAge);
-LMS_high = LMS_low + LMSStep;
-
-% LMS flicker directions
-FlickerDirectionParams = OLDirectionParamsFromName('MaxLMS_bipolar_275_60_667','alternateDictionaryFunc','OLDirectionParamsDictionary_Psychophysics');
-FlickerDirectionParams.primaryHeadRoom = 0;
-FlickerDirectionParams.modulationContrast = [.05 .05 .05];
-FlickerDirection_Mel_low = OLDirectionNominalFromParams(FlickerDirectionParams, calibration, 'background', Mel_low, 'observerAge', participantAge);
-FlickerDirection_Mel_high = OLDirectionNominalFromParams(FlickerDirectionParams, calibration, 'background', Mel_high, 'observerAge', participantAge);
-FlickerDirection_LMS_low = OLDirectionNominalFromParams(FlickerDirectionParams, calibration, 'background', LMS_low, 'observerAge', participantAge);
-FlickerDirection_LMS_high = OLDirectionNominalFromParams(FlickerDirectionParams, calibration, 'background', LMS_high, 'observerAge', participantAge);
+%% Get directions
+directions = MakeNominalMeLMSens_SteadyAdapt(calibration,'observerAge',participantAge);
 
 %% Validations
+receptors = directions('MelStep').describe.directionParams.T_receptors;
 input('<strong>Place eyepiece in radiometer, and press any key to start measuring.</strong>\n'); pause(5);
 validations = containers.Map();
-validations('Mel_lowhigh') = OLValidateDirection(MelStep, Mel_low, oneLight, radiometer, 'receptors', receptors);
-validations('LMS_lowhigh')  = OLValidateDirection(LMSStep, LMS_low, oneLight, radiometer, 'receptors', receptors);
-validations('Flicker_Mel_low') = OLValidateDirection(FlickerDirection_Mel_low, Mel_low, oneLight, radiometer, 'receptors', receptors);
-validations('Flicker_Mel_high') = OLValidateDirection(FlickerDirection_Mel_high, Mel_high, oneLight, radiometer, 'receptors', receptors);
-validations('Flicker_LMS_low') = OLValidateDirection(FlickerDirection_LMS_low, LMS_low, oneLight, radiometer, 'receptors', receptors);
-validations('Flicker_LMS_high') = OLValidateDirection(FlickerDirection_LMS_high, LMS_high, oneLight, radiometer, 'receptors', receptors);
+validations('Mel_lowhigh') = OLValidateDirection(directions('MelStep'), directions('Mel_low'), oneLight, radiometer, 'receptors', receptors);
+validations('LMS_lowhigh')  = OLValidateDirection(directions('LMSStep'), directions('LMS_low'), oneLight, radiometer, 'receptors', receptors);
+validations('Flicker_Mel_low') = OLValidateDirection(directions('FlickerDirection_Mel_low'), directions('Mel_low'), oneLight, radiometer, 'receptors', receptors);
+validations('Flicker_Mel_high') = OLValidateDirection(directions('FlickerDirection_Mel_high'), directions('Mel_high'), oneLight, radiometer, 'receptors', receptors);
+validations('Flicker_LMS_low') = OLValidateDirection(directions('FlickerDirection_LMS_low'), directions('LMS_low'), oneLight, radiometer, 'receptors', receptors);
+validations('Flicker_LMS_high') = OLValidateDirection(directions('FlickerDirection_LMS_high'), directions('LMS_high'), oneLight, radiometer, 'receptors', receptors);
 
 %% Corrections, re-validations
 % TODO
@@ -89,29 +67,29 @@ validations('Flicker_LMS_high') = OLValidateDirection(FlickerDirection_LMS_high,
 %% Setup acquisitions
 % Low Mel
 acquisitions(1) = Acquisition_FlickerSensitivity_2IFC(...
-    Mel_low,...
-    FlickerDirection_Mel_low,...
+    directions('Mel_low'),...
+    directions('FlickerDirection_Mel_low'),...
     receptors,...
     'name',"Mel_low");
 
 % High Mel
 acquisitions(2) = Acquisition_FlickerSensitivity_2IFC(...
-    Mel_high,...
-    FlickerDirection_Mel_high,...
+    directions('Mel_high'),...
+    directions('FlickerDirection_Mel_high'),...
     receptors,...
     'name',"Mel_high");
 
 % Low LMS
 acquisitions(3) = Acquisition_FlickerSensitivity_2IFC(...
-    LMS_low,...
-    FlickerDirection_LMS_low,...
+    directions('LMS_low'),...
+    directions('FlickerDirection_LMS_low'),...
     receptors,...
     'name',"LMS_low");
 
 % High LMS
 acquisitions(4) = Acquisition_FlickerSensitivity_2IFC(...
-    LMS_high,...
-    FlickerDirection_LMS_high,...
+    directions('LMS_high'),...
+    directions('FlickerDirection_LMS_high'),...
     receptors,...
     'name',"LMS_high");
 

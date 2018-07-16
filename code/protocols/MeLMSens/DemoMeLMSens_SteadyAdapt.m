@@ -43,19 +43,6 @@ calibration = OLGetCalibrationStructure('CalibrationType',calibrationType,'Calib
 % Open up a OneLight device
 oneLight = OneLight('simulate',simulate.oneLight); drawnow;
 
-%% Get radiometer
-% Open up a radiometer, which we will need later on.
-if ~simulate.radiometer
-    oneLight.setAll(true);
-    commandwindow;
-    input('<strong>Turn on radiometer and connect to USB; press any key to connect to radiometer</strong>\n');
-    oneLight.setAll(false);
-    pause(3);
-    radiometer = OLOpenSpectroRadiometerObj('PR-670');
-else
-    radiometer = [];
-end
-
 %% Get directions
 directions = MakeNominalMeLMSens_SteadyAdapt(calibration);
 receptors = directions('MelStep').describe.directionParams.T_receptors;
@@ -83,20 +70,21 @@ keyBindings('ESCAPE') = 'abort';
 keyBindings('GP:B') = 'abort';
 keyBindings('GP:LOWERLEFTTRIGGER') = 'decrease';
 keyBindings('GP:LOWERRIGHTTRIGGER') = 'increase';
-keyBindings('GP:A') = 'continue';
+keyBindings('GP:A') = 'nextStim';
 keyBindings('GP:Y') = 'spot';
 
 %% Open projector spot
 % Background
-backgroundRGB = [1 1 1];
+backgroundRGB = [0 0 0];
 annulusRGB = [0 0 0];
 spotRGB = [1 1 1];
 
-spotDiameter = 78; % px
-annulusDiameter = 303; % px
+spotDiameter = 130; % px
+annulusDiameter = 590; % px
 centerPosition = [0 0];
 
 % We will present everything to the last display. Get its ID.
+displayInfo = mglDescribeDisplays;
 lastDisplay = length(displayInfo);
 
 % Get the screen size
@@ -111,7 +99,8 @@ win = GLWindow( 'SceneDimensions', screenSizeInPixels, ...
 win.open;
 
 % Add objects
-win.addOval(centerPosition, [annulusDiameter annulusDiameter], outerCircleRGB, 'Name', 'annulusOuter');
+win.addRectangle(centerPosition, [screenSizeInPixels], spotRGB, 'Name', 'background');
+win.addOval(centerPosition, [annulusDiameter annulusDiameter], annulusRGB, 'Name', 'annulusOuter');
 win.addOval(centerPosition, [spotDiameter spotDiameter], spotRGB, 'Name', 'spot');
 
 %% Show stimulus
@@ -121,54 +110,61 @@ while true
         break;
     end
 end
+OLShowDirection(background, oneLight);
 
 showSpot = true;
+win.enableAllObjects;
+win.draw;
+
 abort = false;
 while ~abort
     % Make single flicker modulation
     fprintf('Flicker contrast: %.2f%%\n',flickerContrast*100);
     scaledDirection = direction.ScaleToReceptorContrast(background, receptors, [flickerContrast, flickerContrast, flickerContrast, 0]');
     targetModulation = OLAssembleModulation([background, scaledDirection],[ones(1,length(flickerWaveform)); flickerWaveform]);
-
-    % Show projector spot
-    if showSpot
-        % Enable all objects attached to win, i.e., show circles.
-        win.enableAllObjects;
-    else
-        % Disable all objects
-        win.disableAllObjects;
-    end
-    win.draw;
     
     % Show background, wait for keypad, show modulation, back to background.
     OLShowDirection(background, oneLight);
+    fprintf('Showing stim....\n');
     OLFlicker(oneLight, targetModulation.starts, targetModulation.stops, 1/samplingFq,1);
     OLShowDirection(background, oneLight);
 
     %% Wait for keypad
-    while true
-        responseKey = upper(WaitForKeyChar);
-        if any(strcmp(responseKey,keyBindings.keys()))
-            break;
+    nextStim = false;
+    while ~abort && ~nextStim
+        while true
+            responseKey = upper(WaitForKeyChar);
+            if any(strcmp(responseKey,keyBindings.keys()))
+                break;
+            end
         end
-    end
-    response = keyBindings(responseKey);
-
-    if ischar(response)
-        switch response
-            case 'abort'
-                abort = true;
-            case 'decrease'
-                flickerContrast = max(0,flickerContrast-.0025);
-            case 'increase'
-                flickerContrast = min(5,flickerContrast+.0025);
-            case 'spot'
-                if showSpot
-                    showSpot = false;
-                else
-                    showSpot = true;
-                end
+        response = keyBindings(responseKey);
+        if ischar(response)
+            switch response
+                case 'abort'
+                    abort = true;
+                case 'decrease'
+                    flickerContrast = max(0,flickerContrast-.0025);
+                    fprintf('Flicker contrast: %.2f%%\n',flickerContrast*100);
+                case 'increase'
+                    flickerContrast = min(5,flickerContrast+.0025);
+                    fprintf('Flicker contrast: %.2f%%\n',flickerContrast*100);
+                case 'spot'
+                    if showSpot
+                        showSpot = false;
+                        win.disableAllObjects;
+                    else
+                        showSpot = true;
+                        win.enableAllObjects;
+                    end
+                    win.draw;
+                case 'nextStim'
+                    nextStim = true;
+                    break;
+            end
         end
     end
 end
+
+%%
 win.close;

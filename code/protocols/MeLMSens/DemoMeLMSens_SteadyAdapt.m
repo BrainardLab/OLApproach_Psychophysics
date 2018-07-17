@@ -36,7 +36,7 @@ simulate = getpref(approach,'simulate'); % localhook defines what devices to sim
 % Specify which box and calibration to use, check that everything is set up
 % correctly, and retrieve the calibration structure.
 boxName = 'BoxB';
-calibrationType = 'BoxBRandomizedLongCableBEyePiece2_ND01';
+calibrationType = 'BoxBRandomizedLongCableBEyePiece3Beamsplitter';
 calibration = OLGetCalibrationStructure('CalibrationType',calibrationType,'CalibrationDate','latest');
 
 %% Open the OneLight
@@ -73,59 +73,28 @@ keyBindings('GP:LOWERRIGHTTRIGGER') = 'increase';
 keyBindings('GP:A') = 'nextStim';
 keyBindings('GP:Y') = 'spot';
 
-%% Open projector spot
-% Background
-backgroundRGB = [0 0 0];
-annulusRGB = [0 0 0];
-spotRGB = [1 1 1];
-
-spotDiameter = 130; % px
-annulusDiameter = 590; % px
-centerPosition = [0 0];
-
-% We will present everything to the last display. Get its ID.
-displayInfo = mglDescribeDisplays;
-lastDisplay = length(displayInfo);
-
-% Get the screen size
-screenSizeInPixels = displayInfo(lastDisplay).screenSizePixel;
-
-% Create a full-screen GLWindow object
-win = GLWindow( 'SceneDimensions', screenSizeInPixels, ...
-    'BackgroundColor', backgroundRGB,...
-    'windowID',        lastDisplay);
-
-% Open the window
-win.open;
-
-% Add objects
-win.addRectangle(centerPosition, [screenSizeInPixels], spotRGB, 'Name', 'background');
-win.addOval(centerPosition, [annulusDiameter annulusDiameter], annulusRGB, 'Name', 'annulusOuter');
-win.addOval(centerPosition, [spotDiameter spotDiameter], spotRGB, 'Name', 'spot');
-
 %% Show stimulus
+% Show background, wait for initial key press
+OLShowDirection(background, oneLight);
 while true
     responseKey = upper(WaitForKeyChar);
     if any(strcmp(responseKey,keyBindings.keys()))
         break;
     end
 end
-OLShowDirection(background, oneLight);
 
-showSpot = true;
-win.enableAllObjects;
-win.draw;
+projectorWindow = makeProjectorSpot('Fullscreen',~simulate.projector); % make projector spot window object
+toggleProjectorSpot(projectorWindow,true); % toggle on
 
 abort = false;
 while ~abort
     % Make single flicker modulation
-    fprintf('Flicker contrast: %.2f%%\n',flickerContrast*100);
     scaledDirection = direction.ScaleToReceptorContrast(background, receptors, [flickerContrast, flickerContrast, flickerContrast, 0]');
     targetModulation = OLAssembleModulation([background, scaledDirection],[ones(1,length(flickerWaveform)); flickerWaveform]);
     
     % Show background, wait for keypad, show modulation, back to background.
     OLShowDirection(background, oneLight);
-    fprintf('Showing stim....\n');
+    fprintf('Showing flicker stiumulus with contrast: %.2f%%...\n',flickerContrast*100);
     OLFlicker(oneLight, targetModulation.starts, targetModulation.stops, 1/samplingFq,1);
     OLShowDirection(background, oneLight);
 
@@ -143,6 +112,7 @@ while ~abort
             switch response
                 case 'abort'
                     abort = true;
+                    break;
                 case 'decrease'
                     flickerContrast = max(0,flickerContrast-.0025);
                     fprintf('Flicker contrast: %.2f%%\n',flickerContrast*100);
@@ -150,14 +120,7 @@ while ~abort
                     flickerContrast = min(5,flickerContrast+.0025);
                     fprintf('Flicker contrast: %.2f%%\n',flickerContrast*100);
                 case 'spot'
-                    if showSpot
-                        showSpot = false;
-                        win.disableAllObjects;
-                    else
-                        showSpot = true;
-                        win.enableAllObjects;
-                    end
-                    win.draw;
+                    toggleProjectorSpot(projectorWindow);
                 case 'nextStim'
                     nextStim = true;
                     break;
@@ -165,6 +128,4 @@ while ~abort
         end
     end
 end
-
-%%
-win.close;
+projectorWindow.close;

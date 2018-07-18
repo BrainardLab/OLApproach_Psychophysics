@@ -36,8 +36,8 @@ parser.addParameter('fieldRGB',[1 1 1],@isnumeric);
 parser.addParameter('spotRGB',[1 1 1],@isnumeric);
 
 % Sizes
-parser.addParameter('spotDiameter',130,@isnumeric);
-parser.addParameter('annulusDiameter',590,@isnumeric);
+parser.addParameter('spotDiameter',160,@isnumeric);
+parser.addParameter('annulusDiameter',530,@isnumeric);
 parser.addParameter('centerPosition',[0 0],@isnumeric);
 
 parser.parse(projectorWindow, varargin{:});

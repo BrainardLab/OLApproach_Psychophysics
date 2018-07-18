@@ -129,7 +129,7 @@ while ~abort
                     flickerContrast = max(0,flickerContrast-.0025);
                     fprintf('Flicker contrast: %.2f%%\n',flickerContrast*100);
                 case 'increase'
-                    flickerContrast = min(5,flickerContrast+.0025);
+                    flickerContrast = min(.05,flickerContrast+.0025);
                     fprintf('Flicker contrast: %.2f%%\n',flickerContrast*100);
                 case 'toggleSpot'
                     toggleProjectorSpot(projectorWindow);

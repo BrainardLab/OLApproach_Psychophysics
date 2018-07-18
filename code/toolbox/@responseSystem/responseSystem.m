@@ -45,7 +45,7 @@ classdef responseSystem
             key = {};
             key = [key, obj.getKey_keyboard];
             if ~isempty(obj.gamePad)
-                key = [key, getKey_gamePad];
+                key = [key, obj.getKey_GamePad(obj.gamePad)];
             end
             key = upper(key);
         end

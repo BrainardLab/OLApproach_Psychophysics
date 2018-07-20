@@ -98,11 +98,21 @@ sessionResults = table();
 rngSettings = rng;
 acquisitions = Shuffle(acquisitions);
 
+%% Set trial response system
+trialKeyBindings = containers.Map();
+trialKeyBindings('ESCAPE') = 'abort';
+trialKeyBindings('GP:B') = 'abort';
+trialKeyBindings('GP:LOWERLEFTTRIGGER') = [1 0];
+trialKeyBindings('GP:LOWERRIGHTTRIGGER') = [0 1];
+trialKeyBindings('Q') = [1 0];
+trialKeyBindings('P') = [0 1];
+trialResponseSys = responseSystem(trialKeyBindings);
+
 %% Run
 for acquisition = acquisitions
     fprintf('Running acquisition %s...\n',acquisition.name)
     acquisition.initializeStaircases();
-    acquisition.runAcquisition(oneLight);
+    acquisition.runAcquisition(oneLight, trialResponseSys);
     fprintf('Acquisition complete.\n'); Speak('Acquisition complete.',[],230);
     input('<strong>Place eyepiece in radiometer, and press any key to start measuring.</strong>\n'); pause(3);
     

@@ -27,7 +27,7 @@ mkdir(sessionDataPath);
 % Specify which box and calibration to use, check that everything is set up
 % correctly, and retrieve the calibration structure.
 boxName = 'BoxB';
-calibrationType = 'BoxBRandomizedLongCableBEyePiece2_ND01';
+calibrationType = 'BoxBRandomizedLongCableBEyePiece3Beamsplitter';
 calibration = OLGetCalibrationStructure('CalibrationType',calibrationType,'CalibrationDate','latest');
 
 %% Open the OneLight

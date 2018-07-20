@@ -6,16 +6,6 @@
 %   - Low or high stimulation in background
 %   - LMS flicker, can adjust the contrast
 %   - Projector spot can be turned on/off
-%  Single trial
-%   - 2IFC
-%   - Mel or LMS directed background
-%   - low or high stimulation in background
-%   - LMS flicker in one interval
-%   - Auditory feedback after response
-%  Single acquisition
-%   - Mel or LMS directed background and adaptation
-%   - Low or high stimulation in background/adaptation field
-%   - Length reduced compared to actual acquisition
 %  In all these, the projector spot on the surround/macular blocker can be 
 %  switched on/off
 

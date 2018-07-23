@@ -132,7 +132,12 @@ for acquisition = acquisitions
     end
     
     % Save acquisition
-    save(fullfile(sessionDataPath,sprintf('data-%s-%s-%s',participantID,sessionName,acquisition.name)),'acquisition');
+    filename = sprintf('data-%s-%s-%s.mat',participantID,sessionName,acquisition.name);
+    if isfile(fullfile(sessionDataPath,filename))
+        prevAcq = load(fullfile(sessionDataPath,filename));
+        acquisition = [prevAcq.acquisition acquisition];
+    end
+    save(fullfile(sessionDataPath,filename),'acquisition');
 
     % Collect results
     acquisitionResults.condition = acquisition.name;

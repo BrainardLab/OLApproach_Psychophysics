@@ -154,6 +154,9 @@ for acquisition = acquisitions
     sessionResults = [sessionResults; struct2table(acquisitionResults)];
     writetable(sessionResults,fullfile(sessionDataPath,['results-' participantID '-' sessionName '.csv']));
 end
+save(fullfile(sessionDataPath, ...
+    sprintf('data-%s-%s-%s.mat',...
+    participantID,sessionName)),'acquisitions');
     
 %% Close radiometer
 if exist('radiometer','var') && ~isempty(radiometer)

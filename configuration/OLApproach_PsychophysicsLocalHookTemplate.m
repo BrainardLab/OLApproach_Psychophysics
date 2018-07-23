@@ -32,30 +32,17 @@ for pp = 1:length(protocols)
 end
 
 %% Specify base paths for materials and data
-[~, userID] = system('whoami');
-userID = strtrim(userID);
-switch userID
-    case {'melanopsin' 'pupillab'}
-        materialsBasePath = ['/Users/' userID '/Dropbox (Aguirre-Brainard Lab)/MELA_materials'];
-        dataBasePath = ['/Users/' userID '/Dropbox (Aguirre-Brainard Lab)/MELA_data/'];
-    case {'dhb'}
-        materialsBasePath = ['/Users1'  '/Dropbox (Aguirre-Brainard Lab)/MELA_materials'];
-        dataBasePath = ['/Users1' '/Dropbox (Aguirre-Brainard Lab)/MELA_data/'];     
-    case {'nicolas'}
-        [~, computerName] = system('hostname');
-        if (contains(computerName, 'Ithaka'))
-            ABDBoxPath = '/Volumes/SamsungT3/Dropbox/AguirreBrainardLabsDropbox';
-        elseif (contains(computerName, 'Manta'))
-            ABDBoxPath = '/Volumes/Manta TM HD/Dropbox (Aguirre-Brainard Lab)';
-        else
-            error('Unknown computer name: ''%s'' !\n', computerName);
-        end
-        materialsBasePath = fullfile(ABDBoxPath, 'MELA_materials');
-        dataBasePath = fullfile(ABDBoxPath, 'MELA_data');
-    otherwise
-        materialsBasePath = ['/Users/' userID '/Dropbox (Aguirre-Brainard Lab)/MELA_materials'];
-        dataBasePath = ['/Users/' userID '/Dropbox (Aguirre-Brainard Lab)/MELA_data/'];
+if ismac
+    materialsBasePath = fullfile('~','Dropbox (Aguirre-Brainard Lab)','MELA_materials');
+    dataBasePath = fullfile('~','Dropbox (Aguirre-Brainard Lab)','MELA_data');
+else
+    error('No basepaths specified');
 end
+assert(isfolder(materialsBasePath),'Materials basepath (%s) does not exist',materialsBasePath);
+assert(isfolder(dataBasePath),'Data basepath (%s) does not exist',dataBasePath);
+
+setpref(approach,'MaterialsPath',fullfile(materialsBasePath, 'Experiments', approach));
+setpref(approach,'DataPath',fullfile(dataBasePath, 'Experiments', approach));
 
 %% Set prefs for materials and data
 setpref(approach,'MaterialsPath',fullfile(materialsBasePath, 'Experiments', approach));

@@ -52,6 +52,9 @@ classdef Acquisition_FlickerSensitivity_2IFC < handle
         nDowns = [1 1 1];
         rngSettings;
     end
+    properties
+        trials = [];
+    end
     
     %% Methods
     methods
@@ -120,7 +123,8 @@ classdef Acquisition_FlickerSensitivity_2IFC < handle
                         flickerContrast = getCurrentValue(obj.staircases{k});
                         
                         % Run trial
-                        [correct, abort] = obj.runTrial(flickerContrast, oneLight, responseSys);
+                        [correct, abort, trial] = obj.runTrial(flickerContrast, oneLight, responseSys);
+                        obj.trials = [obj.trials trial];
                         
                         % Update modulation parameters, according to staircase
                         obj.staircases{k} = updateForTrial(obj.staircases{k}, flickerContrast, correct);
@@ -133,7 +137,7 @@ classdef Acquisition_FlickerSensitivity_2IFC < handle
             end
         end
         
-        function [correct, abort] = runTrial(obj, flickerContrast, oneLight, trialResponseSys)
+        function [correct, abort, trial] = runTrial(obj, flickerContrast, oneLight, trialResponseSys)
             %% Assemble trial
             % Assemble modulations
             scaledDirection = obj.direction.ScaleToReceptorContrast(obj.background, obj.receptors, [flickerContrast, flickerContrast, flickerContrast, 0]');
@@ -147,6 +151,20 @@ classdef Acquisition_FlickerSensitivity_2IFC < handle
             OLShowDirection(obj.background, oneLight);
             
             correct = trial.correct;
+        end
+        
+        function postAcquisition(obj, oneLight, radiometer)
+            % Get threshold estimate
+            for k = 1:obj.NInterleavedStaircases
+                obj.thresholds(k) = getThresholdEstimate(obj.staircases{k});
+            end
+            
+            % Validate contrast at threshold
+            desiredContrast = [1 1 1 0]' * mean(obj.thresholds);
+            scaledDirection = obj.direction.ScaleToReceptorContrast(obj.background, obj.receptors, desiredContrast);
+            for v = 1:5
+                obj.validationAtThreshold = OLValidateDirection(scaledDirection,obj.background, oneLight, radiometer, 'receptors', obj.receptors);
+            end
         end
     end
 end

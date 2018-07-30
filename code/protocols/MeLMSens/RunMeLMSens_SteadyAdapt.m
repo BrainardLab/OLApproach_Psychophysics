@@ -115,22 +115,7 @@ for acquisition = acquisitions
     acquisition.runAcquisition(oneLight, trialResponseSys);
     fprintf('Acquisition complete.\n'); Speak('Acquisition complete.',[],230);
     input('<strong>Place eyepiece in radiometer, and press any key to start measuring.</strong>\n'); pause(3);
-    
-    % Get threshold estimate
-    for k = 1:acquisition.NInterleavedStaircases
-        acquisition.thresholds(k) = getThresholdEstimate(acquisition.staircases{k});
-    end
-    
-    % Validate contrast at threshold
-    desiredContrast = [1 1 1 0]' * mean(acquisition.thresholds);
-    scaledDirection = acquisition.direction.ScaleToReceptorContrast(acquisition.background, receptors, desiredContrast);
-    for v = 1:5
-        [validationAtThreshold, ~, ~, validationContrast] = OLValidateDirection(scaledDirection,acquisition.background, oneLight, radiometer, 'receptors', receptors);
-        acquisition.validationAtThreshold = [acquisition.validationAtThreshold, validationAtThreshold];
-        acquisition.validatedContrastAtThresholdPos = [acquisition.validatedContrastAtThresholdPos, validationContrast.actual(:,1)];
-        acquisition.validatedContrastAtThresholdNeg = [acquisition.validatedContrastAtThresholdNeg, validationContrast.actual(:,3)];
-    end
-    
+       
     % Save acquisition
     filename = sprintf('data-%s-%s-%s.mat',participantID,sessionName,acquisition.name);
     if isfile(fullfile(sessionDataPath,filename))

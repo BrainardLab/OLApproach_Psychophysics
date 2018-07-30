@@ -41,9 +41,9 @@ classdef Acquisition_FlickerSensitivity_2IFC < handle
         
         % Staircase parameters
         staircaseType = 'standard';
-        contrastStep = 0.005;
+        contrastStep = 0.001;
         maxContrast = 0.05;
-        minContrast;
+        minContrast = 0;
         contrastLevels;
         NTrialsPerStaircase = 40;
         NInterleavedStaircases = 3;
@@ -85,7 +85,6 @@ classdef Acquisition_FlickerSensitivity_2IFC < handle
         
         function initializeStaircases(obj)
             %% Initialize staircases
-            obj.minContrast = obj.contrastStep;
             obj.contrastLevels = (0:obj.contrastStep:obj.maxContrast);
             obj.stepSizes = [4*obj.contrastStep 2*obj.contrastStep obj.contrastStep];
             

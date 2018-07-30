@@ -18,6 +18,9 @@ function OLApproach_PsychophysicsLocalHook
 fprintf('Running OLApproach_Psychophysics local hook\n');
 approach = 'OLApproach_Psychophysics';
 
+%% Define Dropbox path
+dropboxPath = fullfile('~','Dropbox (Aguirre-Brainard Lab)');
+
 %% Define protocols for this approach
 protocols = DefineProtocolNames;
 
@@ -31,34 +34,81 @@ for pp = 1:length(protocols)
     end
 end
 
-%% Specify base paths for materials and data
-if ismac
-    materialsBasePath = fullfile('~','Dropbox (Aguirre-Brainard Lab)','MELA_materials');
-    dataBasePath = fullfile('~','Dropbox (Aguirre-Brainard Lab)','MELA_data');
-else
-    error('No basepaths specified');
-end
-assert(isfolder(materialsBasePath),'Materials basepath (%s) does not exist',materialsBasePath);
-assert(isfolder(dataBasePath),'Data basepath (%s) does not exist',dataBasePath);
-
-setpref(approach,'MaterialsPath',fullfile(materialsBasePath, 'Experiments', approach));
-setpref(approach,'DataPath',fullfile(dataBasePath, 'Experiments', approach));
-
-%% Set prefs for materials and data
-setpref(approach,'MaterialsPath',fullfile(materialsBasePath, 'Experiments', approach));
-setpref(approach,'DataPath',fullfile(dataBasePath, 'Experiments', approach));
-   
 %% Set pref to point at the code for this approach
 setpref(approach,'CodePath', fullfile(tbLocateProject(approach),'code'));
 
-%% Set the calibration file path
-setpref(approach, 'OneLightCalDataPath', fullfile(getpref(approach, 'MaterialsPath'), 'OneLightCalData'));
+%% Set Dropbox-related paths
+% Define the following paths:
+%  - materials:	[dropbox]/MELA_materials/Experiments/[Approach]
+%  - data:      [dropbox]/MELA_data/Experiments/[Approach]
+%  - analysis:	[dropbox]/MELA_analysis/Experiments/[Approach]
+%  - cal:       [dropbox]/MELA_materials/Experiments/[Approach]/OneLightCalData
+materialsBasePath = fullfile(dropboxPath,'MELA_materials','Experiments',approach);
+dataBasePath = fullfile(dropboxPath,'MELA_data','Experiments',approach);
+analysisBasePath = fullfile(dropboxPath,'MELA_analysis','Experiments',approach);
+calBasePath = fullfile(materialsBasePath,'OneLightCalData');
+
+% Check that directories exist
+assert(isfolder(materialsBasePath),'Materials basepath (%s) does not exist', materialsBasePath);
+assert(isfolder(dataBasePath),'Data basepath (%s) does not exist', dataBasePath);
+assert(isfolder(calBasePath),'Calibration basepath (%s) does not exist', calBasePath);
+assert(isfolder(analysisBasePath),'Analysis basepath (%s) does not exist',analysisBasePath);
+
+% Set as perferences
+setpref(approach, 'MaterialsPath', materialsBasePath);
+setpref(approach, 'DataPath', dataBasePath); 
+setpref(approach, 'OneLightCalDataPath', calBasePath);
+setpref(approach, 'AnalysisPath',analysisBasePath);
+
+% Overwrite OneLightToolbox preference for calibrations
 setpref('OneLightToolbox','OneLightCalData',getpref(approach,'OneLightCalDataPath'));
 
-%% Prefs for individual protocols
+%% Set Directory structures for individual protocols
 for pp = 1:length(protocols)
-    % Data files base path
-    setpref(protocols{pp},'DataFilesBasePath',fullfile(getpref(approach, 'DataPath'),protocols{pp}));
+    % Set prefs
+    setpref(protocols{pp},'DataFilesBasePath',fullfile(dataBasePath,protocols{pp}));
+    setpref(protocols{pp},'AnalysisBasePath',fullfile(analysisBasePath,protocols{pp}));
+    
+    % Create symbolic links to dropbox folders, in the
+    % `analysis/[protocol]` directory. The symbolic link is a subdirectory 
+    % in `analysis/[protocol]` that points directly to the dropbox 
+    % directory. This makes filepath specifications in data analysis a lot
+    % easier. The following links are created:
+    %  - analysis/[protocol]/data/raw: MELA_data/Experiments/[Approach]/[protocol]
+    %  - analysis/[protocol]/data/processed: MELA_analysis/Experiments/[Approach]/[protocol]
+    protocolAnalysisDir = fullfile(getpref(approach,'CodePath'),'analysis',protocols{pp});
+    mkdir(protocolAnalysisDir,'data');
+    
+    rawDataDestination = fullfile(protocolAnalysisDir,'data','raw');
+    if ~unix(['test -L ',rawDataDestination])
+        delete(rawDataDestination)
+    end
+    rawDataLinkCommand = sprintf('ln -s %s %s',...
+        replace(getpref(protocols{pp},'DataFilesBasePath'),{'(',')',' '},{'\(','\)','\ '}),...
+        rawDataDestination);
+    system(rawDataLinkCommand);
+    
+    processedDataDestination = fullfile(protocolAnalysisDir,'data','processed');
+    if ~unix(['test -L ',processedDataDestination])
+        delete(processedDataDestination)
+    end
+    processedDataLinkCommand = sprintf('ln -s %s %s',...
+        replace(getpref(protocols{pp},'AnalysisBasePath'),{'(',')',' '},{'\(','\)','\ '}),...
+        processedDataDestination);
+    system(processedDataLinkCommand);
+    
+    % Add the symlinks to .gitignore
+    % Since on different machines, these links might not work / need to
+    % point to a different directory, the links should NOT be under source
+    % control. We add them to .gitignore to take care of that.
+    gitIgnoreFID = fopen(fullfile(getpref(approach,'CodePath'),'..','.gitignore'),'a+');
+    frewind(gitIgnoreFID);
+    gitIgnore = textscan(gitIgnoreFID,'%s','Delimiter','\n');
+    ignoreLine = fullfile('/','code','analysis',protocols{pp},'data');
+    if isempty(gitIgnore) || ~any(contains(string(gitIgnore{:}),ignoreLine))
+        fprintf(gitIgnoreFID,[ignoreLine '\n']);
+    end
+    fclose(gitIgnoreFID);
 end
 
 %% Set simulate.

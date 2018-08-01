@@ -16,7 +16,7 @@ simulate = getpref(approach,'simulate'); % localhook defines what devices to sim
 %% Set output path
 participantID = GetWithDefault('>> Enter <strong>participant ID</strong>', 'HERO_xxxx');
 participantAge = GetWithDefault('>> Enter <strong>participant age</strong>', 32);
-sessionName = GetWithDefault('>> Enter <strong>session number</strong>:', 'session_1');
+sessionName = GetWithDefault('>> Enter <strong>session name</strong>:', 'session_1');
 todayDate = datestr(now, 'yyyy-mm-dd');
 protocolDataPath = getpref(protocol,'DataFilesBasePath');
 participantDataPath = fullfile(protocolDataPath,participantID);
@@ -114,7 +114,7 @@ for acquisition = acquisitions
     acquisition.runAcquisition(oneLight, trialResponseSys);
     fprintf('Acquisition complete.\n'); Speak('Acquisition complete.',[],230);
     input('<strong>Place eyepiece in radiometer, and press any key to start measuring.</strong>\n'); pause(3);
-    acquisition.postAcquisition(oneLight, radiometer);   
+    acquisition.postAcquisition(oneLight, radiometer);
     
     % Save acquisition
     filename = sprintf('data-%s-%s-%s.mat',participantID,sessionName,acquisition.name);
@@ -124,11 +124,12 @@ for acquisition = acquisitions
     end
     save(fullfile(sessionDataPath,filename),'acquisition');
 end
-    
+
 %% Close radiometer
 if exist('radiometer','var') && ~isempty(radiometer)
     radiometer.shutDown();
 end
+clear radiometer;
 
 %% Close OneLight
 shutdown = input('<strong>Shutdown OneLight? [Y/N]</strong>>> ','s');
@@ -136,3 +137,4 @@ if upper(shutdown) == 'Y'
     oneLight.shutdown();
 end
 oneLight.close();
+clear oneLight;

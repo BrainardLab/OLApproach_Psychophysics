@@ -108,6 +108,8 @@ trialKeyBindings('P') = [0 1];
 trialResponseSys = responseSystem(trialKeyBindings);
 
 %% Run
+projectorWindow = makeProjectorSpot('Fullscreen',~simulate.projector); % make projector spot window object
+toggleProjectorSpot(projectorWindow,true); % toggle on
 for acquisition = acquisitions
     fprintf('Running acquisition %s...\n',acquisition.name)
     acquisition.initializeStaircases();
@@ -130,6 +132,9 @@ if exist('radiometer','var') && ~isempty(radiometer)
     radiometer.shutDown();
 end
 clear radiometer;
+
+%% Close projectorWindow
+projectorWindow.close()
 
 %% Close OneLight
 shutdown = input('<strong>Shutdown OneLight? [Y/N]</strong>>> ','s');

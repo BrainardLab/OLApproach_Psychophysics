@@ -94,7 +94,6 @@ acquisitions(4) = Acquisition_FlickerSensitivity_2IFC(...
     'name',"LMS_high");
 
 % Combine
-sessionResults = table();
 rngSettings = rng;
 acquisitions = Shuffle(acquisitions);
 
@@ -124,25 +123,7 @@ for acquisition = acquisitions
         acquisition = [prevAcq.acquisition acquisition];
     end
     save(fullfile(sessionDataPath,filename),'acquisition');
-
-    % Collect results
-    acquisitionResults.condition = acquisition.name;
-    acquisitionResults.medianLcontrast = median(max(abs([acquisition.validatedContrastAtThresholdPos(1,:); acquisition.validatedContrastAtThresholdNeg(1,:)])));
-    acquisitionResults.medianMcontrast = median(max(abs([acquisition.validatedContrastAtThresholdPos(2,:); acquisition.validatedContrastAtThresholdNeg(2,:)])));
-    acquisitionResults.medianScontrast = median(max(abs([acquisition.validatedContrastAtThresholdPos(3,:); acquisition.validatedContrastAtThresholdNeg(3,:)])));
-    acquisitionResults.medianMelcontrast = median(max(abs([acquisition.validatedContrastAtThresholdPos(4,:); acquisition.validatedContrastAtThresholdNeg(4,:)])));
-
-    if exist(fullfile(sessionDataPath,['results-' participantID '-' sessionName '.csv']),'file')
-        sessionResults = readtable(fullfile(sessionDataPath,['results-' participantID '-' sessionName '.csv']));
-    else
-        sessionResults = table();
-    end
-    sessionResults = [sessionResults; struct2table(acquisitionResults)];
-    writetable(sessionResults,fullfile(sessionDataPath,['results-' participantID '-' sessionName '.csv']));
 end
-save(fullfile(sessionDataPath, ...
-    sprintf('data-%s-%s-%s.mat',...
-    participantID,sessionName)),'acquisitions');
     
 %% Close radiometer
 if exist('radiometer','var') && ~isempty(radiometer)

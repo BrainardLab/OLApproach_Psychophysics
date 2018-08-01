@@ -1,4 +1,4 @@
-function contrast = extractContrastFromAcquisition(acquisition)
+function contrast = extractResultsFromAcquisition(acquisition)
     validations = acquisition.validationAtThreshold;
 
     contrastActual = [];

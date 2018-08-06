@@ -1,0 +1,14 @@
+# Locations
+DATA_PROC_DIR=../data/processed
+DATA_RAW_DIR=../data/raw
+LIB_DIR=./lib/
+
+# Data to results conversion
+CONVERT_LANGUAGE=MATLAB
+CONVERT_SRC=dataMatToResultsCSV.m
+CONVERT_EXE=$(CONVERT_LANGUAGE) $(CONVERT_SRC)
+
+# Munging
+MUNGE_LANGUAGE=Rscript
+MERGE_SRC=mergeCSVs.R
+MERGE_EXE=$(MUNGE_LANGUAGE) $(LIB_DIR)$(MERGE_SRC)

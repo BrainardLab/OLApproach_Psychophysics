@@ -146,5 +146,4 @@ shutdown = input('<strong>Shutdown OneLight? [Y/N]</strong>>> ','s');
 if upper(shutdown) == 'Y'
     oneLight.shutdown();
 end
-oneLight.close();
-clear oneLight;
+oneLight.close()

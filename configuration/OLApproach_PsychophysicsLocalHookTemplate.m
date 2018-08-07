@@ -45,14 +45,14 @@ setpref(approach,'CodePath', fullfile(tbLocateProject(approach),'code'));
 %  - cal:       [dropbox]/MELA_materials/Experiments/[Approach]/OneLightCalData
 materialsBasePath = fullfile(dropboxPath,'MELA_materials','Experiments',approach);
 dataBasePath = fullfile(dropboxPath,'MELA_data','Experiments',approach);
-analysisBasePath = fullfile(dropboxPath,'MELA_analysis','Experiments',approach);
+analysisBasePath = fullfile(dropboxPath,'MELA_analysis','experiments',approach);
 calBasePath = fullfile(materialsBasePath,'OneLightCalData');
 
 % Check that directories exist
-assert(isfolder(materialsBasePath),'Materials basepath (%s) does not exist', materialsBasePath);
-assert(isfolder(dataBasePath),'Data basepath (%s) does not exist', dataBasePath);
-assert(isfolder(calBasePath),'Calibration basepath (%s) does not exist', calBasePath);
-assert(isfolder(analysisBasePath),'Analysis basepath (%s) does not exist',analysisBasePath);
+assert(isdir(materialsBasePath),'Materials basepath (%s) does not exist', materialsBasePath);
+assert(isdir(dataBasePath),'Data basepath (%s) does not exist', dataBasePath);
+assert(isdir(calBasePath),'Calibration basepath (%s) does not exist', calBasePath);
+assert(isdir(analysisBasePath),'Analysis basepath (%s) does not exist',analysisBasePath);
 
 % Set as perferences
 setpref(approach, 'MaterialsPath', materialsBasePath);

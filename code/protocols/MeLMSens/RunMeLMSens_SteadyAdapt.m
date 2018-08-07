@@ -21,7 +21,6 @@ todayDate = datestr(now, 'yyyymmdd');
 protocolDataPath = getpref(protocol,'DataFilesBasePath');
 participantDataPath = fullfile(protocolDataPath,participantID);
 sessionDataPath = fullfile(participantDataPath,[todayDate '_' sessionName]);
-mkdir(sessionDataPath);
 
 %% Get calibration
 % Specify which box and calibration to use, check that everything is set up
@@ -112,6 +111,7 @@ trialResponseSys = responseSystem(trialKeyBindings,gamePad);
 %% Run
 projectorWindow = makeProjectorSpot('Fullscreen',~simulate.projector); % make projector spot window object
 toggleProjectorSpot(projectorWindow,true); % toggle on
+mkdir(sessionDataPath);
 for acquisition = acquisitions
     fprintf('Running acquisition %s...\n',acquisition.name)
     acquisition.initializeStaircases();

@@ -8,16 +8,11 @@ classdef responseSystem
     end
     
     methods
-        function obj = responseSystem(keyBindings)
+        function obj = responseSystem(keyBindings, gamePad)
             % Construct an instance of this class
             %   Detailed explanation goes here
             obj.keyBindings = keyBindings;
-            
-            try
-                obj.gamePad = GamePad();
-            catch
-                obj.gamePad = [];
-            end
+            obj.gamePad = gamePad;
         end
         
         function response = checkResponse(obj)

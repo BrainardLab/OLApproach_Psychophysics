@@ -105,7 +105,9 @@ trialKeyBindings('GP:LOWERLEFTTRIGGER') = [1 0];
 trialKeyBindings('GP:LOWERRIGHTTRIGGER') = [0 1];
 trialKeyBindings('Q') = [1 0];
 trialKeyBindings('P') = [0 1];
-trialResponseSys = responseSystem(trialKeyBindings);
+
+gamePad = GamePad();
+trialResponseSys = responseSystem(trialKeyBindings,gamePad);
 
 %% Run
 projectorWindow = makeProjectorSpot('Fullscreen',~simulate.projector); % make projector spot window object
@@ -135,6 +137,9 @@ clear radiometer;
 
 %% Close projectorWindow
 projectorWindow.close()
+
+%% Close GamePad
+gamePad.shutDown()
 
 %% Close OneLight
 shutdown = input('<strong>Shutdown OneLight? [Y/N]</strong>>> ','s');

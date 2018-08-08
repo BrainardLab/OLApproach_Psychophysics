@@ -143,11 +143,6 @@ end
 if (ispref(approach))
     rmpref(approach);
 end
-for pp = 1:length(protocols)
-    if (ispref(protocols{pp}))
-        rmpref(protocols{pp});
-    end
-end
 
 % Set path preferences
 setpref(approach,'ApproachPath', approachPath);
@@ -158,6 +153,19 @@ setpref(approach, 'AnalysisPath',analysisBasePath);
 
 % Overwrite OneLightToolbox preference for calibrations
 setpref('OneLightToolbox','OneLightCalData',getpref(approach,'OneLightCalDataPath'));
+
+% Set protocol specific preferences
+for pp = 1:length(protocols)
+    if (ispref(protocols{pp}))
+        rmpref(protocols{pp});
+    end
+    
+    setpref(protocols{pp},'ProtocolBasePath',protocolDir);
+    setpref(protocols{pp},'ProtocolDataRawPath',fullfile(protocolDir,'data','raw'));
+    setpref(protocols{pp},'ProtocolDataProcessedPath',fullfile(protocolDir,'data','processed'));
+    setpref(protocols{pp},'ProtocolExperimentPath',fullfile(protocolDir,'experiment'));
+    setpref(protocols{pp},'ProtocolAnalysisPath',fullfile(protocolDir,'analysis'));
+end
 
 %% Set simulate.
 simulate.oneLight = true;

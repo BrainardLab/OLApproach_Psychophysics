@@ -96,13 +96,20 @@ assert(isdir(calBasePath),'Calibration basepath (%s) does not exist', calBasePat
 assert(isdir(analysisBasePath),'Analysis basepath (%s) does not exist',analysisBasePath);
 
 %% Create data symlinks
+if ~unix(['test -L ',fullfile(approachPath,'data','raw')])
+	delete(fullfile(approachPath,'data','raw'))
+end
 rawDataLinkCommand = sprintf('ln -s %s %s',...
 	replace(dataBasePath,{'(',')',' '},{'\(','\)','\ '}),...
     fullfile(approachPath,'data','raw'));
 system(rawDataLinkCommand);
 
+
+if ~unix(['test -L ',fullfile(approachPath,'data','processed')])
+    delete(fullfile(approachPath,'data','processed'))
+end
 procDataLinkCommand = sprintf('ln -s %s %s',...
-	replace(dataBasePath,{'(',')',' '},{'\(','\)','\ '}),...
+	replace(analysisBasePath,{'(',')',' '},{'\(','\)','\ '}),...
     fullfile(approachPath,'data','processed'));
 system(procDataLinkCommand);
 

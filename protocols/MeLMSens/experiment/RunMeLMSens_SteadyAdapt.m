@@ -93,7 +93,7 @@ acquisitions(4) = Acquisition_FlickerSensitivity_2IFC(...
     'name',"LMS_high");
 
 % Combine
-rngSettings = rng;
+rngSettings = rng('shuffle');
 acquisitions = Shuffle(acquisitions);
 
 %% Set trial response system

@@ -88,7 +88,7 @@ classdef Acquisition_FlickerSensitivity_2IFC < handle
             obj.contrastLevels = (0:obj.contrastStep:obj.maxContrast);
             obj.stepSizes = [4*obj.contrastStep 2*obj.contrastStep obj.contrastStep];
             
-            obj.rngSettings = rng('default');
+            obj.rngSettings = rng('shuffle');
             for k = 1:obj.NInterleavedStaircases
                 initialGuess = randsample(obj.contrastLevels,1);
                 obj.staircases{k} = Staircase(obj.staircaseType,initialGuess, ...

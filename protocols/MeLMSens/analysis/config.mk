@@ -1,12 +1,11 @@
 # Locations
 DATA_PROC_DIR=../data/processed
 DATA_RAW_DIR=../data/raw
-LIB_DIR=./lib/
+LIB_DIR=./lib
 
 # Data to results conversion
-CONVERT_LANGUAGE=MATLAB
 CONVERT_SRC=dataMatToResultsCSV.m
-CONVERT_EXE=$(CONVERT_LANGUAGE) $(CONVERT_SRC)
+CONVERT_EXE=$(LIB_DIR)/matlab_dataMatToResultsCSV.sh
 
 # Munging
 MUNGE_LANGUAGE=Rscript

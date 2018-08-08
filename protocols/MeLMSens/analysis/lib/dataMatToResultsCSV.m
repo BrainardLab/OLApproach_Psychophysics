@@ -1,16 +1,6 @@
-function dataMatToResultsCSV(inputFile)
-[inputFileDir, inputFilename] = fileparts(inputFile);
-
-rawDataFilesBasePath = fullfile('.','data','raw');
-processedDataFilesBasePath = fullfile('.','data','processed');
-
-outputFileDir = replace(inputFileDir,rawDataFilesBasePath,processedDataFilesBasePath);
-if ~isdir(outputFileDir)
-    mkdir(outputFileDir)
-end
-
+function dataMatToResultsCSV(inputFilePath, outputFilePath)
 %% Load raw datafile
-load(fullfile(inputFileDir,inputFilename));
+load(inputFilePath);
 
 %% Extract results from raw datafile
 for i = 1:numel(acquisition)
@@ -22,10 +12,11 @@ end
 acquisitionResults = struct2table(acquisitionResults);
 acquisitionResults = splitvars(acquisitionResults,'contrast','NewVariableNames',{'contrast_L','contrasts_M','contrast_S','contrast_Mel'});
 
-%% Generate results filename
-outputFilename = replace(inputFilename,'data','results');
-
 %% Save
-writetable(acquisitionResults,[fullfile(outputFileDir,outputFilename) '.csv']);
+outputFileDir = fileparts(outputFilePath);
+if ~isdir(outputFileDir)
+    mkdir(outputFileDir)
+end
+writetable(acquisitionResults,outputFilePath);
 
 end

@@ -10,18 +10,22 @@ results_all.csv :
 		@echo "execute grand merge rule"
 		
 # Merge sessions per participant	
-results-%.csv :
+results_participant-%.csv :
 		@echo "execute participant rule"
 
 # Merge acquisitions per session
-results-%-%.csv :
-		@echo "execute merge rule on dir $*"
+# Stem (%) in target specifies both participant AND session
+# Requires .SECONDEXPANSION to expand $* in prereqs
+.SECONDEXPANSION:
+results_session-%.csv: $$(wildcard $(DATA_PROC_DIR)/*/*/results_acquisition-$$*-*.csv)
+		@echo execute merge rule $(MERGE_SRC) on CSVs: $^
 
 # Extract acquisition results
-results-%-%-%.csv :
+results_acquisition-%.csv : $(CONVERT_SRC)
 		@echo "execute conversion rule"
 		
 # Print variables
-.PHONY : variables
+.PHONY:
 variables :
 		@echo PARTICIPANTS:"\n" $(foreach PARTICIPANT, $(PARTICIPANTS), $(PARTICIPANT)"\n")
+		@echo ACQUISITIONS:"\n" $(foreach ACQUISITION, $(ACQUISITIONS), $(ACQUISITION)"\n")

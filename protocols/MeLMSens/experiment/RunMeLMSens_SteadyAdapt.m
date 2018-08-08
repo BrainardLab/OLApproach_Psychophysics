@@ -18,7 +18,7 @@ participantID = GetWithDefault('>> Enter <strong>participant ID</strong>', 'HERO
 participantAge = GetWithDefault('>> Enter <strong>participant age</strong>', 32);
 sessionName = GetWithDefault('>> Enter <strong>session name</strong>:', 'session_1');
 todayDate = datestr(now, 'yyyymmdd');
-protocolDataPath = getpref(protocol,'DataFilesBasePath');
+protocolDataPath = getpref(protocol,'ProtocolDataRawPath');
 participantDataPath = fullfile(protocolDataPath,participantID);
 sessionDataPath = fullfile(participantDataPath,[todayDate '_' sessionName]);
 

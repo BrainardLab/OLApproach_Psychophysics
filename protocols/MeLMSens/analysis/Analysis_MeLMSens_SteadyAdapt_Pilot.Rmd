@@ -1,0 +1,23 @@
+---
+title: "MeLMSens pilot data analysis"
+output: html_notebook
+---
+```{r}
+library(tidyverse)
+```
+```{r}
+results_all = read_csv('../data/processed/results_all.csv')
+results_all = results_all %>%
+  separate(condition,into=c("axis","adaptation"),sep="_") %>%
+  mutate(adaptation=factor(.$adaptation,levels=c('low','high'))) %>%
+  mutate(contrast_LMS=contrast_L)
+```
+```{r}
+
+```
+```{r}
+results_all %>%
+  ggplot() +
+  aes(x = adaptation, y = contrast_LMS, fill = axis) +
+  geom_violin(scale="area", position = "dodge")
+```

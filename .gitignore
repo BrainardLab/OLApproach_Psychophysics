@@ -1,7 +1,8 @@
+# Some user specific stuff
 .DS_Store
-/code/analysis/Demo/data
-/code/analysis/MaxMelPulsePsychophysics/data
-/code/analysis/MeLMSens/data
 .Rproj.user
+.Rdata
+.Rhistory
 
+# Don't track the datadirs (symlinks to dropbox)
 data/

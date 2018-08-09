@@ -1,17 +1,27 @@
-mergeCSVs = function(filepaths) {
+mergeCSVs = function(filepaths, addCol) {
   suppressPackageStartupMessages(library(tidyverse, verbose = FALSE, quietly = TRUE))
-  filepaths %>%
-    lapply(.,function(x) {
-      read_csv(x, col_types = cols()) %>%
-        add_column(filename=basename(x),.before=1)
-    }) %>%
-    bind_rows %>%
-    return(.)
+  if (addCol) {
+    filepaths %>%
+      lapply(.,function(x) {
+        read_csv(x, col_types = cols()) %>%
+          add_column(filename=basename(x),.before=1)
+      }) %>%
+      bind_rows %>%
+      return(.)
+  } else {
+    filepaths %>%
+      lapply(.,function(x) {
+        read_csv(x, col_types = cols())
+      }) %>%
+      bind_rows %>%
+      return(.)     
+   }
 }
 
 main = function() {
   # Parse arguments
   args = commandArgs(trailingOnly = TRUE)
+  addCol = TRUE;
   
   if (length(args) == 0) { # no arguments, use stdin
     stop("No files specified")
@@ -19,7 +29,9 @@ main = function() {
     dirpath = args[2]
     filepaths = args[-(1:2)] # extract files specified in other args
     filepaths = lapply(filepaths, function(x) paste0(dirpath,'/',x))
-    
+  } else if (args[1] == "--nocol") { # flag for not adding a column
+    addCol = FALSE;
+    filepaths = args[-1] # extract files specified in other args
   } else { # filepaths specified, no DIRPATH specified
     dirpath = ''
     filepaths = args
@@ -31,7 +43,7 @@ main = function() {
     }
 
   # Merge        
-  CSV = mergeCSVs(filepaths)
+  CSV = mergeCSVs(filepaths, addCol)
   
   # Output to stdout, formatted as CSV  
   cat(format_csv(CSV))

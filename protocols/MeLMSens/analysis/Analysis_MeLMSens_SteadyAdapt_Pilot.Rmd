@@ -8,16 +8,22 @@ library(tidyverse)
 ```{r}
 results_all = read_csv('../data/processed/results_all.csv')
 results_all = results_all %>%
+  separate(filename,into=c("tmp1","participant","session","tmp2"),sep="-") %>%
+  select(-tmp1, -tmp2)
+
+results_all = results_all %>%
   separate(condition,into=c("axis","adaptation"),sep="_") %>%
   mutate(adaptation=factor(.$adaptation,levels=c('low','high'))) %>%
   mutate(contrast_LMS=contrast_L)
 ```
 ```{r}
-
+results_all %>%
+  group_by(axis,adaptation,session) %>%
+  summarise(contrast=median(contrast_LMS))
 ```
 ```{r}
 results_all %>%
   ggplot() +
-  aes(x = adaptation, y = contrast_LMS, fill = axis) +
-  geom_violin(scale="area", position = "dodge")
+  aes(adaptation, contrast_LMS, group=interaction(session,axis),color=axis) +
+  geom_line()
 ```

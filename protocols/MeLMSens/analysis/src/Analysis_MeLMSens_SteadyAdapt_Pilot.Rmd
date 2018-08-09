@@ -1,12 +1,15 @@
 ---
 title: "MeLMSens pilot data analysis"
-output: html_notebook
+output:
+  html_notebook:
+    number_sections: yes
+    toc: yes
 ---
 ```{r}
 library(tidyverse)
 ```
 ```{r}
-results_all = read_csv('../data/processed/results_all.csv')
+results_all = read_csv('../../data/processed/results_all.csv',col_types=cols())
 results_all = results_all %>%
   separate(filename,into=c("tmp1","participant","session","tmp2"),sep="-") %>%
   select(-tmp1, -tmp2)
@@ -18,8 +21,9 @@ results_all = results_all %>%
 ```
 ```{r}
 results_all %>%
-  group_by(axis,adaptation,session) %>%
-  summarise(contrast=median(contrast_LMS))
+  group_by(axis,session,adaptation) %>%
+  summarise(contrast=median(contrast_LMS*100)) %>%
+  spread(adaptation,contrast)
 ```
 ```{r}
 results_all %>%

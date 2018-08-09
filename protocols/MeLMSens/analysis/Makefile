@@ -1,61 +1,88 @@
 # Config
 include config.mk
 
+
+
 #Empty variable, two of them with a space in between == literal space
 empty := 
 space := $(empty) $(empty)
 
-# Outline data
+# Outline data (= .mat) files
 DATAFILES := $(wildcard $(DATA_RAW_DIR)/*/*/*.mat)
+DATAFILENAMES := $(notdir $(DATAFILES))
+DATAFILEPATHS := $(dir $(DATAFILES))
 
-ACQUISITIONIDS := $(patsubst data-%, %, $(basename $(notdir $(DATAFILES))))
-SESSIONIDS := $(sort\
-	$(foreach ACQUISITIONID, $(ACQUISITIONIDS),\
-	$(patsubst -%, %,\
-	$(subst $(space),-,\
-	$(wordlist 1,2,\
-	$(subst -,$(space),$(ACQUISITIONID)))))))
-	
-PARTICIPANTIDS := $(sort\
-	$(foreach SESSIONID, $(SESSIONIDS),\
-	$(patsubst $(space),-,\
-	$(firstword \
-	$(subst -,$(space),$(SESSIONID))))))	
-
-ACQUISITIONFILES := $(foreach ACQUISITIONID,$(ACQUISITIONIDS),\
-	$(patsubst /%, %,\
-	$(subst $(space),/,\
-	$(wordlist 1,2,\
-	$(subst -,$(space),$(DATA_PROC_DIR)/$(ACQUISITIONID)))))/results_acquisition-$(ACQUISITIONID).csv)
-SESSIONFILES := $(addsuffix .csv, $(SESSIONIDS))
-PARTICIPANTFILES := $(addsuffix .csv, $(PARTICIPANTIDS))
+# Outline results_acquisition-*.csv files
+ACQUISITIONFILENAMES := $(subst data-,results_acquisition-,\
+	$(subst $(DATA_RAW_DIR),$(DATA_PROC_DIR),\
+	$(subst .mat,.csv,$(DATAFILENAMES))))
+ACQUISITIONFILEPATHS := $(subst $(DATA_RAW_DIR),$(DATA_PROC_DIR),$(DATAFILEPATHS))
 
 # Extract acquisition results
-results_acquisition-%.csv : $(DATA_RAW_DIR)/*/*/data-%.mat $(LIB_DIR)/$(CONVERT_SRC) 
-		$(CONVERT_EXE) $< $@ 
+#results_acquisition-%.csv : $(DATA_RAW_DIR)/*/*/data-%.mat $(LIB_DIR)/$(CONVERT_SRC) 
+#		$(CONVERT_EXE) $< $@
 
-# Merge participants
-#results_all.csv :
-#		@echo "execute grand merge rule"
-		
-# Merge sessions per participant	
-#results_participant-%.csv :
-#		@echo "execute participant rule"
+# Define session file paths
+SESSIONFILENAMES := $(sort\
+	$(subst -results_acquisition-,results_session-,\
+	$(foreach ACQUISITION, $(ACQUISITIONFILENAMES),\
+	$(subst $(space),-,\
+	$(wordlist 1,3,\
+	$(subst -,$(space),$(ACQUISITION)))).csv)))
+SESSIONFILEPATHS := $(sort $(ACQUISITIONFILEPATHS))
+SESSIONFILES := $(join $(SESSIONFILEPATHS),$(SESSIONFILENAMES))
 
-# Merge acquisitions per session
-# Stem (%) in target specifies both participant AND session
-# Requires .SECONDEXPANSION to expand $* in prereqs
-#.SECONDEXPANSION:
-#results_session-%.csv: $$(wildcard $(DATA_PROC_DIR)/*/*/results_acquisition-$$*-*.csv)
-#		@echo execute merge rule $(MERGE_SRC) on CSVs: $^
+# Define participant paths
+PARTICIPANTFILENAMES := $(sort\
+  $(subst -results_session-,results_participant-,\
+  $(foreach SESSION,$(SESSIONFILENAMES),\
+  $(subst $(space),-,\
+  $(wordlist 1,2,\
+  $(subst -,$(space),$(SESSION)))).csv)))
+PARTICIPANTFILEPATHS := $(sort\
+	$(patsubst /%,%/,\
+	$(foreach SESSIONFILE,$(SESSIONFILEPATHS),\
+	$(subst $(space),/,\
+	$(wordlist 1,4,\
+	$(subst /,$(space),$(SESSIONFILE)))))))
+PARTICIPANTFILES := $(join $(PARTICIPANTFILEPATHS),$(PARTICIPANTFILENAMES))
 
+# First target: results_all.csv
+.PHONY : results participants sessions
+	results : $(DATA_PROC_DIR)/results_all.csv
+	sessions : $(SESSIONFILES)
+	participants : $(PARTICIPANTFILES)
 
-		
+$(DATA_PROC_DIR)/results_all.csv : $(PARTICIPANTFILES)
+	$(MERGE_EXE) --nocol $^ > $@
+
+.SECONDEXPANSION:
+results_participant-%.csv: $(SESSIONFILES)
+	$(MERGE_EXE) --nocol $^ > $@
+	
+.SECONDEXPANSION:
+results_session-%.csv: $$(wildcard $(DATA_PROC_DIR)/*/*/results_acquisition-$$*-*.csv)
+		$(MERGE_EXE) $^ > $@
+
+# Clean
+.PHONY: clean
+clean:
+		rm -rf $(SESSIONFILES) $(PARTICIPANTFILES) $(DATA_PROC_DIR)/results_all.csv
+
 # Print variables
-.PHONY:
+.PHONY: variables
 variables :
 		@echo DATAFILES:"\n" $(foreach DATAFILE, $(DATAFILES), $(DATAFILE)"\n")
-		@echo ACQUISITIONIDS:"\n" $(foreach ACQUISITION, $(ACQUISITIONIDS), $(ACQUISITION)"\n")
-		@echo SESSIONIDS:"\n" $(foreach SESSION, $(SESSIONIDS), $(SESSION)"\n")		
-		@echo PARTICIPANTIDS:"\n" $(foreach PARTICIPANT, $(PARTICIPANTIDS), $(PARTICIPANT)"\n")	
-		@echo ACQUISITIONFILES:"\n" $(foreach ACQUISITIONFILE, $(ACQUISITIONFILES), $(ACQUISITIONFILE)"\n")
+		@echo DATAFILENAMES:"\n" $(foreach DATAFILE, $(DATAFILENAMES), $(DATAFILE)"\n")
+		@echo DATAFILEPATHS:"\n" $(foreach DATAFILE, $(DATAFILEPATHS), $(DATAFILE)"\n")
+		@echo ACQUISITIONFILENAMES:"\n" $(foreach ACQUISITIONFILE, $(ACQUISITIONFILENAMES), $(ACQUISITIONFILE)"\n")
+		@echo ACQUISITIONFILEPATHS:"\n" $(foreach ACQUISITIONFILE, $(ACQUISITIONFILEPATHS), $(ACQUISITIONFILE)"\n")		
+		@echo SESSIONFILENAMES:"\n" $(foreach SESSION, $(SESSIONFILENAMES), $(SESSION)"\n")		
+		@echo SESSIONFILEPATHS:"\n" $(foreach SESSION, $(SESSIONFILEPATHS), $(SESSION)"\n")		
+		@echo SESSIONFILES:"\n" $(foreach SESSION, $(SESSIONFILES), $(SESSION)"\n")	
+		@echo PARTICIPANTFILENAMES:"\n" $(foreach PARTICIPANT, $(PARTICIPANTFILENAMES), $(PARTICIPANT)"\n")	
+		@echo PARTICIPANTFILEPATHS:"\n" $(foreach PARTICIPANT, $(PARTICIPANTFILEPATHS), $(PARTICIPANT)"\n")			
+		@echo PARTICIPANTFILES:"\n" $(foreach PARTICIPANT, $(PARTICIPANTFILES), $(PARTICIPANT)"\n")	
+.PHONY: test
+test :
+	@echo $(DATA_PROC_DIR)/results_all.csv

@@ -1,8 +1,6 @@
 # Config
 include config.mk
 
-
-
 #Empty variable, two of them with a space in between == literal space
 empty := 
 space := $(empty) $(empty)
@@ -48,10 +46,8 @@ PARTICIPANTFILEPATHS := $(sort\
 PARTICIPANTFILES := $(join $(PARTICIPANTFILEPATHS),$(PARTICIPANTFILENAMES))
 
 # First target: results_all.csv
-.PHONY : results participants sessions
-	results : $(DATA_PROC_DIR)/results_all.csv
-	sessions : $(SESSIONFILES)
-	participants : $(PARTICIPANTFILES)
+.PHONY : results
+results: $(DATA_PROC_DIR)/results_all.csv
 
 $(DATA_PROC_DIR)/results_all.csv : $(PARTICIPANTFILES)
 	$(MERGE_EXE) --nocol $^ > $@
@@ -62,7 +58,7 @@ results_participant-%.csv: $(SESSIONFILES)
 	
 .SECONDEXPANSION:
 results_session-%.csv: $$(wildcard $(DATA_PROC_DIR)/*/*/results_acquisition-$$*-*.csv)
-		$(MERGE_EXE) $^ > $@
+	$(MERGE_EXE) $^ > $@
 
 # Clean
 .PHONY: clean

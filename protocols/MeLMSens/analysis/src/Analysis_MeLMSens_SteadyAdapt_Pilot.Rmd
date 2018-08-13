@@ -1,14 +1,21 @@
 ---
 title: "MeLMSens pilot data analysis"
+author: "Joris Vincent"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
 output:
+  pdf_document:
+    toc: no
   html_notebook:
     number_sections: yes
     toc: yes
+  html_document:
+    toc: yes
 ---
-```{r}
+```{r setup, echo=FALSE, message=FALSE}
 library(tidyverse)
+library(knitr)
 ```
-```{r}
+```{r munge, echo=FALSE}
 results_all = read_csv('../../data/processed/results_all.csv',col_types=cols())
 results_all = results_all %>%
   separate(filename,into=c("tmp1","participant","session","tmp2"),sep="-") %>%
@@ -19,13 +26,18 @@ results_all = results_all %>%
   mutate(adaptation=factor(.$adaptation,levels=c('low','high'))) %>%
   mutate(contrast_LMS=contrast_L)
 ```
-```{r}
+
+# Summary statistics
+```{r summary_statistics, tidy=TRUE, echo=FALSE}
 results_all %>%
   group_by(axis,session,adaptation) %>%
   summarise(contrast=median(contrast_LMS*100)) %>%
-  spread(adaptation,contrast)
+  spread(adaptation,contrast) %>%
+  kable(.,digits = 2)
 ```
-```{r}
+
+# Plot
+```{r plot_line_condition_per_session, echo=FALSE}
 results_all %>%
   ggplot() +
   aes(adaptation, contrast_LMS, group=interaction(session,axis),color=axis) +

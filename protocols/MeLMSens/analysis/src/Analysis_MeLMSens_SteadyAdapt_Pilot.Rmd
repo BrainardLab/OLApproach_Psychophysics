@@ -22,24 +22,70 @@ results_all = results_all %>%
   select(-tmp1, -tmp2)
 
 results_all = results_all %>%
+  filter(session != "pilot_1")
+
+# Separate 'condition' into 'axis' and 'adaptation'
+results_all = results_all %>%
   separate(condition,into=c("axis","adaptation"),sep="_") %>%
-  mutate(adaptation=factor(.$adaptation,levels=c('low','high'))) %>%
-  mutate(contrast_LMS=contrast_L)
+  mutate(adaptation=factor(.$adaptation,levels=c('low','high')))
 ```
 
-# Summary statistics
-```{r summary_statistics, tidy=TRUE, echo=FALSE}
-results_all %>%
-  group_by(axis,session,adaptation) %>%
-  summarise(contrast=median(contrast_LMS*100)) %>%
-  spread(adaptation,contrast) %>%
-  kable(.,digits = 2)
-```
+```{r echo=FALSE}
+# Combine L, M, S excitation
+results_all  = results_all %>%
+  mutate(excitationPos_LMS = excitationPos_L + excitationPos_M + excitationPos_S) %>%
+  mutate(excitationNeg_LMS = excitationNeg_L + excitationNeg_M + excitationNeg_S) %>%
+  mutate(excitationBackground_LMS = excitationBackground_L + excitationBackground_M + excitationBackground_S)
 
+# Subtract background LMS
+results_all = results_all %>%
+  mutate(excitationPos_LMS_diff = excitationPos_LMS - excitationBackground_LMS) %>%
+  mutate(excitationNeg_LMS_diff = excitationNeg_LMS - excitationBackground_LMS)
+```
 # Plot
 ```{r plot_line_condition_per_session, echo=FALSE}
 results_all %>%
   ggplot() +
-  aes(adaptation, contrast_LMS, group=interaction(session,axis),color=axis) +
-  geom_line()
+  aes(adaptation, excitationPos_LMS_diff, group=interaction(session,axis),color=axis) +
+  geom_line() +
+  facet_wrap( ~ participant)
+```
+
+```{r echo=FALSE}
+# Average over sessions
+results_mean = results_all %>% 
+  select(participant, session, axis, adaptation, excitationPos_LMS_diff, excitationNeg_LMS_diff) %>%
+  group_by(participant, axis, adaptation) %>%
+  summarise(mean_excitation_LMS_diff_pos = mean(excitationPos_LMS_diff), sem = sd(excitationPos_LMS_diff)/sqrt(n()))
+```
+```{r echo=FALSE}
+results_mean %>%
+  ggplot() +
+  aes(adaptation, mean_excitation_LMS_diff_pos, group=axis,color=axis) +
+  geom_line() +
+  geom_pointrange(aes(ymax = mean_excitation_LMS_diff_pos+sem, ymin = mean_excitation_LMS_diff_pos-sem)) +
+  facet_wrap( ~ participant)
+```
+
+# Statistics
+```{r summary_statistics, tidy=TRUE, echo=FALSE}
+ttests = results_all %>% 
+  select(participant, adaptation, axis, excitationPos_LMS_diff) %>%
+  gather(key = variable, value = value, -adaptation, -axis, -participant) %>%
+  group_by(participant, adaptation, axis, variable) %>%
+  summarise(value = list(value)) %>%
+  spread(adaptation, value) %>%
+  group_by(participant, axis) %>%
+  mutate(t_value = t.test(unlist(high),unlist(low),paired=TRUE)$statistic,
+         p_value = t.test(unlist(high),unlist(low),paired=TRUE)$p.value) %>%
+  select(participant, axis, t_value, p_value)
+
+results_mean %>% 
+  gather(variable, value, -participant, -axis, -adaptation) %>%
+  unite(temp, adaptation, variable) %>%
+  spread(temp, value) %>%
+  rename(low = low_mean_excitation_LMS_diff_pos,high = high_mean_excitation_LMS_diff_pos) %>%
+  select(participant, axis, low, high, low_sem, high_sem) %>%
+  full_join(.,ttests,by=c('participant','axis')) %>%
+  kable(digits = 4)
 ```

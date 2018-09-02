@@ -26,30 +26,8 @@ end
 pSpot = projectorSpot('Fullscreen',~simulate.projector);
 pSpot.show();
 
-%% Define on/off matrix
-% Cell array, where each cell is a condition in the continency table. In
-% each cell, there is a logical vector [projectorOn, mirrorsOn]
-onOffMatrix = {[true, true] , [true, false] ;
-    [false, true], [false, false]};
-
-%% Define output
-measurements = cell(2,2);
-
-%% Measure above
-input('<strong>Point the radiometer above the blocker; press any key to start measuring</strong>\n');
-measurements{1,1} = measureLocation(onOffMatrix, oneLight, pSpot, radiometer);
-
-%% Measure left
-input('<strong>Point the radiometer to the left of the blocker; press any key to start measuring</strong>\n');
-measurements{1,2} = measureLocation(onOffMatrix, oneLight, pSpot, radiometer);
-
-%% Measure right
-input('<strong>Point the radiometer to the right of the blocker; press any key to start measuring</strong>\n');
-measurements{2,1} = measureLocation(onOffMatrix, oneLight, pSpot, radiometer);
-
-%% Measure below
-input('<strong>Point the radiometer below blocker; press any key to start measuring</strong>\n');
-measurements{2,2} = measureLocation(onOffMatrix, oneLight, pSpot, radiometer);
+%% Measure SPDs
+SPDs = pSpot.measureSPDInFourLocations(oneLight,radiometer);
 
 %% Turn off hardware
 oneLight.close();

@@ -31,21 +31,21 @@ toggleProjectorSpot(projectorWindow,true); % toggle on
 % Cell array, where each cell is a condition in the continency table. In
 % each cell, there is a logical vector [projectorOn, mirrorsOn]
 onOffMatrix = {[true, true] , [true, false] ;
-               [false, true], [false, false]};
+    [false, true], [false, false]};
 
 %% Define output
 measurements = cell(2,2);
-           
+
 %% Measure above
 input('<strong>Point the radiometer above the blocker; press any key to start measuring</strong>\n');
 measurements{1,1} = measureLocation(onOffMatrix, oneLight, projectorWindow, radiometer);
 
-%% Measure right
-input('<strong>Point the radiometer to the right of the blocker; press any key to start measuring</strong>\n');
-measurements{1,2} = measureLocation(onOffMatrix, oneLight, projectorWindow, radiometer);
-
 %% Measure left
 input('<strong>Point the radiometer to the left of the blocker; press any key to start measuring</strong>\n');
+measurements{1,2} = measureLocation(onOffMatrix, oneLight, projectorWindow, radiometer);
+
+%% Measure right
+input('<strong>Point the radiometer to the right of the blocker; press any key to start measuring</strong>\n');
 measurements{2,1} = measureLocation(onOffMatrix, oneLight, projectorWindow, radiometer);
 
 %% Measure below
@@ -64,49 +64,73 @@ plotAll(measurements)
 
 %% Support functions
 function SPDs = measureLocation(onOffMatrix, oneLight, projectorWindow, radiometer)
-    SPDs = cell(size(onOffMatrix));
-    for i = 1:size(onOffMatrix,1)
-        for j = 1:size(onOffMatrix,2)
-            projectorOn = onOffMatrix{i,j}(1);
-            mirrorsOn = onOffMatrix{i,j}(2);
-            SPDs{i,j} = measureCondition(projectorOn, mirrorsOn, oneLight, projectorWindow, radiometer);
-        end
+SPDs = cell(size(onOffMatrix));
+for i = 1:size(onOffMatrix,1)
+    for j = 1:size(onOffMatrix,2)
+        projectorOn = onOffMatrix{i,j}(1);
+        mirrorsOn = onOffMatrix{i,j}(2);
+        SPDs{i,j} = measureCondition(projectorOn, mirrorsOn, oneLight, projectorWindow, radiometer);
     end
+end
 end
 
 function SPD = measureCondition(projectorOn, mirrorsOn, oneLight, projectorWindow, radiometer)
-    toggleProjectorSpot(projectorWindow,projectorOn); % toggle on
-    oneLight.setAll(mirrorsOn);
-    if ~isempty(radiometer)
-        SPD = radiometer.measure();
-    else
-        SPD = (projectorOn+1)*ones(201,1);
-    end
+toggleProjectorSpot(projectorWindow,projectorOn); % toggle on
+oneLight.setAll(mirrorsOn);
+if ~isempty(radiometer)
+    SPD = radiometer.measure();
+else
+    SPD = (projectorOn+3*mirrorsOn+1)*ones(201,1);
+end
 end
 
-function [ax1, ax2] = plotSPDsForLocation(SPDs, varargin)
+function lum = SPDToLum(SPD,S)
+load('T_xyz1931.mat','*_xyz1931');
+T_xyz = SplineCmf(S_xyz1931,T_xyz1931,S);
+T_xyz = 683*T_xyz;
+lum = T_xyz(2,:) * SPD;
+end
+
+function lums = SPDsLocationToLums(SPDs,S)
+lums = cellfun(@(x) SPDToLum(x,S),SPDs);
+% lums = SPDToLum(cell2mat(SPDs(:)'),S);
+% lums = [lums([1,3]); lums([2, 4])];
+end
+
+function plotSPDsForLocation(SPDs, ax)
 parser = inputParser;
 parser.addRequired('SPDs',@iscell);
-ax1 = subplot(1,2,1);
-plot(SPDs{1,1},'g');
-plot(SPDs{2,1},'r');
+axes(ax); hold on;
+plot(SPDs{1,1} ,'g-');
+plot(SPDs{2,1},'r-');
+plot(SPDs{1,2},'g:');
+plot(SPDs{2,2},'r:');
 xlim([1, length(SPDs{1,1})]);
-ax2 = subplot(1,2,2);
-plot(SPDs{1,2},'g');
-plot(SPDs{2,2},'r');
-xlim([1, length(SPDs{1,2})]);
+% legend({'projector on, mirrors on', 'projector Off, mirrors On',...
+%     'projector on, mirrors off', 'projector off, mirrors off'},...
+%     'NumColumns',2);
+end
+
+function plotLumsForLocation(lums, ax)
+parser = inputParser;
+parser.addRequired('SPDs',@iscell);
+axes(ax); hold on;
+bar(lums);
+xticks([1 2]);
+xticklabels({'on', 'off'});
+%legend('mirrors on','mirrors off');
 end
 
 function F = plotAll(measurements, varargin)
-    for i = 1:size(measurements,1)
-        for j = 1:size(measurements,2)
-            Figs{i,j} = {plotSPDsForLocation(measurements{i,j})};
+    F = figure();
+    for i = 1:2
+        for j = 1:2
+            idxs = j*4+(i-1)*8+[-1 0];
+            M = measurements{i,j};
+            plotSPDsForLocation(M,subplot(3,6,idxs(1)));
+            plotLumsForLocation(SPDsLocationToLums(M,[380 2 201]),subplot(3,6,idxs(2)))
         end
     end
-    
-    F = figure();
-    subplot(3,6,3,Figs{i,j}(1));
-    
 end
 
 %% Average

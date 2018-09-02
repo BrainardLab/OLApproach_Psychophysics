@@ -23,9 +23,8 @@ else
 end
 
 %% Get projectorSpot
-projectorWindow = makeProjectorSpot('Fullscreen',~simulate.projector); % make projector spot window object
-mglSetParam('spoofFullScreen',1);
-toggleProjectorSpot(projectorWindow,true); % toggle on
+pSpot = projectorSpot('Fullscreen',~simulate.projector);
+pSpot.show();
 
 %% Define on/off matrix
 % Cell array, where each cell is a condition in the continency table. In
@@ -38,23 +37,23 @@ measurements = cell(2,2);
 
 %% Measure above
 input('<strong>Point the radiometer above the blocker; press any key to start measuring</strong>\n');
-measurements{1,1} = measureLocation(onOffMatrix, oneLight, projectorWindow, radiometer);
+measurements{1,1} = measureLocation(onOffMatrix, oneLight, pSpot, radiometer);
 
 %% Measure left
 input('<strong>Point the radiometer to the left of the blocker; press any key to start measuring</strong>\n');
-measurements{1,2} = measureLocation(onOffMatrix, oneLight, projectorWindow, radiometer);
+measurements{1,2} = measureLocation(onOffMatrix, oneLight, pSpot, radiometer);
 
 %% Measure right
 input('<strong>Point the radiometer to the right of the blocker; press any key to start measuring</strong>\n');
-measurements{2,1} = measureLocation(onOffMatrix, oneLight, projectorWindow, radiometer);
+measurements{2,1} = measureLocation(onOffMatrix, oneLight, pSpot, radiometer);
 
 %% Measure below
 input('<strong>Point the radiometer below blocker; press any key to start measuring</strong>\n');
-measurements{2,2} = measureLocation(onOffMatrix, oneLight, projectorWindow, radiometer);
+measurements{2,2} = measureLocation(onOffMatrix, oneLight, pSpot, radiometer);
 
 %% Turn off hardware
 oneLight.close();
-projectorWindow.close();
+pSpot.close();
 if ~isempty(radiometer)
     radiometer.shutDown();
 end
@@ -63,19 +62,23 @@ end
 plotAll(measurements)
 
 %% Support functions
-function SPDs = measureLocation(onOffMatrix, oneLight, projectorWindow, radiometer)
+function SPDs = measureLocation(onOffMatrix, oneLight, pSpot, radiometer)
 SPDs = cell(size(onOffMatrix));
 for i = 1:size(onOffMatrix,1)
     for j = 1:size(onOffMatrix,2)
         projectorOn = onOffMatrix{i,j}(1);
         mirrorsOn = onOffMatrix{i,j}(2);
-        SPDs{i,j} = measureCondition(projectorOn, mirrorsOn, oneLight, projectorWindow, radiometer);
+        SPDs{i,j} = measureCondition(projectorOn, mirrorsOn, oneLight, pSpot, radiometer);
     end
 end
 end
 
-function SPD = measureCondition(projectorOn, mirrorsOn, oneLight, projectorWindow, radiometer)
-toggleProjectorSpot(projectorWindow,projectorOn); % toggle on
+function SPD = measureCondition(projectorOn, mirrorsOn, oneLight, pSpot, radiometer)
+if projectorOn
+    pSpot.show();
+else
+    pSpot.hide();
+end
 oneLight.setAll(mirrorsOn);
 if ~isempty(radiometer)
     SPD = radiometer.measure();

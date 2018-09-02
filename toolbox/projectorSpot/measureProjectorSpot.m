@@ -24,6 +24,7 @@ end
 
 %% Get projectorSpot
 projectorWindow = makeProjectorSpot('Fullscreen',~simulate.projector); % make projector spot window object
+mglSetParam('spoofFullScreen',1);
 toggleProjectorSpot(projectorWindow,true); % toggle on
 
 %% Define on/off matrix

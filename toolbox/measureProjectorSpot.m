@@ -1,4 +1,4 @@
-function SPDs = measureSPDInFourLocations(obj,oneLight, radiometer)
+function SPDs = measureProjectorSpot(pSpot,oneLight, radiometer)
 %% Define on/off matrix
 % Cell array, where each cell is a condition in the continency table. In
 % each cell, there is a logical vector [projectorOn, mirrorsOn]
@@ -9,28 +9,28 @@ onOffMatrix = {[true, true] , [true, false] ;
 SPDs = cell(2,2);
 
 %% Measure above
-obj.show();
+pSpot.show();
 oneLight.setAll(true);
 input('<strong>Point the radiometer above the blocker; press any key to start measuring</strong>\n');
-SPDs{1,1} = measureLocation(onOffMatrix, oneLight, obj, radiometer);
+SPDs{1,1} = measureLocation(onOffMatrix, oneLight, pSpot, radiometer);
 
 %% Measure left
-obj.show();
+pSpot.show();
 oneLight.setAll(true);
 input('<strong>Point the radiometer to the left of the blocker; press any key to start measuring</strong>\n');
-SPDs{1,2} = measureLocation(onOffMatrix, oneLight, obj, radiometer);
+SPDs{1,2} = measureLocation(onOffMatrix, oneLight, pSpot, radiometer);
 
 %% Measure right
-obj.show();
+pSpot.show();
 oneLight.setAll(true);
 input('<strong>Point the radiometer to the right of the blocker; press any key to start measuring</strong>\n');
-SPDs{2,1} = measureLocation(onOffMatrix, oneLight, obj, radiometer);
+SPDs{2,1} = measureLocation(onOffMatrix, oneLight, pSpot, radiometer);
 
 %% Measure below
-obj.show();
+pSpot.show();
 oneLight.setAll(true);
 input('<strong>Point the radiometer below blocker; press any key to start measuring</strong>\n');
-SPDs{2,2} = measureLocation(onOffMatrix, oneLight, obj, radiometer);
+SPDs{2,2} = measureLocation(onOffMatrix, oneLight, pSpot, radiometer);
 end
 
 %% Support functions

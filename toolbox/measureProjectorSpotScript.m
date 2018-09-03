@@ -27,7 +27,7 @@ else
 end
 
 %% Measure SPDs
-SPDs = pSpot.measureSPDInFourLocations(oneLight,radiometer);
+SPDs = measureProjectorSpot(pSpot, oneLight,radiometer);
 
 %% Turn off hardware
 oneLight.close();

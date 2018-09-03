@@ -10,21 +10,25 @@ SPDs = cell(2,2);
 
 %% Measure above
 obj.show();
+oneLight.setAll(true);
 input('<strong>Point the radiometer above the blocker; press any key to start measuring</strong>\n');
 SPDs{1,1} = measureLocation(onOffMatrix, oneLight, obj, radiometer);
 
 %% Measure left
 obj.show();
+oneLight.setAll(true);
 input('<strong>Point the radiometer to the left of the blocker; press any key to start measuring</strong>\n');
 SPDs{1,2} = measureLocation(onOffMatrix, oneLight, obj, radiometer);
 
 %% Measure right
 obj.show();
+oneLight.setAll(true);
 input('<strong>Point the radiometer to the right of the blocker; press any key to start measuring</strong>\n');
 SPDs{2,1} = measureLocation(onOffMatrix, oneLight, obj, radiometer);
 
 %% Measure below
 obj.show();
+oneLight.setAll(true);
 input('<strong>Point the radiometer below blocker; press any key to start measuring</strong>\n');
 SPDs{2,2} = measureLocation(onOffMatrix, oneLight, obj, radiometer);
 end

@@ -1,9 +1,13 @@
 %% Get a general sense of projector spot SPD
 % Measure SPDs around non-blocked region, in several locations
-
+clear all; close all; clc;
 approach = 'OLApproach_Psychophysics';
 protocol = 'MeLMSens';
 simulate = getpref(approach,'simulate'); % localhook defines what devices to simulate
+
+%% Get projectorSpot
+pSpot = projectorSpot('Fullscreen',~simulate.projector);
+pSpot.show();
 
 %% Open the OneLight
 % Open up a OneLight device
@@ -21,10 +25,6 @@ if ~simulate.radiometer
 else
     radiometer = [];
 end
-
-%% Get projectorSpot
-pSpot = projectorSpot('Fullscreen',~simulate.projector);
-pSpot.show();
 
 %% Measure SPDs
 SPDs = pSpot.measureSPDInFourLocations(oneLight,radiometer);

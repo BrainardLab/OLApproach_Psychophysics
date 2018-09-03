@@ -67,6 +67,9 @@ classdef projectorSpot < handle
         end
         
         function open(obj)
+            %    09/03/18  jv   spoofFullScreen before opening. Workaround
+            %                   for R2018a mgl issues.            
+            mglSetParam('spoofFullScreen',1);            
             try
                 obj.projectorWindow.open();
             catch E
@@ -110,7 +113,7 @@ classdef projectorSpot < handle
 
             % History:
             %    07/17/18  jv   wrote toggleProjectorSpot.
-            %    09/01/18  jv   turn into projectorSpot.show method.        
+            %    09/01/18  jv   turn into projectorSpot.show method.  
             obj.open();
             obj.isOn = true;
             obj.projectorWindow.enableAllObjects();

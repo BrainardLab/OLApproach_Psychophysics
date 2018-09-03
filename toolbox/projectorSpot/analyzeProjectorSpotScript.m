@@ -1,43 +1,4 @@
-%% Get a general sense of projector spot SPD
-% Measure SPDs around non-blocked region, in several locations
-clear all; close all; clc;
-approach = 'OLApproach_Psychophysics';
-protocol = 'MeLMSens';
-simulate = getpref(approach,'simulate'); % localhook defines what devices to simulate
-
-%% Get projectorSpot
-pSpot = projectorSpot('Fullscreen',~simulate.projector);
-pSpot.show();
-
-%% Open the OneLight
-% Open up a OneLight device
-oneLight = OneLight('simulate',simulate.oneLight); drawnow;
-
-%% Get radiometer
-% Open up a radiometer, which we will need later on.
-if ~simulate.radiometer
-    oneLight.setAll(true);
-    commandwindow;
-    input('<strong>Turn on radiometer and connect to USB; press any key to connect to radiometer</strong>\n');
-    oneLight.setAll(false);
-    pause(3);
-    radiometer = OLOpenSpectroRadiometerObj('PR-670');
-else
-    radiometer = [];
-end
-
-%% Measure SPDs
-SPDs = measureProjectorSpot(pSpot, oneLight,radiometer);
-
-%% Turn off hardware
-oneLight.close();
-pSpot.close();
-if ~isempty(radiometer)
-    radiometer.shutDown();
-end
-
-%% Plot
-plotAll(measurements)
+plotAll(SPDs);
 
 %% Support functions
 function lum = SPDToLum(SPD,S)
@@ -90,6 +51,23 @@ function F = plotAll(measurements, varargin)
 end
 
 %% Average
+function deltaProjectorSPDs = calcDeltaProjectorSPDs(SPDs)
+    for i = 1:2
+        for j = 1:2
+            deltaProjectorSPDs{i,j} = [SPDs{i,j}{1,1}-SPDs{i,j}{2,1}, ...
+                                       SPDs{i,j}{1,2}-SPDs{i,j}{2,2}];
+        end
+    end
+end
+
+function avgDeltaProjectorSPDs = averagoOverOLOnOff(deltaProjectorSPDs)
+    for i = 1:2
+        for j = 1:2
+            avgDeltaProjectorSPDs{i,j} = mean(deltaProjectorSPDs,2);
+        end
+    end
+end
+
 % - Subtract projector on - off, to get projector SPD, per location per condition
 % - Average SPD across OneLight on/off conditions, per location
 %   - SEM, CI (95% CI = +- 1.96 SEM)

@@ -53,7 +53,7 @@ else
 end
 oneLight.setAll(mirrorsOn);
 if ~isempty(radiometer)
-    SPD = radiometer.measure();
+    SPD = radiometer.measure()';
 else
     SPD = (projectorOn+3*mirrorsOn+1)*ones(201,1);
 end

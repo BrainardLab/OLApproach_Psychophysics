@@ -40,31 +40,6 @@ end
 plotAll(measurements)
 
 %% Support functions
-function SPDs = measureLocation(onOffMatrix, oneLight, pSpot, radiometer)
-SPDs = cell(size(onOffMatrix));
-for i = 1:size(onOffMatrix,1)
-    for j = 1:size(onOffMatrix,2)
-        projectorOn = onOffMatrix{i,j}(1);
-        mirrorsOn = onOffMatrix{i,j}(2);
-        SPDs{i,j} = measureCondition(projectorOn, mirrorsOn, oneLight, pSpot, radiometer);
-    end
-end
-end
-
-function SPD = measureCondition(projectorOn, mirrorsOn, oneLight, pSpot, radiometer)
-if projectorOn
-    pSpot.show();
-else
-    pSpot.hide();
-end
-oneLight.setAll(mirrorsOn);
-if ~isempty(radiometer)
-    SPD = radiometer.measure();
-else
-    SPD = (projectorOn+3*mirrorsOn+1)*ones(201,1);
-end
-end
-
 function lum = SPDToLum(SPD,S)
 load('T_xyz1931.mat','*_xyz1931');
 T_xyz = SplineCmf(S_xyz1931,T_xyz1931,S);

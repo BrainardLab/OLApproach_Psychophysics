@@ -7,19 +7,6 @@ lums = cellfun(@(x) SPDToLum(x,S),SPDs);
 % lums = [lums([1,3]); lums([2, 4])];
 end
 
-function plotSPDsForLocation(SPDs, ax)
-parser = inputParser;
-parser.addRequired('SPDs',@iscell);
-axes(ax); hold on;
-plot(SPDs{1,1} ,'g-');
-plot(SPDs{2,1},'r-');
-plot(SPDs{1,2},'g:');
-plot(SPDs{2,2},'r:');
-xlim([1, length(SPDs{1,1})]);
-% legend({'projector on, mirrors on', 'projector Off, mirrors On',...
-%     'projector on, mirrors off', 'projector off, mirrors off'},...
-%     'NumColumns',2);
-end
 
 function plotLumsForLocation(lums, ax)
 parser = inputParser;

@@ -1,7 +1,8 @@
-function testMeLMSens_SteadyAdapt
+function [validationsPre, validationsPost, directions] = testMeLMSens_SteadyAdapt
 %% Test MeLMSens_SteadyAdapt protocol
 approach = 'OLApproach_Psychophysics';
 protocol = 'MeLMSens';
+simulate = getpref(approach,'simulate'); % localhook defines what devices to simulate
 
 %% Get calibration
 % Specify which box and calibration to use, check that everything is set up
@@ -12,26 +13,29 @@ calibration = OLGetCalibrationStructure('CalibrationType',calibrationType,'Calib
 
 %% Open the OneLight
 % Open up a OneLight device
-oneLight = OneLight('simulate',true); drawnow;
+oneLight = OneLight('simulate',simulate.oneLight); drawnow;
 
 %% Get radiometer
 % Open up a radiometer, which we will need later on.
-radiometer = [];
+if ~simulate.radiometer
+    radiometer = OLOpenSpectroRadiometerObj('PR-670');
+else
+    radiometer = [];
+end
 
 %% Get directions
 directions = MakeNominalMeLMSens_SteadyAdapt(calibration,'observerAge',32);
 receptors = directions('MelStep').describe.directionParams.T_receptors;
 
 %% Validate directions pre-correction
-validations = validateMeLMSens_SteadyAdapt(directions,oneLight,radiometer,'receptors',receptors);
+validationsPre = validateMeLMSens_SteadyAdapt(directions,oneLight,radiometer,'receptors',receptors);
 
 %% Correct directions
-CorrectMeLMSens_SteadyAdapt(directions,oneLight,calibration,radiometer,'receptors',receptors);
+correctMeLMSens_SteadyAdapt(directions,oneLight,calibration,radiometer,'receptors',receptors);
 
 %% Validate directions post-correction
-validations = validateMeLMSens_SteadyAdapt(directions,oneLight,radiometer,'receptors',receptors);
+validationsPost = validateMeLMSens_SteadyAdapt(directions,oneLight,radiometer,'receptors',receptors);
 
 %% Compare validations
-
 
 end

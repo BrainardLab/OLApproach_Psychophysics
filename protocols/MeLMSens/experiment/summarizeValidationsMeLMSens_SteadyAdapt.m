@@ -1,48 +1,71 @@
-function [luminancesDesired, luminancesActual, contrastsBgActual, contrastsFlickerActual] = summarizeValidationsMeLMSens_SteadyAdapt(validations)
+function [luminancesBg, contrastsBg, contrastsFlicker] = summarizeValidationsMeLMSens_SteadyAdapt(validations)
 %% Background luminances
 backgroundNames = ["LMS_low","Mel_low"; "LMS_high", "Mel_high"];
-luminancesActual = [];
-luminancesDesired = [];
-for bb = backgroundNames(:)'
-    luminancesDesired = [luminancesDesired; validations(char(bb)).luminanceDesired(2)];
-    luminancesActual = [luminancesActual; validations(char(bb)).luminanceActual(2)];
+luminancesBg = table;
+for bgName = backgroundNames(:)'
+    bgValidations = validations(char(bgName));
+    
+    bgLuminancesDesired = vertcat(bgValidations.luminanceDesired);
+    lumDesired = bgLuminancesDesired(:,2);
+    
+    bgLuminancesActual = vertcat(bgValidations.luminanceActual);
+    lumActual = bgLuminancesActual(:,2);
+    
+    T = table(repmat(bgName,size(lumActual)),lumDesired,lumActual,...
+        'VariableNames',{'direction','lumDesired','lumActual'});
+    luminancesBg = [luminancesBg; T];
 end
 
 %% Background contrasts
 backgroundNames = ["LMS_low","Mel_low"; "LMS_high", "Mel_high"];
-contrastsBgDesired = table();
-contrastsBgActual = table();
+contrastsBg = table();
 for bPair = backgroundNames
-    excitationsDesired = [validations(char(bPair(1))).excitationDesired(:,2),validations(char(bPair(2))).excitationDesired(:,2)];
-    contrastDesired = ReceptorExcitationToReceptorContrast(excitationsDesired);
-    contrastDesired = round(contrastDesired(:,1)*100,1);
-    contrastDesired = unipolarContrastsToTable(contrastDesired,{'L','M','S','Mel'});
-    contrastDesired.Properties.RowNames = cellstr(compose('%s-directed backgrounds',extractBefore(bPair(1),"_")));   
-    contrastsBgDesired = [contrastsBgDesired; contrastDesired];
+    axis = compose('%s-directed backgrounds',extractBefore(bPair(1),"_"));
+    validationsLow = validations(char(bPair(1)));
+    validationsHigh = validations(char(bPair(2)));
     
-    excitationsActual = [validations(char(bPair(1))).excitationActual(:,2),validations(char(bPair(2))).excitationActual(:,2)];
-    contrastActual = ReceptorExcitationToReceptorContrast(excitationsActual);
-    contrastActual = unipolarContrastsToTable(contrastActual(:,1)*100,{'L','M','S','Mel'});   
-    contrastActual.Properties.RowNames = cellstr(compose('%s-directed backgrounds',extractBefore(bPair(1),"_")));
+    excitationsDesiredLow = horzcat(validationsLow.excitationDesired);
+    excitationsDesiredLow = excitationsDesiredLow(:,2:3:end);
     
-    contrastsBgActual = [contrastsBgActual; contrastActual];
+    excitationsDesiredHigh = horzcat(validationsHigh.excitationDesired);
+    excitationsDesiredHigh = excitationsDesiredHigh(:,2:3:end);
+    
+    for i = 1:numel(validationsLow)
+        contrastDesired = ReceptorExcitationToReceptorContrast([excitationsDesiredLow(:,i),excitationsDesiredHigh(:,i)]);
+        contrastDesired = round(contrastDesired(:,1)*100,1); 
+        contrastDesired = unipolarContrastsToTable(contrastDesired,{'L','M','S','Mel'});
+    end
+
+    excitationsActualLow = horzcat(validationsLow.excitationDesired);
+    excitationsActualLow = excitationsActualLow(:,2:3:end);
+    
+    excitationsActualHigh = horzcat(validationsHigh.excitationDesired);
+    excitationsActualHigh = excitationsActualHigh(:,2:3:end);
+    
+    for i = 1:numel(validationsLow)
+        contrastActual = ReceptorExcitationToReceptorContrast([excitationsActualLow(:,i),excitationsActualHigh(:,i)]);
+        contrastActual = unipolarContrastsToTable(contrastActual(:,1)*100,{'L','M','S','Mel'});   
+    end
+    T = table(axis,contrastDesired,contrastActual);
+    contrastsBg = [contrastsBg; T];
 end
 
 %% Direction contrasts
 backgroundNames = ["LMS_low","Mel_low"; "LMS_high", "Mel_high"];
 directionNames = "FlickerDirection_" + backgroundNames;
-contrastsFlickerActual = table();
-contrastsFlickerDesired = table;
-for dd = directionNames(:)' % loop over each flicker direction
-    validation = validations(char(dd));
-    contrastDesired = validation.contrastDesired(:,[1 3]); % desired modulation, not differential, contrast    
-    contrastDesired = bipolarContrastsToTable(contrastDesired*100,{'L','M','S','Mel'}); % convert to table 
-    contrastDesired.Properties.RowNames = cellstr(dd); % add direction name
-    contrastsFlickerDesired = [contrastsFlickerDesired; contrastDesired];
-    
-    contrastActual = validation.contrastActual(:,[1 3]); % measured modulation, not differential, contrast
-    contrastActual = bipolarContrastsToTable(contrastActual*100,{'L','M','S','Mel'}); % convert to table
-    contrastActual.Properties.RowNames = cellstr(dd); % add direction name
-    contrastsFlickerActual = [contrastsFlickerActual; contrastActual];
+contrastsFlicker = table();
+
+for direction = directionNames(:)' % loop over each flicker direction
+    for validation = validations(char(direction))
+        contrastDesired = validation.contrastDesired(:,[1 3]); % desired modulation, not differential, contrast    
+        contrastDesired = bipolarContrastsToTable(contrastDesired*100,{'L','M','S','Mel'}); % convert to table 
+
+        contrastActual = validation.contrastActual(:,[1 3]); % measured modulation, not differential, contrast
+        contrastActual = bipolarContrastsToTable(contrastActual*100,{'L','M','S','Mel'}); % convert to table
+        
+        T = table(direction,contrastDesired,contrastActual);
+        contrastsFlicker = [contrastsFlicker; T];
+    end
 end
+
 end

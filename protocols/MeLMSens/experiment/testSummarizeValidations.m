@@ -31,5 +31,5 @@ receptors = directions('MelStep').describe.directionParams.T_receptors;
 validationsPre = validateMeLMSens_SteadyAdapt(directions,oneLight,radiometer,'receptors',receptors,'nValidations',5);
 
 %% Summarize validations
-[luminancesDesired, luminancesActual, contrastsBgActual, contrastsFlickerActual] = summarizeValidationsMeLMSens_SteadyAdapt(validationsPre);
-plotValidationSummary(luminancesDesired, luminancesActual, contrastsBgActual, contrastsFlickerActual);
+[luminancesBg, contrastsBg, contrastsFlicker] = summarizeValidationsMeLMSens_SteadyAdapt(validationsPre);
+plotValidationSummary(luminancesDesired, luminancesActual, contrastsBg, contrastsFlickerActual);

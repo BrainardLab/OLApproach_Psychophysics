@@ -1,5 +1,4 @@
-function [luminancesActual, contrastsBgActual, contrastsFlickerActual] = summarizeValidationsMeLMSens_SteadyAdapt(validations)
-
+function [luminancesDesired, luminancesActual, contrastsBgActual, contrastsFlickerActual] = summarizeValidationsMeLMSens_SteadyAdapt(validations)
 %% Background luminances
 backgroundNames = ["LMS_low","Mel_low"; "LMS_high", "Mel_high"];
 luminancesActual = [];
@@ -8,15 +7,6 @@ for bb = backgroundNames(:)'
     luminancesDesired = [luminancesDesired; validations(char(bb)).luminanceDesired(2)];
     luminancesActual = [luminancesActual; validations(char(bb)).luminanceActual(2)];
 end
-
-% Plot
-figure();
-axLum = axes(); hold on;
-bar([luminancesDesired, luminancesActual]);
-xticks(1:4);
-xticklabels(backgroundNames);
-legend('desired','actual');
-ylabel('Luminance (CIE1931 cd/m^2)');
 
 %% Background contrasts
 backgroundNames = ["LMS_low","Mel_low"; "LMS_high", "Mel_high"];
@@ -38,19 +28,6 @@ for bPair = backgroundNames
     contrastsBgActual = [contrastsBgActual; contrastActual];
 end
 
-% Plot background contrasts
-figure();
-axBgContrasts = axes(); hold on;
-bars = bar(table2array(contrastsBgActual)');
-plot(xlim,[5 5],'r:');
-plot(xlim,[350 350],'r:');
-ylabel('Receptor contrast (%)');
-xticks(1:4);
-xticklabels({'L','M','S','Mel'});
-xlabel('Receptor');
-axBgContrasts.YScale = 'log';
-legend(replace(contrastsBgActual.Properties.RowNames,'_',' '));
-
 %% Direction contrasts
 backgroundNames = ["LMS_low","Mel_low"; "LMS_high", "Mel_high"];
 directionNames = "FlickerDirection_" + backgroundNames;
@@ -59,23 +36,13 @@ contrastsFlickerDesired = table;
 for dd = directionNames(:)' % loop over each flicker direction
     validation = validations(char(dd));
     contrastDesired = validation.contrastDesired(:,[1 3]); % desired modulation, not differential, contrast    
-    contrastDesired = bipolarContrastsToTable(contrastDesired,{'L','M','S','Mel'}); % convert to table 
+    contrastDesired = bipolarContrastsToTable(contrastDesired*100,{'L','M','S','Mel'}); % convert to table 
     contrastDesired.Properties.RowNames = cellstr(dd); % add direction name
     contrastsFlickerDesired = [contrastsFlickerDesired; contrastDesired];
     
     contrastActual = validation.contrastActual(:,[1 3]); % measured modulation, not differential, contrast
-    contrastActual = bipolarContrastsToTable(contrastActual,{'L','M','S','Mel'}); % convert to table
+    contrastActual = bipolarContrastsToTable(contrastActual*100,{'L','M','S','Mel'}); % convert to table
     contrastActual.Properties.RowNames = cellstr(dd); % add direction name
     contrastsFlickerActual = [contrastsFlickerActual; contrastActual];
 end
-
-% Plot flicker contrasts
-figure();
-axFlickerContrasts = axes(); hold on;
-bars = bar(table2array(contrastsFlickerActual)');
-ylabel('Receptor contrast (%)');
-xticks(1:4);
-xticklabels({'L','M','S','Mel'});
-xlabel('Receptor');
-legend(replace(contrastsFlickerActual.Properties.RowNames,'_',' '));
 end

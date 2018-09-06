@@ -28,7 +28,7 @@ directions = makeNominalMeLMSens_SteadyAdapt(calibration,'observerAge',32);
 receptors = directions('MelStep').describe.directionParams.T_receptors;
 
 %% Validate directions pre-correction
-validationsPre = validateMeLMSens_SteadyAdapt(directions,oneLight,radiometer,'receptors',receptors);
+validationsPre = validateMeLMSens_SteadyAdapt(directions,oneLight,radiometer,'receptors',receptors,'nValidations',5);
 
 %% Summarize validations
 [luminancesDesired, luminancesActual, contrastsBgActual, contrastsFlickerActual] = summarizeValidationsMeLMSens_SteadyAdapt(validationsPre);

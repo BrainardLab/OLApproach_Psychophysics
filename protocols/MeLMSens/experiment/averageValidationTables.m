@@ -1,4 +1,4 @@
-function resultsLuminancesBg = averageValidationSummaries(luminancesBg, contrastsBg, contrastsFlicker)
+function resultsLuminancesBg = averageValidationTables(luminancesBg, contrastsBg, contrastsFlicker)
 %% Average background luminances
 [G,direction] = findgroups(luminancesBg.direction);
 [median, ~,~,~,CI] = splitapply(@multiStats,luminancesBg.lumActual,G);

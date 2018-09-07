@@ -50,9 +50,9 @@ stats = table(med, stdSample, semean, semedian, CImedian);
 end
 
 function stats = multiStatsDouble(x)
-med = median(x);
-stdSample = std(x);
-semean = stdSample/sqrt(length(x));
+med = median(x,1);
+stdSample = std(x,0,1);
+semean = stdSample/sqrt(size(x,1));
 semedian = 1.2533 * semean;
 CImedian = ([-1.96, +1.96, -1.96, +1.96] .* semedian([1 1 2 2])) + med([1 1 2 2]);
 stats = table(med, stdSample, semean, semedian, CImedian);

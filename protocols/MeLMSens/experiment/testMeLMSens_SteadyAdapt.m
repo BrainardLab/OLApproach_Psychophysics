@@ -28,13 +28,13 @@ directions = MakeNominalMeLMSens_SteadyAdapt(calibration,'observerAge',32);
 receptors = directions('MelStep').describe.directionParams.T_receptors;
 
 %% Validate directions pre-correction
-validationsPre = validateMeLMSens_SteadyAdapt(directions,oneLight,radiometer,'receptors',receptors);
+validationsPre = validateMeLMSens_SteadyAdapt(directions,oneLight,radiometer,'receptors',receptors,'primaryTolerance',1e-5);
 
 %% Correct directions
 correctMeLMSens_SteadyAdapt(directions,oneLight,calibration,radiometer,'receptors',receptors);
 
 %% Validate directions post-correction
-validationsPost = validateMeLMSens_SteadyAdapt(directions,oneLight,radiometer,'receptors',receptors);
+validationsPost = validateMeLMSens_SteadyAdapt(directions,oneLight,radiometer,'receptors',receptors,'primaryTolerance',1e-5);
 
 %% Compare validations
 

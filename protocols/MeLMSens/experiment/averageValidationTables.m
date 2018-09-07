@@ -24,6 +24,16 @@ results.M = removevars(results.multiStatsSingle_M,{'stdSample','semean','semedia
 results.S = removevars(results.multiStatsSingle_S,{'stdSample','semean','semedian'});
 results.Mel = removevars(results.multiStatsSingle_Mel,{'stdSample','semean','semedian'});
 results = removevars(results,{'GroupCount','multiStatsSingle_L','multiStatsSingle_M','multiStatsSingle_S','multiStatsSingle_Mel'});
+
+a = inner2outer(results);
+b = stack(a.med,{'L','M','S','Mel'},'NewDataVariableName','medianContrast','IndexVariableName','receptor');
+b.axis = a.axis([1 1 1 1 2 2 2 2]);
+c = stack(a.CImedian,{'L','M','S','Mel'},'NewDataVariableName','CImedian','IndexVariableName','receptor');
+c.axis = a.axis([1 1 1 1 2 2 2 2]);
+results = join(b,c);
+results = movevars(results,'axis','Before',1);
+results.axis = categorical(results.axis);
+results.receptor = categorical(results.receptor);
 end
 
 

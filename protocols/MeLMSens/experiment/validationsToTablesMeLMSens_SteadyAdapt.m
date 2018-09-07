@@ -1,4 +1,4 @@
-function [luminancesBg, contrastsBg, contrastsFlicker] = summarizeValidationsMeLMSens_SteadyAdapt(validations)
+function [luminancesBg, contrastsBg, contrastsFlicker] = validationsToTablesMeLMSens_SteadyAdapt(validations)
 %% Background luminances
 backgroundNames = ["LMS_low","Mel_low"; "LMS_high", "Mel_high"];
 luminancesBg = table;

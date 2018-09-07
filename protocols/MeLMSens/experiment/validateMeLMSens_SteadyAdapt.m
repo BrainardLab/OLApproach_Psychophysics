@@ -39,6 +39,7 @@ parser = inputParser;
 parser.addRequired('directions');
 parser.addRequired('oneLight');
 parser.addRequired('radiometer');
+parser.addParameter('nValidations',1);
 parser.KeepUnmatched = true;
 
 parser.parse(directions, oneLight, radiometer, varargin{:});
@@ -53,14 +54,21 @@ fprintf("<strong>Validating backgrounds and directions...</strong>\n");
 backgroundNames = ["LMS_low","LMS_high","Mel_low","Mel_high"];
 for bb = backgroundNames
     fprintf("Validating background %s...",bb);
-    validations(char(bb)) = OLValidateDirection(directions(char(bb)), directions('null'), oneLight, radiometer, validationParams);
+    for i = 1:parser.Results.nValidations
+        validation(i) = OLValidateDirection(directions(char(bb)), directions('null'), oneLight, radiometer, validationParams);
+    end
+    validations(char(bb)) = validation;
+    clear validation;
     fprintf("done.\n");
 end
 
 %% Validate flicker directions
 for bb = backgroundNames
     fprintf("Validating direction %s...",sprintf('FlickerDirection_%s',bb));
-    validations(sprintf('FlickerDirection_%s',bb)) = OLValidateDirection(directions(sprintf('FlickerDirection_%s',bb)), directions(char(bb)), oneLight, radiometer, validationParams);
+    for i = 1:parser.Results.nValidations
+        validation(i) = OLValidateDirection(directions(sprintf('FlickerDirection_%s',bb)), directions(char(bb)), oneLight, radiometer, validationParams);
+    end
+    validations(sprintf('FlickerDirection_%s',bb)) = validation;
     fprintf("done.\n");
 end
 

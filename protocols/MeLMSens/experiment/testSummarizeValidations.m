@@ -32,4 +32,5 @@ validationsPre = validateMeLMSens_SteadyAdapt(directions,oneLight,radiometer,'re
 
 %% Summarize validations
 [luminancesBg, contrastsBg, contrastsFlicker] = validationsToTablesMeLMSens_SteadyAdapt(validationsPre);
+[avgLuminancesBg, avgContrastsBg, avgContrastsFlicker] = averageValidationTables(luminancesBg,contrastsBg, contrastsFlicker);
 %plotValidationSummary(luminancesDesired, luminancesActual, contrastsBg, contrastsFlickerActual);

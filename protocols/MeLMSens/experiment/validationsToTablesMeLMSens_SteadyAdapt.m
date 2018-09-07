@@ -5,14 +5,11 @@ luminancesBg = table;
 for bgName = backgroundNames(:)'
     bgValidations = validations(char(bgName));
     
-    bgLuminancesDesired = vertcat(bgValidations.luminanceDesired);
-    lumDesired = bgLuminancesDesired(:,2);
-    
     bgLuminancesActual = vertcat(bgValidations.luminanceActual);
     lumActual = bgLuminancesActual(:,2);
     
-    T = table(repmat(bgName,size(lumActual)),lumDesired,lumActual,...
-        'VariableNames',{'direction','lumDesired','lumActual'});
+    T = table(repmat(bgName,size(lumActual)),lumActual,...
+        'VariableNames',{'direction','lumActual'});
     luminancesBg = [luminancesBg; T];
 end
 
@@ -20,33 +17,28 @@ end
 backgroundNames = ["LMS_low","Mel_low"; "LMS_high", "Mel_high"];
 contrastsBg = table();
 for bPair = backgroundNames
-    axis = compose('%s-directed backgrounds',extractBefore(bPair(1),"_"));
+    % Extract axis name
+    axis = compose("%s-directed backgrounds",extractBefore(bPair(1),"_"));
+    
+    % Extract validations
     validationsLow = validations(char(bPair(1)));
     validationsHigh = validations(char(bPair(2)));
     
-    excitationsDesiredLow = horzcat(validationsLow.excitationDesired);
-    excitationsDesiredLow = excitationsDesiredLow(:,2:3:end);
-    
-    excitationsDesiredHigh = horzcat(validationsHigh.excitationDesired);
-    excitationsDesiredHigh = excitationsDesiredHigh(:,2:3:end);
-    
-    for i = 1:numel(validationsLow)
-        contrastDesired = ReceptorExcitationToReceptorContrast([excitationsDesiredLow(:,i),excitationsDesiredHigh(:,i)]);
-        contrastDesired = round(contrastDesired(:,1)*100,1); 
-        contrastDesired = unipolarContrastsToTable(contrastDesired,{'L','M','S','Mel'});
-    end
-
+    % Actual contrast
     excitationsActualLow = horzcat(validationsLow.excitationDesired);
-    excitationsActualLow = excitationsActualLow(:,2:3:end);
-    
+    excitationsActualLow = excitationsActualLow(:,2:3:end); 
     excitationsActualHigh = horzcat(validationsHigh.excitationDesired);
-    excitationsActualHigh = excitationsActualHigh(:,2:3:end);
-    
+    excitationsActualHigh = excitationsActualHigh(:,2:3:end);   
+    contrastsActual = table();
     for i = 1:numel(validationsLow)
         contrastActual = ReceptorExcitationToReceptorContrast([excitationsActualLow(:,i),excitationsActualHigh(:,i)]);
         contrastActual = unipolarContrastsToTable(contrastActual(:,1)*100,{'L','M','S','Mel'});   
-    end
-    T = table(axis,contrastDesired,contrastActual);
+        contrastsActual = [contrastsActual; contrastActual];
+    end  
+    
+    % Output table
+    axis = table(repmat(axis,[numel(validationsLow) 1]),'VariableNames',{'axis'});
+    T = [axis, contrastsActual];
     contrastsBg = [contrastsBg; T];
 end
 
@@ -63,7 +55,7 @@ for direction = directionNames(:)' % loop over each flicker direction
         contrastActual = validation.contrastActual(:,[1 3]); % measured modulation, not differential, contrast
         contrastActual = bipolarContrastsToTable(contrastActual*100,{'L','M','S','Mel'}); % convert to table
         
-        T = table(direction,contrastDesired,contrastActual);
+        T = [table(direction),contrastActual];
         contrastsFlicker = [contrastsFlicker; T];
     end
 end

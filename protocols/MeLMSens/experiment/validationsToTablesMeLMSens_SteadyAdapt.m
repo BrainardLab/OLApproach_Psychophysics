@@ -25,9 +25,9 @@ for bPair = backgroundNames
     validationsHigh = validations(char(bPair(2)));
     
     % Actual contrast
-    excitationsActualLow = horzcat(validationsLow.excitationDesired);
+    excitationsActualLow = horzcat(validationsLow.excitationActual);
     excitationsActualLow = excitationsActualLow(:,2:3:end); 
-    excitationsActualHigh = horzcat(validationsHigh.excitationDesired);
+    excitationsActualHigh = horzcat(validationsHigh.excitationActual);
     excitationsActualHigh = excitationsActualHigh(:,2:3:end);   
     contrastsActual = table();
     for i = 1:numel(validationsLow)

@@ -104,8 +104,6 @@ for acquisition = acquisitions
     acquisition.initializeStaircases();
     acquisition.runAcquisition(oneLight, trialResponseSys);
     fprintf('Acquisition complete.\n'); Speak('Acquisition complete.',[],230);
-    input('<strong>Place eyepiece in radiometer, and press any key to start measuring.</strong>\n'); pause(3);
-    acquisition.postAcquisition(oneLight, radiometer);
     
     % Save acquisition
     dataFilename = sprintf('data-%s-%s-%s.mat',participantID,sessionName,acquisition.name);
@@ -115,6 +113,22 @@ for acquisition = acquisitions
     end
     save(fullfile(sessionDataPath,dataFilename),'acquisition');
     save(fullfile(sessionDataPath,materialsFilename),'acquisitions','-append');    
+end
+
+%% Validate post acquisitions
+input('<strong>Place eyepiece in radiometer, and press any key to start measuring.</strong>\n'); pause(3);
+for acquisition = acquisitions
+    % Run post acquisition routine
+    acquisition.postAcquisition(oneLight, radiometer);    
+
+    % Save acquisition
+    dataFilename = sprintf('data-%s-%s-%s.mat',participantID,sessionName,acquisition.name);
+    if isfile(fullfile(sessionDataPath,dataFilename))
+        prevAcq = load(fullfile(sessionDataPath,dataFilename));
+        acquisition = [prevAcq.acquisition acquisition];
+    end
+    save(fullfile(sessionDataPath,dataFilename),'acquisition');
+    save(fullfile(sessionDataPath,materialsFilename),'acquisitions','-append');        
 end
 
 %% Close radiometer

@@ -54,6 +54,7 @@ pSpot.show();
 
 %% Update OLCalibration with pSpot
 calibration = UpdateOLCalibrationWithProjectorSpot(calibration, pSpot, oneLight, radiometer);
+[calibration, projSPD,projLum,projSPDs] = UpdateOLCalibrationWithProjectorSpot(calibration, pSpot, oneLight, radiometer);
 
 %% Get directions
 directions = MakeNominalMeLMSens_SteadyAdapt(calibration,'observerAge',32);

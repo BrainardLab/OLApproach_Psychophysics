@@ -46,6 +46,7 @@ parser.parse(directions, oneLight, radiometer, varargin{:});
 validationParams = parser.Unmatched;
 
 %% Initialize
+oneLight.setAll(true);
 input('<strong>Place eyepiece in radiometer, and press any key to start validating directions.</strong>\n'); pause(5);
 validations = containers.Map();
 fprintf("<strong>Validating backgrounds and directions...</strong>\n");

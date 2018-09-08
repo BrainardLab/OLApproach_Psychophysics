@@ -107,7 +107,14 @@ trialKeyBindings('GP:LOWERRIGHTTRIGGER') = [0 1];
 trialKeyBindings('Q') = [1 0];
 trialKeyBindings('P') = [0 1];
 
-gamePad = GamePad();
+if ~simulate.gamepad
+    gamePad = GamePad();
+    trialKeyBindings('GP:B') = 'abort';
+    trialKeyBindings('GP:LOWERLEFTTRIGGER') = [1 0];
+    trialKeyBindings('GP:LOWERRIGHTTRIGGER') = [0 1];    
+else
+    gamePad = [];
+end
 trialResponseSys = responseSystem(trialKeyBindings,gamePad);
 
 %% Run

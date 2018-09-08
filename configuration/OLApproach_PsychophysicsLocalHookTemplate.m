@@ -171,6 +171,7 @@ end
 simulate.oneLight = true;
 simulate.radiometer = true;
 simulate.projector = true;
+simulate.gamepad = true;
 setpref(approach,'simulate',simulate);
 
 %% Set the default speak rate

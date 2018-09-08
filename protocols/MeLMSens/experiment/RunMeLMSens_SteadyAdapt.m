@@ -47,6 +47,12 @@ else
     radiometer = [];
 end
 
+%% Get projectorSpot
+pSpot = projectorSpotMeLMSens_SteadyAdapt(simulate.projector);
+
+%% Update OLCalibration with pSpot
+calibration = UpdateOLCalibrationWithProjectorSpot(calibration, pSpot, oneLight, radiometer);
+
 %% Get directions
 directions = MakeNominalMeLMSens_SteadyAdapt(calibration,'observerAge',32);
 receptors = directions('MelStep').describe.directionParams.T_receptors;
@@ -96,9 +102,8 @@ end
 trialResponseSys = responseSystem(trialKeyBindings,gamePad);
 
 %% Run
-projectorWindow = makeProjectorSpot('Fullscreen',~simulate.projector); % make projector spot window object
-toggleProjectorSpot(projectorWindow,true); % toggle on
-
+pSpot.show();
+mkdir(sessionDataPath);
 for acquisition = acquisitions
     fprintf('Running acquisition %s...\n',acquisition.name)
     acquisition.initializeStaircases();
@@ -138,7 +143,7 @@ end
 clear radiometer;
 
 %% Close projectorWindow
-projectorWindow.close()
+pSpot.close()
 
 %% Close GamePad
 gamePad.shutDown()

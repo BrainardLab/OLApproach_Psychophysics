@@ -48,7 +48,9 @@ else
 end
 
 %% Get projectorSpot
+oneLight.setAll(true);
 pSpot = projectorSpotMeLMSens_SteadyAdapt(simulate.projector);
+pSpot.show();
 
 %% Update OLCalibration with pSpot
 calibration = UpdateOLCalibrationWithProjectorSpot(calibration, pSpot, oneLight, radiometer);

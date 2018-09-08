@@ -44,4 +44,37 @@ validationsPost = validateMeLMSens_SteadyAdapt(directions,oneLight,radiometer,..
                                             
 %% Compare validations
 
+%% Setup acquisitions
+acquisitions = makeAcquisitionsMeLMSens_SteadyAdapt(directions, receptors,...
+                'adaptationDuration',seconds(40),...
+                'NTrialsPerStaircase',6);
+
+%% Set trial response system
+trialKeyBindings = containers.Map();
+trialKeyBindings('ESCAPE') = 'abort';
+trialKeyBindings('Q') = [1 0];
+trialKeyBindings('P') = [0 1];
+
+if ~simulate.gamepad
+    gamePad = GamePad();
+    trialKeyBindings('GP:B') = 'abort';
+    trialKeyBindings('GP:LOWERLEFTTRIGGER') = [1 0];
+    trialKeyBindings('GP:LOWERRIGHTTRIGGER') = [0 1];
+else
+    gamePad = [];
+end
+trialResponseSys = responseSystem(trialKeyBindings,gamePad);
+
+%% Run
+projectorWindow = makeProjectorSpot('Fullscreen',~simulate.projector); % make projector spot window object
+toggleProjectorSpot(projectorWindow,true); % toggle on
+for acquisition = acquisitions
+    fprintf('Running acquisition %s...\n',acquisition.name)
+    acquisition.initializeStaircases();
+    acquisition.runAcquisition(oneLight, trialResponseSys);
+    fprintf('Acquisition complete.\n'); Speak('Acquisition complete.',[],230);
+    input('<strong>Place eyepiece in radiometer, and press any key to start measuring.</strong>\n'); pause(3);
+    acquisition.postAcquisition(oneLight, radiometer);
+end
+
 end

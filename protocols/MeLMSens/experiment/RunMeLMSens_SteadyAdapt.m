@@ -21,12 +21,13 @@ todayDate = datestr(now, 'yyyymmdd');
 protocolDataPath = getpref(protocol,'ProtocolDataRawPath');
 participantDataPath = fullfile(protocolDataPath,participantID);
 sessionDataPath = fullfile(participantDataPath,[todayDate '_' sessionName]);
+mkdir(sessionDataPath);
 
 %% Get calibration
 % Specify which box and calibration to use, check that everything is set up
 % correctly, and retrieve the calibration structure.
 boxName = 'BoxB';
-calibrationType = 'BoxBRandomizedLongCableBEyePiece3Beamsplitter';
+calibrationType = 'BoxBRandomizedShortCableAEyePiece3Beamsplitter';
 calibration = OLGetCalibrationStructure('CalibrationType',calibrationType,'CalibrationDate','latest');
 
 %% Open the OneLight
@@ -49,13 +50,16 @@ end
 %% Get directions
 directions = MakeNominalMeLMSens_SteadyAdapt(calibration,'observerAge',32);
 receptors = directions('MelStep').describe.directionParams.T_receptors;
+save(fullfile(sessionDataPath,materialsFilename),...
+                'directions','receptors','-append');
 
 %% Validate directions pre-correction
 validationsPre = validateMeLMSens_SteadyAdapt(directions,oneLight,radiometer,...
                                                 'receptors',receptors,...
                                                 'primaryTolerance',1e-5,...
                                                 'nValidations',5);
-
+save(fullfile(sessionDataPath,materialsFilename),'directions','validationsPre','-append');
+                                            
 %% Correct directions
 correctMeLMSens_SteadyAdapt(directions,oneLight,calibration,radiometer,'receptors',receptors);
 
@@ -64,11 +68,13 @@ validationsPost = validateMeLMSens_SteadyAdapt(directions,oneLight,radiometer,..
                                                 'receptors',receptors,...
                                                 'primaryTolerance',1e-5,...
                                                 'nValidations',5);
+save(fullfile(sessionDataPath,materialsFilename),'directions','validationsPost','-append');
 
 %% Setup acquisitions
 acquisitions = makeAcquisitionsMeLMSens_SteadyAdapt(directions, receptors,...
                 'adaptationDuration',minutes(5),...
                 'NTrialsPerStaircase',40);
+save(fullfile(sessionDataPath,materialsFilename),'acquisitions','-append');            
 
 %% Set trial response system
 trialKeyBindings = containers.Map();
@@ -92,7 +98,7 @@ trialResponseSys = responseSystem(trialKeyBindings,gamePad);
 %% Run
 projectorWindow = makeProjectorSpot('Fullscreen',~simulate.projector); % make projector spot window object
 toggleProjectorSpot(projectorWindow,true); % toggle on
-mkdir(sessionDataPath);
+
 for acquisition = acquisitions
     fprintf('Running acquisition %s...\n',acquisition.name)
     acquisition.initializeStaircases();
@@ -102,12 +108,13 @@ for acquisition = acquisitions
     acquisition.postAcquisition(oneLight, radiometer);
     
     % Save acquisition
-    filename = sprintf('data-%s-%s-%s.mat',participantID,sessionName,acquisition.name);
-    if isfile(fullfile(sessionDataPath,filename))
-        prevAcq = load(fullfile(sessionDataPath,filename));
+    dataFilename = sprintf('data-%s-%s-%s.mat',participantID,sessionName,acquisition.name);
+    if isfile(fullfile(sessionDataPath,dataFilename))
+        prevAcq = load(fullfile(sessionDataPath,dataFilename));
         acquisition = [prevAcq.acquisition acquisition];
     end
-    save(fullfile(sessionDataPath,filename),'acquisition');
+    save(fullfile(sessionDataPath,dataFilename),'acquisition');
+    save(fullfile(sessionDataPath,materialsFilename),'acquisitions','-append');    
 end
 
 %% Close radiometer

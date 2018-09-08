@@ -47,21 +47,23 @@ else
 end
 
 %% Get directions
-directions = MakeNominalMeLMSens_SteadyAdapt(calibration,'observerAge',participantAge);
-
-%% Validations
+directions = MakeNominalMeLMSens_SteadyAdapt(calibration,'observerAge',32);
 receptors = directions('MelStep').describe.directionParams.T_receptors;
-input('<strong>Place eyepiece in radiometer, and press any key to start measuring.</strong>\n'); pause(5);
-validations = containers.Map();
-validations('Mel_lowhigh') = OLValidateDirection(directions('MelStep'), directions('Mel_low'), oneLight, radiometer, 'receptors', receptors);
-validations('LMS_lowhigh')  = OLValidateDirection(directions('LMSStep'), directions('LMS_low'), oneLight, radiometer, 'receptors', receptors);
-validations('Flicker_Mel_low') = OLValidateDirection(directions('FlickerDirection_Mel_low'), directions('Mel_low'), oneLight, radiometer, 'receptors', receptors);
-validations('Flicker_Mel_high') = OLValidateDirection(directions('FlickerDirection_Mel_high'), directions('Mel_high'), oneLight, radiometer, 'receptors', receptors);
-validations('Flicker_LMS_low') = OLValidateDirection(directions('FlickerDirection_LMS_low'), directions('LMS_low'), oneLight, radiometer, 'receptors', receptors);
-validations('Flicker_LMS_high') = OLValidateDirection(directions('FlickerDirection_LMS_high'), directions('LMS_high'), oneLight, radiometer, 'receptors', receptors);
 
-%% Corrections, re-validations
-% TODO
+%% Validate directions pre-correction
+validationsPre = validateMeLMSens_SteadyAdapt(directions,oneLight,radiometer,...
+                                                'receptors',receptors,...
+                                                'primaryTolerance',1e-5,...
+                                                'nValidations',5);
+
+%% Correct directions
+correctMeLMSens_SteadyAdapt(directions,oneLight,calibration,radiometer,'receptors',receptors);
+
+%% Validate directions post-correction
+validationsPost = validateMeLMSens_SteadyAdapt(directions,oneLight,radiometer,...
+                                                'receptors',receptors,...
+                                                'primaryTolerance',1e-5,...
+                                                'nValidations',5);
 
 %% Setup acquisitions
 % Low Mel

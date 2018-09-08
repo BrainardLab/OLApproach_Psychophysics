@@ -139,7 +139,7 @@ classdef Acquisition_FlickerSensitivity_2IFC < handle
         function [correct, abort, trial] = runTrial(obj, flickerContrast, oneLight, trialResponseSys)
             %% Assemble trial
             % Assemble modulations
-            scaledDirection = obj.direction.ScaleToReceptorContrast(obj.background, obj.receptors, [flickerContrast, flickerContrast, flickerContrast, 0]');
+            scaledDirection = obj.direction.ScaleToReceptorContrast(obj.background, obj.receptors, flickerContrast * [1, -1; 1, -1; 1, -1; 0, 0]);
             targetModulation = OLAssembleModulation([obj.background, scaledDirection],[ones(1,length(obj.flickerWaveform)); obj.flickerWaveform]);
             referenceModulation = OLAssembleModulation(obj.background, ones([1,length(obj.flickerWaveform)]));
             trial = Trial_NIFC(2,targetModulation,referenceModulation);

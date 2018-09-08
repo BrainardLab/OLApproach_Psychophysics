@@ -2,9 +2,21 @@ classdef projectorSpot < handle
     %PROJECTORSPOT Summary of this class goes here
     %   Detailed explanation goes here
     
-    properties
+    properties (SetAccess = protected)
         projectorWindow;
         isOn = false;
+        fullScreen = false;
+        
+        % Colors
+        backgroundRGB = [0 0 0];
+        annulusRGB = [0 0 0];
+        fieldRGB = [1 1 1];
+        spotRGB = [1 1 1];
+
+        % Sizes
+        spotDiameter = 160;
+        annulusDiameter = 530;
+        centerPosition = [0 0];
     end
     
     methods
@@ -48,7 +60,7 @@ classdef projectorSpot < handle
             %% Parse input
             parser = inputParser;
             parser.addParameter('WindowID',lastDisplay,@isnumeric);
-            parser.addParameter('Fullscreen',false,@islogical);
+            parser.addParameter('fullscreen',false,@islogical);
             parser.addParameter('BackgroundColor',[0 0 0],@isnumeric);
             parser.addParameter('SceneDimensions',displayInfo(lastDisplay).screenSizePixel);
             parser.addParameter('WindowPosition',[0 0],@isnumeric);
@@ -60,10 +72,11 @@ classdef projectorSpot < handle
             projectorWindow = GLWindow('SceneDimensions', screenSizeInPixels, ...
                 'BackgroundColor', parser.Results.BackgroundColor,...
                 'WindowID',        parser.Results.WindowID,...
-                'Fullscreen',      parser.Results.Fullscreen,...
+                'Fullscreen',      parser.Results.fullscreen,...
                 'WindowPosition',  parser.Results.WindowPosition,...
                 'WindowSize',      parser.Results.WindowSize);   
             obj.projectorWindow = projectorWindow;
+            obj.fullScreen = parser.Results.fullscreen;
         end
         
         function open(obj)

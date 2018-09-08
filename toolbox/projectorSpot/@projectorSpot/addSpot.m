@@ -43,6 +43,15 @@ parser.addParameter('centerPosition',[0 0],@isnumeric);
 
 parser.parse(obj, varargin{:});
 
+%% Set params
+% Find parameters for which we're not using the defaults:
+overwrites = setdiff(parser.Parameters,['obj',parser.UsingDefaults]);
+
+% Assign to obj.properties
+for p = overwrites
+    obj.(p{:}) = parser.Results.(p{:});
+end
+
 %% Get GLWindow
 projectorWindow = obj.projectorWindow;
 

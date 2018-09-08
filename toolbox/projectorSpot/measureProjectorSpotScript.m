@@ -6,7 +6,7 @@ protocol = 'MeLMSens';
 simulate = getpref(approach,'simulate'); % localhook defines what devices to simulate
 
 %% Get projectorSpot
-pSpot = projectorSpot('Fullscreen',~simulate.projector);
+pSpot = projectorSpot(~simulate.projector);
 pSpot.show();
 
 %% Open the OneLight

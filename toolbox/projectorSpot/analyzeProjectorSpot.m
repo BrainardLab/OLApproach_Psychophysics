@@ -22,6 +22,10 @@ function [projSPD, projLum] = analyzeProjectorSpot(SPDs)
     % - Average SPD across locations
     %   - SEM, CI (95% CI = +- 1.96 SEM)
     [projSPD, projLum] = avgProjectorSPD(projectorSPDTable);
+    if any(projSPD(:) < 0)
+        warning('average projector SPD contains negative values. Truncating these to 0');
+        projSPD(projSPD < 0) = 0;
+    end
 
     %% Luminance, Trolands
     % - Take average SPDs

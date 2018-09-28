@@ -83,4 +83,10 @@ for acquisition = acquisitions
     fprintf('Acquisition complete.\n'); Speak('Acquisition complete.',[],230);
 end
 
+%% Close connections
+fprintf('Closing devices...');
+oneLight.close;
+radiometer.shutDown;
+gamePad.shutDown;
+fprintf('done.\n');
 end

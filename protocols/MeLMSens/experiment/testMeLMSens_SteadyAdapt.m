@@ -26,6 +26,7 @@ end
 %% Get directions
 directions = MakeNominalMeLMSens_SteadyAdapt(calibration,'observerAge',32);
 receptors = directions('MelStep').describe.directionParams.T_receptors;
+testDirections(directions, receptors, oneLight);
 
 %% Validate directions pre-correction
 tic;

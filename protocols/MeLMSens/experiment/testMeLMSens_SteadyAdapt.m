@@ -54,8 +54,8 @@ toc;
 
 %% Setup acquisitions
 acquisitions = makeAcquisitionsMeLMSens_SteadyAdapt(directions, receptors,...
-                'adaptationDuration',seconds(40),...
-                'NTrialsPerStaircase',6);
+                'adaptationDuration',seconds(10),...
+                'NTrialsPerStaircase',1);
 
 %% Set trial response system
 trialKeyBindings = containers.Map();

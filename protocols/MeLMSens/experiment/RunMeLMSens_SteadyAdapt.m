@@ -62,6 +62,7 @@ save(fullfile(sessionDataPath,materialsFilename),...
                 'directions','receptors','-append');
 
 %% Validate directions pre-correction
+pSpot.show();
 validationsPre = validateMeLMSens_SteadyAdapt(directions,oneLight,radiometer,...
                                                 'receptors',receptors,...
                                                 'primaryTolerance',1e-5,...
@@ -69,9 +70,11 @@ validationsPre = validateMeLMSens_SteadyAdapt(directions,oneLight,radiometer,...
 save(fullfile(sessionDataPath,materialsFilename),'directions','validationsPre','-append');
                                             
 %% Correct directions
+pSpot.show();
 correctMeLMSens_SteadyAdapt(directions,oneLight,calibration,radiometer,'receptors',receptors);
 
 %% Validate directions post-correction
+pSpot.show();
 validationsPost = validateMeLMSens_SteadyAdapt(directions,oneLight,radiometer,...
                                                 'receptors',receptors,...
                                                 'primaryTolerance',1e-5,...
@@ -124,6 +127,7 @@ end
 
 %% Validate post acquisitions
 input('<strong>Place eyepiece in radiometer, and press any key to start measuring.</strong>\n'); pause(3);
+pSpot.show();
 for acquisition = acquisitions
     % Run post acquisition routine
     acquisition.postAcquisition(oneLight, radiometer);    

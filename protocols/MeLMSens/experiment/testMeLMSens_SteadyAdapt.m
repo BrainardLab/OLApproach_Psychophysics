@@ -81,8 +81,6 @@ for acquisition = acquisitions
     acquisition.initializeStaircases();
     acquisition.runAcquisition(oneLight, trialResponseSys);
     fprintf('Acquisition complete.\n'); Speak('Acquisition complete.',[],230);
-    input('<strong>Place eyepiece in radiometer, and press any key to start measuring.</strong>\n'); pause(3);
-    acquisition.postAcquisition(oneLight, radiometer);
 end
 
 end

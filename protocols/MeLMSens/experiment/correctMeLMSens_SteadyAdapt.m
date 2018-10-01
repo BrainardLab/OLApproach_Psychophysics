@@ -1,4 +1,4 @@
-function CorrectMeLMSens_SteadyAdapt(directions, oneLight, calibration, radiometer, varargin)
+function correctMeLMSens_SteadyAdapt(directions, oneLight, calibration, radiometer, varargin)
 % Correct nominal directions for MeLMSens_SteadyAdapt protocol
 %
 % Syntax:
@@ -39,10 +39,12 @@ parser = inputParser;
 parser.addRequired('directions');
 parser.addRequired('oneLight');
 parser.addRequired('radiometer');
+parser.addParameter('smoothness',.001);
 parser.KeepUnmatched = true;
 parser.parse(directions, oneLight, radiometer, varargin{:});
 
 correctionArgs = parser.Unmatched;
+correctionArgs.smoothness = parser.Results.smoothness;
 
 backgroundNames = ["LMS_low","LMS_high","Mel_low","Mel_high"];
 

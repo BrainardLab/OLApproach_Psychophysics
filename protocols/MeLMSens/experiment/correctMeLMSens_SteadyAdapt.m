@@ -1,15 +1,14 @@
-function correctMeLMSens_SteadyAdapt(directions, oneLight, calibration, radiometer, varargin)
+function corrections = correctMeLMSens_SteadyAdapt(directions, oneLight, calibration, radiometer, varargin)
 % Correct nominal directions for MeLMSens_SteadyAdapt protocol
 %
 % Syntax:
 %   CorrectMeLMSens_SteadyAdapt(directions, oneLight, radiometer)
 %   CorrectMeLMSens_SteadyAdapt(directions, oneLight, radiometer,...)
-%   directions = CorrectMeLMSens_SteadyAdapt(directions, ...)
+%   corrections = CorrectMeLMSens_SteadyAdapt(directions, ...)
 %
 % Description:
-%    Helper function that, for a given calibration, returns the directions
-%    and backgrounds for use in a session of the MeLMSens_SteadyAdapt
-%    protocol.
+%    Helper function that corrects the given directions and backgrounds for
+%    use in a session of the MeLMSens_SteadyAdapt protocol.
 %
 % Inputs:
 %    directions  - containers.Map containing the directions, as returned by
@@ -51,6 +50,7 @@ backgroundNames = ["LMS_low","LMS_high","Mel_low","Mel_high"];
 %% Initialize
 input('<strong>Place eyepiece in radiometer, and press any key to start correcting directions.</strong>\n'); pause(5);
 fprintf("<strong>Correcting backgrounds and directions...</strong>\n");
+corrections = containers.Map();
 
 %% Get lightlevelScalar
 fprintf("Measuring lightlevel scale factor,...");
@@ -64,16 +64,19 @@ for bb = backgroundNames
                     'receptors',[],... % don't pass receptors to background correction; want to get correct to SPD
                     'lightlevelScalar',lightlevelScalar,...
                     correctionArgs);
+    corrections(char(bb)) = directions(char(bb)).describe.correction;            
     fprintf('done.\n');
 end
                 
 %% Correct flicker directions
 for bb = backgroundNames
-    fprintf("Correcting direction %s...",sprintf('FlickerDirection_%s',bb));
-    OLCorrectDirection(directions(sprintf('FlickerDirection_%s',bb)), directions(char(bb)),...
+    dd = sprintf('FlickerDirection_%s',bb);
+    fprintf("Correcting direction %s...",dd);
+    OLCorrectDirection(directions(dd), directions(char(bb)),...
                         oneLight, radiometer,...
                         'lightlevelScalar',lightlevelScalar,...
                         correctionArgs);
+    corrections(dd) = directions(dd).describe.correction;
     fprintf("done.\n");
 end
 

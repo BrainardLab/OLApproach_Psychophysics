@@ -26,6 +26,8 @@ end
 %% Get directions
 directions = MakeNominalMeLMSens_SteadyAdapt(calibration,'observerAge',32);
 receptors = directions('MelStep').describe.directionParams.T_receptors;
+
+%% Test directions
 testDirections(directions, receptors, oneLight);
 
 %% Validate directions pre-correction
@@ -38,7 +40,7 @@ toc;
 
 %% Correct directions
 tic;
-correctMeLMSens_SteadyAdapt(directions,oneLight,calibration,radiometer,...
+corrections = correctMeLMSens_SteadyAdapt(directions,oneLight,calibration,radiometer,...
                             'receptors',receptors,...
                             'primaryTolerance',1e-5);
 toc;

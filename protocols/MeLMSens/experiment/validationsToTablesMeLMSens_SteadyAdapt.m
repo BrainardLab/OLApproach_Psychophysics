@@ -49,15 +49,13 @@ contrastsFlicker = table();
 
 for direction = directionNames(:)' % loop over each flicker direction
     for validation = validations(char(direction))
-        contrastDesired = validation.contrastDesired(:,[1 3]); % desired modulation, not differential, contrast    
-        contrastDesired = bipolarContrastsToTable(contrastDesired*100,{'L','M','S','Mel'}); % convert to table 
-
-        contrastActual = validation.contrastActual(:,[1 3]); % measured modulation, not differential, contrast
-        contrastActual = bipolarContrastsToTable(contrastActual*100,{'L','M','S','Mel'}); % convert to table
-        
-        T = [table(direction),contrastActual];
+        T = bipolarValidationTallTable(validation);
+        T.direction = repmat(direction,[height(T) 1]);
         contrastsFlicker = [contrastsFlicker; T];
     end
 end
+contrastsFlicker = contrastsFlicker(:,[end, 1:end-1]);
+contrastsFlicker.direction = categorical(contrastsFlicker.direction);
+contrastsFlicker = sortrows(contrastsFlicker,{'direction','receptor','time'});
 
 end

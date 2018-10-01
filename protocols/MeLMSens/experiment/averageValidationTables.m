@@ -38,16 +38,20 @@ end
 
 
 function results = averageContrastsFlicker(contrastsFlicker)
-% Average actual contrats
-results = varfun(@multiStatsDouble,contrastsFlicker,...
-    'GroupingVariables','direction');
+% Identify groups, i.e., direction X receptor
+[G,direction, receptor] = findgroups(contrastsFlicker.direction, contrastsFlicker.receptor);
 
-% Extract medians, CIs
-results.L = removevars(results.multiStatsDouble_L,{'stdSample','semean','semedian'});
-results.M = removevars(results.multiStatsDouble_M,{'stdSample','semean','semedian'});
-results.S = removevars(results.multiStatsDouble_S,{'stdSample','semean','semedian'});
-results.Mel = removevars(results.multiStatsDouble_Mel,{'stdSample','semean','semedian'});
-results = removevars(results,{'GroupCount','multiStatsDouble_L','multiStatsDouble_M','multiStatsDouble_S','multiStatsDouble_Mel'});
+% Get actual contrast median, CI
+stats = splitapply(@multiStatsDouble,contrastsFlicker.actual,G);
+median = stats.med;
+CI = stats.CImedian;
+
+% Get desired contrast
+desired = splitapply(@(x) unique(x,'rows'), contrastsFlicker.desired,G);
+
+% Combine into results output
+results = table(direction,receptor,desired,median,CI);
+
 end
 
 function stats = multiStatsSingle(x)

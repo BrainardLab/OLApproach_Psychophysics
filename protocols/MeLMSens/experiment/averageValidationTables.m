@@ -39,7 +39,7 @@ end
 
 function results = averageContrastsFlicker(contrastsFlicker)
 % Identify groups, i.e., direction X receptor
-[G,direction, receptor] = findgroups(contrastsFlicker.direction, contrastsFlicker.receptor);
+[G,label,direction, receptor] = findgroups(contrastsFlicker.label, contrastsFlicker.direction, contrastsFlicker.receptor);
 
 % Get actual contrast median, CI
 stats = splitapply(@multiStatsDouble,contrastsFlicker.actual,G);
@@ -50,7 +50,7 @@ CI = stats.CImedian;
 desired = splitapply(@(x) unique(x,'rows'), contrastsFlicker.desired,G);
 
 % Combine into results output
-results = table(direction,receptor,desired,median,CI);
+results = table(label,direction,receptor,desired,median,CI);
 
 end
 

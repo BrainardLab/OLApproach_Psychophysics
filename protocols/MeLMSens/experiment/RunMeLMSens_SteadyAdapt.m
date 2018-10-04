@@ -98,7 +98,7 @@ projectorWindow = makeProjectorSpot('Fullscreen',~simulate.projector); % make pr
 toggleProjectorSpot(projectorWindow,true); % toggle on
 
 for acquisition = acquisitions
-    fprintf('Running acquisition %s...\n',acquisition.name)
+    fprintf('Running acquisition...\n')
     acquisition.initializeStaircases();
     acquisition.runAcquisition(oneLight, trialResponseSys);
     fprintf('Acquisition complete.\n'); Speak('Acquisition complete.',[],230);

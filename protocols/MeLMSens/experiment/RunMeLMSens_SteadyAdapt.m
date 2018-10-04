@@ -53,7 +53,6 @@ pSpot = projectorSpotMeLMSens_SteadyAdapt(simulate.projector);
 pSpot.show();
 
 %% Update OLCalibration with pSpot
-calibration = UpdateOLCalibrationWithProjectorSpot(calibration, pSpot, oneLight, radiometer);
 [calibration, projSPD,projLum,projSPDs] = UpdateOLCalibrationWithProjectorSpot(calibration, pSpot, oneLight, radiometer);
 
 %% Get directions

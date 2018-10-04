@@ -17,6 +17,7 @@ protocolDataPath = getpref(protocol,'ProtocolDataRawPath');
 participantDataPath = fullfile(protocolDataPath,participantID);
 sessionDataPath = fullfile(participantDataPath,[todayDate '_' sessionName]);
 mkdir(sessionDataPath);
+materialsFilename = sprintf('materials-%s-%s.mat',participantID,sessionName);
 
 %% Get calibration
 % Specify which box and calibration to use, check that everything is set up
@@ -24,6 +25,8 @@ mkdir(sessionDataPath);
 boxName = 'BoxB';
 calibrationType = 'BoxBRandomizedShortCableAEyePiece3Beamsplitter';
 calibration = OLGetCalibrationStructure('CalibrationType',calibrationType,'CalibrationDate','latest');
+save(fullfile(sessionDataPath, materialsFilename),...
+                'calibration');
 
 %% Open the OneLight
 % Open up a OneLight device

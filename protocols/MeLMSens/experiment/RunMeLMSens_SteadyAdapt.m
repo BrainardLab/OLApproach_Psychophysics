@@ -3,12 +3,7 @@
 %% Set overall parameters
 % We want to start with a clean slate, and set a number of parameters
 % before doing anything else.
-if exist('radiometer','var')
-    try radiometer.shutDown
-    end
-end
 clear all; close all; clc;
-
 approach = 'OLApproach_Psychophysics';
 protocol = 'MeLMSens';
 simulate = getpref(approach,'simulate'); % localhook defines what devices to simulate
@@ -64,11 +59,11 @@ save(fullfile(sessionDataPath,materialsFilename),'directions','validationsPre','
 correctMeLMSens_SteadyAdapt(directions,oneLight,calibration,radiometer,'receptors',receptors);
 
 %% Validate directions post-correction
-validationsPost = validateMeLMSens_SteadyAdapt(directions,oneLight,radiometer,...
+validationsPostCorrection = validateMeLMSens_SteadyAdapt(directions,oneLight,radiometer,...
                                                 'receptors',receptors,...
                                                 'primaryTolerance',1e-5,...
                                                 'nValidations',5);
-save(fullfile(sessionDataPath,materialsFilename),'directions','validationsPost','-append');
+save(fullfile(sessionDataPath,materialsFilename),'directions','validationsPostCorrection','-append');
 
 %% Setup acquisitions
 acquisitions = makeAcquisitionsMeLMSens_SteadyAdapt(directions, receptors,...
@@ -130,6 +125,12 @@ for acquisition = acquisitions
     save(fullfile(sessionDataPath,dataFilename),'acquisition');
     save(fullfile(sessionDataPath,materialsFilename),'acquisitions','-append');        
 end
+
+validationsPostSession = validateMeLMSens_SteadyAdapt(directions,oneLight,radiometer,...
+                                                'receptors',receptors,...
+                                                'primaryTolerance',1e-5,...
+                                                'nValidations',5);
+save(fullfile(sessionDataPath,materialsFilename),'directions','validationsPostSession','-append');
 
 %% Close radiometer
 if exist('radiometer','var') && ~isempty(radiometer)

@@ -42,7 +42,8 @@ toc;
 tic;
 corrections = correctMeLMSens_SteadyAdapt(directions,oneLight,calibration,radiometer,...
                             'receptors',receptors,...
-                            'primaryTolerance',1e-5);
+                            'primaryTolerance',1e-5,...
+                            'smoothness',.001);
 toc;
                         
 %% Validate directions post-correction

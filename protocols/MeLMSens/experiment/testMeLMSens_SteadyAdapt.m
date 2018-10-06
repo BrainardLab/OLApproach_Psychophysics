@@ -1,4 +1,4 @@
-function [validationsPre, validationsPost, directions] = testMeLMSens_SteadyAdapt
+function [validationsPre, corrections, validationsPost, directions] = testMeLMSens_SteadyAdapt
 %% Test MeLMSens_SteadyAdapt protocol
 approach = 'OLApproach_Psychophysics';
 protocol = 'MeLMSens';
@@ -31,28 +31,22 @@ receptors = directions('MelStep').describe.directionParams.T_receptors;
 testDirections(directions, receptors, oneLight);
 
 %% Validate directions pre-correction
-tic;
 validationsPre = validateMeLMSens_SteadyAdapt(directions,oneLight,radiometer,...
                                                 'receptors',receptors,...
                                                 'primaryTolerance',1e-5,...
                                                 'nValidations',5);
-toc;                                    
-
+                                            
 %% Correct directions
-tic;
 corrections = correctMeLMSens_SteadyAdapt(directions,oneLight,calibration,radiometer,...
-                            'receptors',receptors,...
+                            receptors,...
                             'primaryTolerance',1e-5,...
                             'smoothness',.001);
-toc;
                         
 %% Validate directions post-correction
-tic;
 validationsPost = validateMeLMSens_SteadyAdapt(directions,oneLight,radiometer,...
                                                 'receptors',receptors,...
                                                 'primaryTolerance',1e-5,...
-                                                'nValidations',5);
-toc;                                            
+                                                'nValidations',5);                                           
                                             
 %% Compare validations
 

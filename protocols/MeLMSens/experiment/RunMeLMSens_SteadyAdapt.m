@@ -45,6 +45,14 @@ else
     radiometer = [];
 end
 
+%% Get projectorSpot
+oneLight.setAll(true);
+pSpot = projectorSpotMeLMSens_SteadyAdapt(simulate.projector);
+pSpot.show();
+
+%% Update OLCalibration with pSpot
+[calibration, projSPD,projLum,projSPDs] = UpdateOLCalibrationWithProjectorSpot(calibration, pSpot, oneLight, radiometer);
+
 %% Get directions
 directions = MakeNominalMeLMSens_SteadyAdapt(calibration,'observerAge',32);
 receptors = directions('MelStep').describe.directionParams.T_receptors;
@@ -52,6 +60,7 @@ save(fullfile(sessionDataPath,materialsFilename),...
                 'directions','receptors','-append');
 
 %% Validate directions pre-correction
+pSpot.show();
 validationsPre = validateMeLMSens_SteadyAdapt(directions,oneLight,radiometer,...
                                                 'receptors',receptors,...
                                                 'primaryTolerance',1e-5,...
@@ -59,9 +68,11 @@ validationsPre = validateMeLMSens_SteadyAdapt(directions,oneLight,radiometer,...
 save(fullfile(sessionDataPath,materialsFilename),'directions','validationsPre','-append');
                                             
 %% Correct directions
+pSpot.show();
 correctMeLMSens_SteadyAdapt(directions,oneLight,calibration,radiometer,'receptors',receptors);
 
 %% Validate directions post-correction
+pSpot.show();
 validationsPostCorrection = validateMeLMSens_SteadyAdapt(directions,oneLight,radiometer,...
                                                 'receptors',receptors,...
                                                 'primaryTolerance',1e-5,...
@@ -94,9 +105,8 @@ end
 trialResponseSys = responseSystem(trialKeyBindings,gamePad);
 
 %% Run
-projectorWindow = makeProjectorSpot('Fullscreen',~simulate.projector); % make projector spot window object
-toggleProjectorSpot(projectorWindow,true); % toggle on
-
+pSpot.show();
+mkdir(sessionDataPath);
 for acquisition = acquisitions
     fprintf('Running acquisition...\n')
     acquisition.initializeStaircases();
@@ -115,6 +125,7 @@ end
 
 %% Validate post acquisitions
 input('<strong>Place eyepiece in radiometer, and press any key to start measuring.</strong>\n'); pause(3);
+pSpot.show();
 for acquisition = acquisitions
     % Run post acquisition routine
     acquisition.postAcquisition(oneLight, radiometer);    
@@ -142,7 +153,7 @@ end
 clear radiometer;
 
 %% Close projectorWindow
-projectorWindow.close()
+pSpot.close()
 
 %% Close GamePad
 gamePad.shutDown()

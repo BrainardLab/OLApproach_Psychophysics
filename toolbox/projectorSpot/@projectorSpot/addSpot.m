@@ -1,4 +1,4 @@
-function addProjectorSpot(projectorWindow,varargin)
+function addSpot(obj,varargin)
 % Add central white spot and black annulus to a GLWindow
 %
 % Syntax:
@@ -8,7 +8,7 @@ function addProjectorSpot(projectorWindow,varargin)
 %
 %
 % Inputs:
-%    projectorWindow - 
+%    projectorSpot - 
 % 
 % Outputs:
 %    None.             projectorWindow now has objects defining a white
@@ -22,12 +22,13 @@ function addProjectorSpot(projectorWindow,varargin)
 %    GLWindow, makeProjectorSpot, toggleProjectorSpot
 
 % History:
-%    07/16/18  jv  wrote it.
+%    07/16/18  jv  wrote addProjectorSpot;
+%    09/01/18  jv  turn into projectorSpot.addSpot method.        
 
 
 %% Parse input
 parser = inputParser;
-parser.addRequired('projectorWindow');
+parser.addRequired('obj');
 
 % Colors
 parser.addParameter('backgroundRGB',[0 0 0],@isnumeric);
@@ -40,7 +41,19 @@ parser.addParameter('spotDiameter',160,@isnumeric);
 parser.addParameter('annulusDiameter',530,@isnumeric);
 parser.addParameter('centerPosition',[0 0],@isnumeric);
 
-parser.parse(projectorWindow, varargin{:});
+parser.parse(obj, varargin{:});
+
+%% Set params
+% Find parameters for which we're not using the defaults:
+overwrites = setdiff(parser.Parameters,['obj',parser.UsingDefaults]);
+
+% Assign to obj.properties
+for p = overwrites
+    obj.(p{:}) = parser.Results.(p{:});
+end
+
+%% Get GLWindow
+projectorWindow = obj.projectorWindow;
 
 %% Add objects
 projectorWindow.addRectangle(parser.Results.centerPosition, projectorWindow.SceneDimensions, parser.Results.fieldRGB, 'Name', 'field');

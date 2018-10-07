@@ -147,13 +147,7 @@ for acquisition = acquisitions
     acquisition.postAcquisition(oneLight, radiometer);    
 
     % Save acquisition
-    dataFilename = sprintf('data-%s-%s-%s.mat',participantID,sessionName,acquisition.name);
-    if isfile(fullfile(sessionDataPath,dataFilename))
-        prevAcq = load(fullfile(sessionDataPath,dataFilename));
-        acquisition = [prevAcq.acquisition acquisition];
-    end
-    save(fullfile(sessionDataPath,dataFilename),'acquisition');
-    save(fullfile(sessionDataPath,materialsFilename),'acquisitions','-append');        
+    save(fullfile(sessionDataPath,dataFilename),'acquisition','-v7.3');
 end
 
 validationsPostSession = validateMeLMSens_SteadyAdapt(directions,oneLight,radiometer,...

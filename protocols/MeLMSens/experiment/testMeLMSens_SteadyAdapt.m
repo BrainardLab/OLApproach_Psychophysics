@@ -30,7 +30,7 @@ pSpot = projectorSpotMeLMSens_SteadyAdapt(simulate.projector);
 calibration = UpdateOLCalibrationWithProjectorSpot(calibration, pSpot, oneLight, radiometer);
 
 %% Make directions
-directions = MakeNominalMeLMSens_SteadyAdapt(calibration,'observerAge',32);
+directions = makeNominalMeLMSens_SteadyAdapt(calibration,'observerAge',32);
 receptors = directions('MelStep').describe.directionParams.T_receptors;
 
 %% Test directions

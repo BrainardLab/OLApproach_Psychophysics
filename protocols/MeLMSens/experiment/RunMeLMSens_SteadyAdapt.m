@@ -71,7 +71,11 @@ save(fullfile(sessionDataPath,materialsFilename),'directions','validationsPre','
                                             
 %% Correct directions
 pSpot.show();
-correctMeLMSens_SteadyAdapt(directions,oneLight,calibration,radiometer,'receptors',receptors);
+correctMeLMSens_SteadyAdapt(directions,oneLight,calibration,radiometer,...
+                            'receptors',receptors,...
+                            'smoothness',.001);
+save(fullfile(sessionDataPath,materialsFilename),...
+    'directions','corrections','-append');
 
 %% Validate directions post-correction
 pSpot.show();

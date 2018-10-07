@@ -52,7 +52,9 @@ pSpot.show();
 
 %% Update OLCalibration with pSpot
 [calibration, projSPD,projLum,projSPDs] = UpdateOLCalibrationWithProjectorSpot(calibration, pSpot, oneLight, radiometer);
-
+save(fullfile(sessionDataPath,materialsFilename),...
+                'calibration','projSPD','projLum','projSPDs','-append');
+            
 %% Get directions
 directions = MakeNominalMeLMSens_SteadyAdapt(calibration,'observerAge',32);
 receptors = directions('MelStep').describe.directionParams.T_receptors;

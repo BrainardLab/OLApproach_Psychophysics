@@ -136,7 +136,6 @@ for acquisition = acquisitions
         acquisition = [prevAcq.acquisition acquisition];
     end
     save(fullfile(sessionDataPath,dataFilename),'acquisition');
-    save(fullfile(sessionDataPath,materialsFilename),'acquisitions','-append');    
 end
 
 %% Validate post acquisitions

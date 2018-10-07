@@ -26,7 +26,7 @@ boxName = 'BoxB';
 calibrationType = 'BoxBRandomizedShortCableAEyePiece3Beamsplitter';
 calibration = OLGetCalibrationStructure('CalibrationType',calibrationType,'CalibrationDate','latest');
 save(fullfile(sessionDataPath, materialsFilename),...
-                'calibration');
+                'calibration','-v7.3');
 
 %% Open the OneLight
 % Open up a OneLight device
@@ -57,13 +57,13 @@ pSpot.show();
 %% Update OLCalibration with pSpot
 [calibration, projSPD,projLum,projSPDs] = UpdateOLCalibrationWithProjectorSpot(calibration, pSpot, oneLight, radiometer);
 save(fullfile(sessionDataPath,materialsFilename),...
-    'calibration','projSPD','projLum','projSPDs','-append');
+    'calibration','projSPD','projLum','projSPDs','-append','-v7.3');
             
 %% Get directions
 directions = MakeNominalMeLMSens_SteadyAdapt(calibration,'observerAge',32);
 receptors = directions('MelStep').describe.directionParams.T_receptors;
 save(fullfile(sessionDataPath,materialsFilename),...
-    'directions','receptors','-append');
+    'directions','receptors','-append','-v7.3');
 
 %% Validate directions pre-correction
 pSpot.show();
@@ -73,7 +73,7 @@ validationsPre = validateMeLMSens_SteadyAdapt(directions,oneLight,radiometer,...
                                                 'nValidations',5,...
                                                 'temperatureProbe',temperatureProbe);
 save(fullfile(sessionDataPath,materialsFilename),...
-    'directions','validationsPre','-append');
+    'directions','validationsPre','-append','-v7.3');
                                             
 %% Correct directions
 pSpot.show();
@@ -82,7 +82,7 @@ corrections = correctMeLMSens_SteadyAdapt(directions,oneLight,calibration,radiom
                             'smoothness',.001,...
                             'temperatureProbe',temperatureProbe);
 save(fullfile(sessionDataPath,materialsFilename),...
-    'directions','corrections','-append');
+    'directions','corrections','-append','-v7.3');
 
 %% Validate directions post-correction
 pSpot.show();
@@ -92,14 +92,14 @@ validationsPostCorrection = validateMeLMSens_SteadyAdapt(directions,oneLight,rad
                                                 'nValidations',5,...
                                                 'temperatureProbe',temperatureProbe);
 save(fullfile(sessionDataPath,materialsFilename),...
-    'directions','validationsPostCorrection','-append');
+    'directions','validationsPostCorrection','-append','-v7.3');
 
 %% Setup acquisitions
 acquisitions = makeAcquisitionsMeLMSens_SteadyAdapt(directions, receptors,...
                 'adaptationDuration',minutes(5),...
                 'NTrialsPerStaircase',40);
 save(fullfile(sessionDataPath,materialsFilename),...
-    'acquisitions','-append');            
+    'acquisitions','-append','-v7.3');            
 
 %% Set trial response system
 trialKeyBindings = containers.Map();
@@ -122,7 +122,6 @@ trialResponseSys = responseSystem(trialKeyBindings,gamePad);
 
 %% Run
 pSpot.show();
-mkdir(sessionDataPath);
 for acquisition = acquisitions
     fprintf('Running acquisition...\n')
     acquisition.initializeStaircases();
@@ -135,7 +134,7 @@ for acquisition = acquisitions
         prevAcq = load(fullfile(sessionDataPath,dataFilename));
         acquisition = [prevAcq.acquisition acquisition];
     end
-    save(fullfile(sessionDataPath,dataFilename),'acquisition');
+    save(fullfile(sessionDataPath,dataFilename),'acquisition','-v7.3');
 end
 
 %% Validate post acquisitions
@@ -149,11 +148,14 @@ for acquisition = acquisitions
     save(fullfile(sessionDataPath,dataFilename),'acquisition','-v7.3');
 end
 
+%% Validate directions
 validationsPostSession = validateMeLMSens_SteadyAdapt(directions,oneLight,radiometer,...
                                                 'receptors',receptors,...
                                                 'primaryTolerance',1e-5,...
                                                 'nValidations',5);
-save(fullfile(sessionDataPath,materialsFilename),'directions','validationsPostSession','-append');
+save(fullfile(sessionDataPath,materialsFilename),...
+    'directions','validationsPostSession',...
+    '-append','-v7.3');
 
 %% Close radiometer
 if exist('radiometer','var') && ~isempty(radiometer)

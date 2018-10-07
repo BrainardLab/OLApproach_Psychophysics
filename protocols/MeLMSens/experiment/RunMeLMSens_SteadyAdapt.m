@@ -3,12 +3,7 @@
 %% Set overall parameters
 % We want to start with a clean slate, and set a number of parameters
 % before doing anything else.
-if exist('radiometer','var')
-    try radiometer.shutDown
-    end
-end
 clear all; close all; clc;
-
 approach = 'OLApproach_Psychophysics';
 protocol = 'MeLMSens';
 simulate = getpref(approach,'simulate'); % localhook defines what devices to simulate
@@ -21,13 +16,17 @@ todayDate = datestr(now, 'yyyymmdd');
 protocolDataPath = getpref(protocol,'ProtocolDataRawPath');
 participantDataPath = fullfile(protocolDataPath,participantID);
 sessionDataPath = fullfile(participantDataPath,[todayDate '_' sessionName]);
+mkdir(sessionDataPath);
+materialsFilename = sprintf('materials-%s-%s.mat',participantID,sessionName);
 
 %% Get calibration
 % Specify which box and calibration to use, check that everything is set up
 % correctly, and retrieve the calibration structure.
 boxName = 'BoxB';
-calibrationType = 'BoxBRandomizedLongCableBEyePiece3Beamsplitter';
+calibrationType = 'BoxBRandomizedShortCableAEyePiece3Beamsplitter';
 calibration = OLGetCalibrationStructure('CalibrationType',calibrationType,'CalibrationDate','latest');
+save(fullfile(sessionDataPath, materialsFilename),...
+                'calibration','-v7.3');
 
 %% Open the OneLight
 % Open up a OneLight device
@@ -46,55 +45,61 @@ else
     radiometer = [];
 end
 
+%% Get temperatureProbe
+temperatureProbe = LJTemperatureProbe();
+temperatureProbe.open();
+
+%% Get projectorSpot
+oneLight.setAll(true);
+pSpot = projectorSpotMeLMSens_SteadyAdapt(simulate.projector);
+pSpot.show();
+
+%% Update OLCalibration with pSpot
+[calibration, projSPD,projLum,projSPDs] = UpdateOLCalibrationWithProjectorSpot(calibration, pSpot, oneLight, radiometer);
+save(fullfile(sessionDataPath,materialsFilename),...
+    'calibration','projSPD','projLum','projSPDs','-append','-v7.3');
+            
 %% Get directions
-directions = MakeNominalMeLMSens_SteadyAdapt(calibration,'observerAge',participantAge);
-
-%% Validations
+directions = MakeNominalMeLMSens_SteadyAdapt(calibration,'observerAge',32);
 receptors = directions('MelStep').describe.directionParams.T_receptors;
-input('<strong>Place eyepiece in radiometer, and press any key to start measuring.</strong>\n'); pause(5);
-validations = containers.Map();
-validations('Mel_lowhigh') = OLValidateDirection(directions('MelStep'), directions('Mel_low'), oneLight, radiometer, 'receptors', receptors);
-validations('LMS_lowhigh')  = OLValidateDirection(directions('LMSStep'), directions('LMS_low'), oneLight, radiometer, 'receptors', receptors);
-validations('Flicker_Mel_low') = OLValidateDirection(directions('FlickerDirection_Mel_low'), directions('Mel_low'), oneLight, radiometer, 'receptors', receptors);
-validations('Flicker_Mel_high') = OLValidateDirection(directions('FlickerDirection_Mel_high'), directions('Mel_high'), oneLight, radiometer, 'receptors', receptors);
-validations('Flicker_LMS_low') = OLValidateDirection(directions('FlickerDirection_LMS_low'), directions('LMS_low'), oneLight, radiometer, 'receptors', receptors);
-validations('Flicker_LMS_high') = OLValidateDirection(directions('FlickerDirection_LMS_high'), directions('LMS_high'), oneLight, radiometer, 'receptors', receptors);
+save(fullfile(sessionDataPath,materialsFilename),...
+    'directions','receptors','-append','-v7.3');
 
-%% Corrections, re-validations
-% TODO
+%% Validate directions pre-correction
+pSpot.show();
+validationsPre = validateMeLMSens_SteadyAdapt(directions,oneLight,radiometer,...
+                                                'receptors',receptors,...
+                                                'primaryTolerance',1e-5,...
+                                                'nValidations',5,...
+                                                'temperatureProbe',temperatureProbe);
+save(fullfile(sessionDataPath,materialsFilename),...
+    'directions','validationsPre','-append','-v7.3');
+                                            
+%% Correct directions
+pSpot.show();
+corrections = correctMeLMSens_SteadyAdapt(directions,oneLight,calibration,radiometer,...
+                            receptors,...
+                            'smoothness',.001,...
+                            'temperatureProbe',temperatureProbe);
+save(fullfile(sessionDataPath,materialsFilename),...
+    'directions','corrections','-append','-v7.3');
+
+%% Validate directions post-correction
+pSpot.show();
+validationsPostCorrection = validateMeLMSens_SteadyAdapt(directions,oneLight,radiometer,...
+                                                'receptors',receptors,...
+                                                'primaryTolerance',1e-5,...
+                                                'nValidations',5,...
+                                                'temperatureProbe',temperatureProbe);
+save(fullfile(sessionDataPath,materialsFilename),...
+    'directions','validationsPostCorrection','-append','-v7.3');
 
 %% Setup acquisitions
-% Low Mel
-acquisitions(1) = Acquisition_FlickerSensitivity_2IFC(...
-    directions('Mel_low'),...
-    directions('FlickerDirection_Mel_low'),...
-    receptors,...
-    'name',"Mel_low");
-
-% High Mel
-acquisitions(2) = Acquisition_FlickerSensitivity_2IFC(...
-    directions('Mel_high'),...
-    directions('FlickerDirection_Mel_high'),...
-    receptors,...
-    'name',"Mel_high");
-
-% Low LMS
-acquisitions(3) = Acquisition_FlickerSensitivity_2IFC(...
-    directions('LMS_low'),...
-    directions('FlickerDirection_LMS_low'),...
-    receptors,...
-    'name',"LMS_low");
-
-% High LMS
-acquisitions(4) = Acquisition_FlickerSensitivity_2IFC(...
-    directions('LMS_high'),...
-    directions('FlickerDirection_LMS_high'),...
-    receptors,...
-    'name',"LMS_high");
-
-% Combine
-rngSettings = rng('shuffle');
-acquisitions = Shuffle(acquisitions);
+acquisitions = makeAcquisitionsMeLMSens_SteadyAdapt(directions, receptors,...
+                'adaptationDuration',minutes(5),...
+                'NTrialsPerStaircase',40);
+save(fullfile(sessionDataPath,materialsFilename),...
+    'acquisitions','-append','-v7.3');            
 
 %% Set trial response system
 trialKeyBindings = containers.Map();
@@ -105,29 +110,54 @@ trialKeyBindings('GP:LOWERRIGHTTRIGGER') = [0 1];
 trialKeyBindings('Q') = [1 0];
 trialKeyBindings('P') = [0 1];
 
-gamePad = GamePad();
+if ~simulate.gamepad
+    gamePad = GamePad();
+    trialKeyBindings('GP:B') = 'abort';
+    trialKeyBindings('GP:LOWERLEFTTRIGGER') = [1 0];
+    trialKeyBindings('GP:LOWERRIGHTTRIGGER') = [0 1];    
+else
+    gamePad = [];
+end
 trialResponseSys = responseSystem(trialKeyBindings,gamePad);
 
 %% Run
-projectorWindow = makeProjectorSpot('Fullscreen',~simulate.projector); % make projector spot window object
-toggleProjectorSpot(projectorWindow,true); % toggle on
-mkdir(sessionDataPath);
+pSpot.show();
 for acquisition = acquisitions
-    fprintf('Running acquisition %s...\n',acquisition.name)
+    fprintf('Running acquisition...\n')
     acquisition.initializeStaircases();
     acquisition.runAcquisition(oneLight, trialResponseSys);
     fprintf('Acquisition complete.\n'); Speak('Acquisition complete.',[],230);
-    input('<strong>Place eyepiece in radiometer, and press any key to start measuring.</strong>\n'); pause(3);
-    acquisition.postAcquisition(oneLight, radiometer);
     
     % Save acquisition
-    filename = sprintf('data-%s-%s-%s.mat',participantID,sessionName,acquisition.name);
-    if isfile(fullfile(sessionDataPath,filename))
-        prevAcq = load(fullfile(sessionDataPath,filename));
+    dataFilename = sprintf('data-%s-%s-%s.mat',participantID,sessionName,acquisition.name);
+    if isfile(fullfile(sessionDataPath,dataFilename))
+        prevAcq = load(fullfile(sessionDataPath,dataFilename));
         acquisition = [prevAcq.acquisition acquisition];
     end
-    save(fullfile(sessionDataPath,filename),'acquisition');
+    save(fullfile(sessionDataPath,dataFilename),'acquisition','-v7.3');
 end
+
+%% Validate post acquisitions
+input('<strong>Place eyepiece in radiometer, and press any key to start measuring.</strong>\n'); pause(3);
+pSpot.show();
+for acquisition = acquisitions
+    % Run post acquisition routine
+    acquisition.postAcquisition(oneLight, radiometer);    
+
+    % Save acquisition
+    dataFilename = sprintf('data-%s-%s-%s.mat',participantID,sessionName,acquisition.name);
+    save(fullfile(sessionDataPath,dataFilename),'acquisition','-v7.3');
+end
+
+%% Validate directions
+pSpot.show();
+validationsPostSession = validateMeLMSens_SteadyAdapt(directions,oneLight,radiometer,...
+                                                'receptors',receptors,...
+                                                'primaryTolerance',1e-5,...
+                                                'nValidations',5);
+save(fullfile(sessionDataPath,materialsFilename),...
+    'directions','validationsPostSession',...
+    '-append','-v7.3');
 
 %% Close radiometer
 if exist('radiometer','var') && ~isempty(radiometer)
@@ -136,7 +166,7 @@ end
 clear radiometer;
 
 %% Close projectorWindow
-projectorWindow.close()
+pSpot.close()
 
 %% Close GamePad
 gamePad.shutDown()

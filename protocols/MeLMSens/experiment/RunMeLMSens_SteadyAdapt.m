@@ -145,6 +145,7 @@ for acquisition = acquisitions
     acquisition.postAcquisition(oneLight, radiometer);    
 
     % Save acquisition
+    dataFilename = sprintf('data-%s-%s-%s.mat',participantID,sessionName,acquisition.name);
     save(fullfile(sessionDataPath,dataFilename),'acquisition','-v7.3');
 end
 

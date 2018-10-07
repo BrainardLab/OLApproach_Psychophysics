@@ -47,6 +47,7 @@ end
 
 %% Get temperatureProbe
 temperatureProbe = LJTemperatureProbe();
+temperatureProbe.open();
 
 %% Get projectorSpot
 oneLight.setAll(true);

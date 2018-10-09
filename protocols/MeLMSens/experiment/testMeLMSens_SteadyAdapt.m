@@ -23,7 +23,13 @@ else
     radiometer = [];
 end
 
-%% Get directions
+%% Get projectorSpot
+pSpot = projectorSpotMeLMSens_SteadyAdapt(simulate.projector);
+
+%% Update OLCalibration with pSpot
+calibration = UpdateOLCalibrationWithProjectorSpot(calibration, pSpot, oneLight, radiometer);
+
+%% Make directions
 directions = MakeNominalMeLMSens_SteadyAdapt(calibration,'observerAge',32);
 receptors = directions('MelStep').describe.directionParams.T_receptors;
 
@@ -33,7 +39,7 @@ testDirections(directions, receptors, oneLight);
 %% Validate directions pre-correction
 validationsPre = validateMeLMSens_SteadyAdapt(directions,oneLight,radiometer,...
                                                 'receptors',receptors,...
-                                                'primaryTolerance',1e-5,...
+                                                'primaryTolerance',1e-4,...
                                                 'nValidations',5);
                                             
 %% Correct directions

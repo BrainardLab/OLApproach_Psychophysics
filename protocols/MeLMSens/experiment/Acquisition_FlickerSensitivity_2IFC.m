@@ -159,7 +159,7 @@ classdef Acquisition_FlickerSensitivity_2IFC < handle
             end
             
             % Validate contrast at threshold
-            desiredContrast = [1 1 1 0]' * mean(obj.thresholds);
+            desiredContrast = [1 1 1 0; -1 -1 -1 0]' * mean(obj.thresholds);
             scaledDirection = obj.direction.ScaleToReceptorContrast(obj.background, obj.receptors, desiredContrast);
             for v = 1:5
                 obj.validationAtThreshold = OLValidateDirection(scaledDirection,obj.background, oneLight, radiometer, 'receptors', obj.receptors);

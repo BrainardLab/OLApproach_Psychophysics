@@ -60,7 +60,7 @@ save(fullfile(sessionDataPath,materialsFilename),...
     'calibration','projSPD','projLum','projSPDs','-append','-v7.3');
             
 %% Get directions
-directions = MakeNominalMeLMSens_SteadyAdapt(calibration,'observerAge',32);
+directions = makeNominalMeLMSens_SteadyAdapt(calibration,'observerAge',32);
 receptors = directions('MelStep').describe.directionParams.T_receptors;
 save(fullfile(sessionDataPath,materialsFilename),...
     'directions','receptors','-append','-v7.3');

@@ -1,4 +1,4 @@
-function SPDs = measureProjectorSpot(pSpot,oneLight, radiometer)
+function SPDs = measure(pSpot,oneLight, radiometer)
 %% Define on/off matrix
 % Cell array, where each cell is a condition in the continency table. In
 % each cell, there is a logical vector [projectorOn, mirrorsOn]

@@ -82,12 +82,13 @@ else
     pSpot.hide();
 end
 oneLight.setAll(mirrorsOn);
+time = datetime;
 if ~isempty(radiometer)
     SPD = radiometer.measure();
 else
     SPD = projectorOn*.0005*ones(201,1)' + mirrorsOn*.03*ones(201,1)';
 end
-time = datetime;
+time = [time datetime];
 measurement = table(time, projectorOn, mirrorsOn, SPD);
 
 end

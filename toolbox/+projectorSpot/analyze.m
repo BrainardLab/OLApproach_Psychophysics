@@ -4,7 +4,7 @@ function [projSPD, projLum] = analyze(SPDTable)
 
     %% Add luminance as column to table
     % Calculate CIE1931 luminance
-    SPDTable = projectorSpot.addColumnLum(SPDTable,S);
+    SPDTable = addvarLum(SPDTable,S);
 
     %% Compute delta projectorOn-projectorOff
     % - Subtract projector on - off, to get projector SPD, per location per condition

@@ -1,51 +1,81 @@
-function SPDs = measure(pSpot,oneLight, radiometer)
-%% Define on/off matrix
-% Cell array, where each cell is a condition in the continency table. In
-% each cell, there is a logical vector [projectorOn, mirrorsOn]
-onOffMatrix = {[true, true] , [true, false] ;
-    [false, true], [false, false]};
-
+function measurements = measure(pSpot,oneLight, radiometer)
 %% Define output
-SPDs = cell(2,2);
+measurements = [];
 
 %% Measure above
 pSpot.show();
 oneLight.setAll(true);
 input('<strong>Point the radiometer above the blocker; press any key to start measuring</strong>\n');
-SPDs{1,1} = measureLocation(onOffMatrix, oneLight, pSpot, radiometer);
+measurement = measureLocation(oneLight, pSpot, radiometer);
+measurement = addvarString(measurement,'above','VariableName','location');
+measurements = [measurements; measurement];
 
 %% Measure left
 pSpot.show();
 oneLight.setAll(true);
 input('<strong>Point the radiometer to the left of the blocker; press any key to start measuring</strong>\n');
-SPDs{1,2} = measureLocation(onOffMatrix, oneLight, pSpot, radiometer);
+measurement = measureLocation(oneLight, pSpot, radiometer);
+measurement = addvarString(measurement,'left','VariableName','location');
+measurements = [measurements; measurement];
 
 %% Measure right
 pSpot.show();
 oneLight.setAll(true);
 input('<strong>Point the radiometer to the right of the blocker; press any key to start measuring</strong>\n');
-SPDs{2,1} = measureLocation(onOffMatrix, oneLight, pSpot, radiometer);
+measurement = measureLocation(oneLight, pSpot, radiometer);
+measurement = addvarString(measurement,'right','VariableName','location');
+measurements = [measurements; measurement];
 
 %% Measure below
 pSpot.show();
 oneLight.setAll(true);
 input('<strong>Point the radiometer below blocker; press any key to start measuring</strong>\n');
-SPDs{2,2} = measureLocation(onOffMatrix, oneLight, pSpot, radiometer);
+measurement = measureLocation(oneLight, pSpot, radiometer);
+measurement = addvarString(measurement,'below','VariableName','location');
+measurements = [measurements; measurement];
+
+%% Bookkeeping
+measurements.projectorOn = logical(measurements.projectorOn);
+measurements.mirrorsOn = logical(measurements.mirrorsOn);
+measurements.location = categorical(measurements.location);
+
 end
 
 %% Support functions
-function SPDs = measureLocation(onOffMatrix, oneLight, pSpot, radiometer)
-SPDs = cell(size(onOffMatrix));
+function measurements = measureLocation(oneLight, pSpot, radiometer)
+%
+% Inputs:
+%
+% Outputs:
+%    measurements - table, with columns 'time', 'projectorOn', 'mirrorsOn',
+%                   'SPD'
+
+%% Define on/off matrix
+% Logical array, where each row is a condition in the continency table. In
+% each row, there is a logical vector [projectorOn, mirrorsOn]
+onOffMatrix = [[true,  true]; [true,  false];...
+               [false, true]; [false, false]];
+
+%% Measure conditions
+measurements = table;
 for i = 1:size(onOffMatrix,1)
-    for j = 1:size(onOffMatrix,2)
-        projectorOn = onOffMatrix{i,j}(1);
-        mirrorsOn = onOffMatrix{i,j}(2);
-        SPDs{i,j} = measureCondition(projectorOn, mirrorsOn, oneLight, pSpot, radiometer);
-    end
+	projectorOn = onOffMatrix(i,1);
+    mirrorsOn = onOffMatrix(i,2);
+    measurement = measureCondition(projectorOn, mirrorsOn, oneLight, pSpot, radiometer);
+    measurements = [measurements;measurement];
 end
+measurements.projectorOn = logical(measurements.projectorOn);
+measurements.mirrorsOn = logical(measurements.mirrorsOn);
+
 end
 
-function SPD = measureCondition(projectorOn, mirrorsOn, oneLight, pSpot, radiometer)
+function measurement = measureCondition(projectorOn, mirrorsOn, oneLight, pSpot, radiometer)
+%
+% Inputs:
+%
+% Outputs:
+%    measurement - table(row), with columns 'time', 'projectorOn',
+%                  'mirrorsOn', 'SPD'
 if projectorOn
     pSpot.show();
 else
@@ -53,8 +83,11 @@ else
 end
 oneLight.setAll(mirrorsOn);
 if ~isempty(radiometer)
-    SPD = radiometer.measure()';
+    SPD = radiometer.measure();
 else
-    SPD = (projectorOn+.003*mirrorsOn+.001)*ones(201,1);
+    SPD = projectorOn*.0005*ones(201,1)' + mirrorsOn*.03*ones(201,1)';
 end
+time = datetime;
+measurement = table(time, projectorOn, mirrorsOn, SPD);
+
 end

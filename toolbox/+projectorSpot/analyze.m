@@ -1,7 +1,4 @@
-function [projSPD, projLum] = analyze(SPDs)
-    %% Convert to table
-    SPDTable = projectorSpot.SPDsToTable(SPDs);
-
+function [projSPD, projLum] = analyze(SPDTable)
     %% Define wavelength sampling
     S = [380 2 201];
 

@@ -1,43 +1,66 @@
 function measurements = measure(pSpot,oneLight, radiometer)
-%% Define output
-measurements = [];
-
-%% Measure above
-pSpot.show();
-oneLight.setAll(true);
-input('<strong>Point the radiometer above the blocker; press any key to start measuring</strong>\n');
-measurement = measureLocation(oneLight, pSpot, radiometer);
-measurement = addvarString(measurement,'above','VariableName','location');
-measurements = [measurements; measurement];
-
-%% Measure left
-pSpot.show();
-oneLight.setAll(true);
-input('<strong>Point the radiometer to the left of the blocker; press any key to start measuring</strong>\n');
-measurement = measureLocation(oneLight, pSpot, radiometer);
-measurement = addvarString(measurement,'left','VariableName','location');
-measurements = [measurements; measurement];
-
-%% Measure right
-pSpot.show();
-oneLight.setAll(true);
-input('<strong>Point the radiometer to the right of the blocker; press any key to start measuring</strong>\n');
-measurement = measureLocation(oneLight, pSpot, radiometer);
-measurement = addvarString(measurement,'right','VariableName','location');
-measurements = [measurements; measurement];
-
-%% Measure below
-pSpot.show();
-oneLight.setAll(true);
-input('<strong>Point the radiometer below blocker; press any key to start measuring</strong>\n');
-measurement = measureLocation(oneLight, pSpot, radiometer);
-measurement = addvarString(measurement,'below','VariableName','location');
-measurements = [measurements; measurement];
-
-%% Bookkeeping
-measurements.projectorOn = logical(measurements.projectorOn);
-measurements.mirrorsOn = logical(measurements.mirrorsOn);
-measurements.location = categorical(measurements.location);
+%% Measure all locations
+acceptAll = false;
+while ~acceptAll
+    %% Define output
+    measurements = [];
+    
+    %% Measure above
+    accept = false;
+    while ~accept
+        pSpot.show();
+        oneLight.setAll(true);
+        input('<strong>Point the radiometer above the blocker; press any key to start measuring</strong>\n');
+        measurement = measureLocation(oneLight, pSpot, radiometer);
+        measurement = addvarString(measurement,'above','VariableName','location');
+        accept = projectorSpot.acceptMeasurements(measurement);
+    end
+    measurements = [measurements; measurement];
+    
+    %% Measure left
+    accept = false;
+    while ~accept
+        pSpot.show();
+        oneLight.setAll(true);
+        input('<strong>Point the radiometer to the left of the blocker; press any key to start measuring</strong>\n');
+        measurement = measureLocation(oneLight, pSpot, radiometer);
+        measurement = addvarString(measurement,'left','VariableName','location');
+        accept = projectorSpot.acceptMeasurements(measurement);
+    end
+    measurements = [measurements; measurement];
+    
+    %% Measure right
+    accept = false;
+    while ~accept
+        pSpot.show();
+        oneLight.setAll(true);
+        input('<strong>Point the radiometer to the right of the blocker; press any key to start measuring</strong>\n');
+        measurement = measureLocation(oneLight, pSpot, radiometer);
+        measurement = addvarString(measurement,'right','VariableName','location');
+        accept = projectorSpot.acceptMeasurements(measurement);
+    end
+    measurements = [measurements; measurement];
+    
+    %% Measure below
+    accept = false;
+    while ~accept
+        pSpot.show();
+        oneLight.setAll(true);
+        input('<strong>Point the radiometer below blocker; press any key to start measuring</strong>\n');
+        measurement = measureLocation(oneLight, pSpot, radiometer);
+        measurement = addvarString(measurement,'below','VariableName','location');
+        accept = projectorSpot.acceptMeasurements(measurement);
+    end
+    measurements = [measurements; measurement];
+    
+    %% Bookkeeping
+    measurements.projectorOn = logical(measurements.projectorOn);
+    measurements.mirrorsOn = logical(measurements.mirrorsOn);
+    measurements.location = categorical(measurements.location);
+    
+    %% Accept all?
+    acceptAll = projectorSpot.acceptMeasurements(measurements);
+end
 
 end
 
@@ -54,12 +77,12 @@ function measurements = measureLocation(oneLight, pSpot, radiometer)
 % Logical array, where each row is a condition in the continency table. In
 % each row, there is a logical vector [projectorOn, mirrorsOn]
 onOffMatrix = [[true,  true]; [true,  false];...
-               [false, true]; [false, false]];
+    [false, true]; [false, false]];
 
 %% Measure conditions
 measurements = table;
 for i = 1:size(onOffMatrix,1)
-	projectorOn = onOffMatrix(i,1);
+    projectorOn = onOffMatrix(i,1);
     mirrorsOn = onOffMatrix(i,2);
     measurement = measureCondition(projectorOn, mirrorsOn, oneLight, pSpot, radiometer);
     measurements = [measurements;measurement];

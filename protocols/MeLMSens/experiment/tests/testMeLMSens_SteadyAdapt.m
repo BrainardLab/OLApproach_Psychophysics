@@ -27,7 +27,8 @@ end
 pSpot = projectorSpotMeLMSens_SteadyAdapt(simulate.projector);
 
 %% Update OLCalibration with pSpot
-calibration = UpdateOLCalibrationWithProjectorSpot(calibration, pSpot, oneLight, radiometer);
+pSpotMeasurements = projectorSpot.measure(pSpot,oneLight,radiometer);
+[calibration, pSpotSPD, pSpotLum] = projectorSpot.UpdateOLCalibrationWithProjectorSpot(calibration, pSpotMeasurements);
 
 %% Make directions
 directions = makeNominalMeLMSens_SteadyAdapt(calibration,'observerAge',32);

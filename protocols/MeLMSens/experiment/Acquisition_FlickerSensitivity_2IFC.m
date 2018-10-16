@@ -20,6 +20,9 @@ classdef Acquisition_FlickerSensitivity_2IFC < handle
         validatedContrastAtThresholdPos;
         validatedContrastAtThresholdNeg;
     end
+    properties (Dependent)
+        maxContrast;
+    end
     
     %% Timing related properties
     properties
@@ -42,7 +45,6 @@ classdef Acquisition_FlickerSensitivity_2IFC < handle
         % Staircase parameters
         staircaseType = 'standard';
         contrastStep = 0.001;
-        maxContrast = 0.05;
         minContrast = 0;
         contrastLevels;
         NTrialsPerStaircase = 40;
@@ -83,8 +85,18 @@ classdef Acquisition_FlickerSensitivity_2IFC < handle
             obj.receptors = receptors;
         end
         
+        function maxContrast = get.maxContrast(obj)
+            % Figure out max contrast: smallest of the nominal max L, M, S
+            % contrasts
+            nominalContrasts = obj.direction.ToDesiredReceptorContrast(obj.background, obj.receptors);
+            nominalContrasts = abs(nominalContrasts(1:3,:));
+            maxContrast = min(nominalContrasts(:));
+        end
+        
         function initializeStaircases(obj)
             %% Initialize staircases
+                       
+            %% Setup contrast levels
             obj.contrastLevels = (0:obj.contrastStep:obj.maxContrast);
             obj.stepSizes = [4*obj.contrastStep 2*obj.contrastStep obj.contrastStep];
             

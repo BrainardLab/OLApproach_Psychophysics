@@ -13,12 +13,12 @@ classdef projectorSpot < handle
         fieldRGB = [1 1 1];
         spotRGB = [1 1 1];
 
-        % Sizes
+        % Geometry
         spotDiameter = 160;
         annulusDiameter = 530;
         centerPosition = [0 0];
     end
-    
+
     methods
         function obj = projectorSpot(varargin)           
             %% make projectorWindow

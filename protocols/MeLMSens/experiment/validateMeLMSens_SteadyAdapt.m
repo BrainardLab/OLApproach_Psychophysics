@@ -50,6 +50,7 @@ oneLight.setAll(true);
 input('<strong>Place eyepiece in radiometer, and press any key to start validating directions.</strong>\n'); pause(5);
 validations = containers.Map();
 fprintf("<strong>Validating backgrounds and directions...</strong>\n");
+tic;
 
 %% Validate backgrounds
 backgroundNames = ["LMS_low","LMS_high","Mel_low","Mel_high"];
@@ -75,4 +76,5 @@ end
 
 %%
 fprintf("<strong>Validations succesfully completed.</strong>\n\n");
+toc;
 end

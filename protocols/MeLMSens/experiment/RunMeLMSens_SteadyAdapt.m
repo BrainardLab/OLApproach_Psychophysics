@@ -142,12 +142,14 @@ end
 input('<strong>Place eyepiece in radiometer, and press any key to start measuring.</strong>\n'); pause(3);
 pSpot.show();
 for acquisition = acquisitions
+    fprintf('Running post-acquisition routine for %s...',acquisition.name);
     % Run post acquisition routine
     acquisition.postAcquisition(oneLight, radiometer);    
 
     % Save acquisition
     dataFilename = sprintf('data-%s-%s-%s.mat',participantID,sessionName,acquisition.name);
     save(fullfile(sessionDataPath,dataFilename),'acquisition','-v7.3');
+    fprintf('done.\n');
 end
 
 %% Validate directions

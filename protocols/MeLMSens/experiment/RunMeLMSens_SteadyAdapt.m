@@ -55,9 +55,10 @@ pSpot = projectorSpotMeLMSens_SteadyAdapt(simulate.projector);
 pSpot.show();
 
 %% Update OLCalibration with pSpot
-[calibration, projSPD,projLum,projSPDs] = UpdateOLCalibrationWithProjectorSpot(calibration, pSpot, oneLight, radiometer);
+pSpotMeasurements = projectorSpot.measure(pSpot,oneLight,radiometer);
+[calibration, pSpotSPD, pSpotLum] = projectorSpot.UpdateOLCalibrationWithProjectorSpot(calibration, pSpotMeasurements);
 save(fullfile(sessionDataPath,materialsFilename),...
-    'calibration','projSPD','projLum','projSPDs','-append','-v7.3');
+    'calibration','pSpotSPD','pSpotLum','pSpotMeasurements','-append','-v7.3');
             
 %% Get directions
 directions = makeNominalMeLMSens_SteadyAdapt(calibration,'observerAge',32);

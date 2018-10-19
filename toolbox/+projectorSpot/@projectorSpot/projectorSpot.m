@@ -18,6 +18,9 @@ classdef projectorSpot < handle
         annulusDiameter = 530;
         centerPosition = [0 0];
     end
+    properties %(Access = protected)
+        children = [];
+    end
 
     methods
         function obj = projectorSpot(varargin)           

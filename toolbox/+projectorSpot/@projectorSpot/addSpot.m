@@ -53,21 +53,22 @@ for p = overwrites
 end
 
 %% Create child-elements
-annulus = projectorSpot.circle('RGB',obj.annulusRGB,...
+obj.children('annulus') = projectorSpot.circle('RGB',obj.annulusRGB,...
                                'center',obj.centerPosition,...
                                'diameter',obj.annulusDiameter,...
                                'name','annulus');
-spot = projectorSpot.circle('RGB',obj.spotRGB,...
+obj.children('spot') = projectorSpot.circle('RGB',obj.spotRGB,...
                             'center',obj.centerPosition,...
                             'diameter',obj.spotDiameter,...
                             'name','spot');    
-obj.children = {annulus};%, spot};
 
 %% Get GLWindow
 projectorWindow = obj.projectorWindow;
 
 %% Add objects
 projectorWindow.addRectangle(obj.centerPosition, projectorWindow.SceneDimensions, obj.fieldRGB);
-annulus.add(projectorWindow);
-spot.add(projectorWindow);
+for c = obj.children.values()
+    child = c{:};
+    child.add(projectorWindow);
+end
 end

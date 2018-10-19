@@ -15,7 +15,8 @@ classdef projectorSpot < handle
         % Geometry
         spotDiameter = 160;
         annulusDiameter = 530;
-        centerPosition = [0 0];
+        spotCenter = [0 0];
+        annulusCenter = [0 0];
     end
     properties (Access = protected)
         projectorWindow;        

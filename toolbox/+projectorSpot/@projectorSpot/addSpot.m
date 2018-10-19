@@ -39,7 +39,8 @@ parser.addParameter('spotRGB',[1 1 1],@isnumeric);
 % Sizes
 parser.addParameter('spotDiameter',160,@isnumeric);
 parser.addParameter('annulusDiameter',530,@isnumeric);
-parser.addParameter('centerPosition',[0 0],@isnumeric);
+parser.addParameter('spotCenter',[0 0],@isnumeric);
+parser.addParameter('annulusCenter',[0 0],@isnumeric);
 
 parser.parse(obj, varargin{:});
 
@@ -54,11 +55,11 @@ end
 
 %% Create child-elements
 obj.children('annulus') = projectorSpot.circle('RGB',obj.annulusRGB,...
-                               'center',obj.centerPosition,...
+                               'center',obj.annulusCenter,...
                                'diameter',obj.annulusDiameter,...
                                'name','annulus');
 obj.children('spot') = projectorSpot.circle('RGB',obj.spotRGB,...
-                            'center',obj.centerPosition,...
+                            'center',obj.spotCenter,...
                             'diameter',obj.spotDiameter,...
                             'name','spot');    
 
@@ -66,7 +67,7 @@ obj.children('spot') = projectorSpot.circle('RGB',obj.spotRGB,...
 projectorWindow = obj.projectorWindow;
 
 %% Add objects
-projectorWindow.addRectangle(obj.centerPosition, projectorWindow.SceneDimensions, obj.fieldRGB);
+projectorWindow.addRectangle(obj.annulusCenter, projectorWindow.SceneDimensions, obj.fieldRGB);
 for c = obj.children.values()
     child = c{:};
     child.add(projectorWindow);

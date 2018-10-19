@@ -31,6 +31,9 @@ classdef projectorSpot < handle
             
             %% Add spot
             obj.addSpot;
+            
+            %% Show
+            obj.show;
         end
         
         function delete(obj)

@@ -7,16 +7,19 @@ classdef projectorSpot < handle
         fullScreen = false;
         
         % Colors
-        backgroundRGB = [0 0 0];
-        annulusRGB = [0 0 0];
         fieldRGB = [1 1 1];
-        spotRGB = [1 1 1];
+        backgroundRGB = [0 0 0];
+    end
+    properties (Dependent)
+        % Colors
+        annulusRGB;
+        spotRGB;
 
         % Geometry
-        spotDiameter = 160;
-        annulusDiameter = 530;
-        spotCenter = [0 0];
-        annulusCenter = [0 0];
+        spotDiameter;
+        annulusDiameter;
+        spotCenter;
+        annulusCenter;
     end
     properties (Access = protected)
         projectorWindow;        
@@ -150,6 +153,27 @@ classdef projectorSpot < handle
                 obj.hide();
             end
             isOn = obj.isOn;
+        end
+    end
+   
+    methods % Getters
+        function annulusRGB = get.annulusRGB(obj)
+            annulusRGB = obj.children('annulus').RGB;
+        end
+        function spotRGB = get.spotRGB(obj)
+            spotRGB = obj.children('spot').RGB;
+        end
+        function spotDiameter = get.spotDiameter(obj)
+            spotDiameter = obj.children('spot').diameter;
+        end
+        function annulusDiameter = get.annulusDiameter(obj)
+            annulusDiameter = obj.children('annulus').diameter;
+        end
+        function spotCenter = get.spotCenter(obj)
+            spotCenter = obj.children('spot').center;
+        end
+        function annulusCenter = get.annulusCenter(obj)
+            annulusCenter = obj.children('annulus').center;
         end
     end
     

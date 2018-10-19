@@ -31,9 +31,7 @@ parser = inputParser;
 parser.addRequired('obj');
 
 % Colors
-parser.addParameter('backgroundRGB',[0 0 0],@isnumeric);
 parser.addParameter('annulusRGB',[0 0 0],@isnumeric);
-parser.addParameter('fieldRGB',[1 1 1],@isnumeric);
 parser.addParameter('spotRGB',[1 1 1],@isnumeric);
 
 % Sizes
@@ -44,30 +42,21 @@ parser.addParameter('annulusCenter',[0 0],@isnumeric);
 
 parser.parse(obj, varargin{:});
 
-%% Set params
-% Find parameters for which we're not using the defaults:
-overwrites = setdiff(parser.Parameters,['obj',parser.UsingDefaults]);
-
-% Assign to obj.properties
-for p = overwrites
-    obj.(p{:}) = parser.Results.(p{:});
-end
-
 %% Create child-elements
-obj.children('annulus') = projectorSpot.circle('RGB',obj.annulusRGB,...
-                               'center',obj.annulusCenter,...
-                               'diameter',obj.annulusDiameter,...
+obj.children('annulus') = projectorSpot.circle('RGB',parser.Results.annulusRGB,...
+                               'center',parser.Results.annulusCenter,...
+                               'diameter',parser.Results.annulusDiameter,...
                                'name','annulus');
-obj.children('spot') = projectorSpot.circle('RGB',obj.spotRGB,...
-                            'center',obj.spotCenter,...
-                            'diameter',obj.spotDiameter,...
+obj.children('spot') = projectorSpot.circle('RGB',parser.Results.spotRGB,...
+                            'center',parser.Results.spotCenter,...
+                            'diameter',parser.Results.spotDiameter,...
                             'name','spot');    
 
 %% Get GLWindow
 projectorWindow = obj.projectorWindow;
 
 %% Add objects
-projectorWindow.addRectangle(obj.annulusCenter, projectorWindow.SceneDimensions, obj.fieldRGB);
+projectorWindow.addRectangle([0 0], projectorWindow.SceneDimensions, obj.fieldRGB);
 for c = obj.children.values()
     child = c{:};
     child.add(projectorWindow);

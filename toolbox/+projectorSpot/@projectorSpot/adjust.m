@@ -23,7 +23,10 @@ while true %% Main loop
         case "up"
             translation = [0 +1];
         case "down"
-            translation = [0 -1];            
+            translation = [0 -1];
+        case "toggle"
+            translation = [0 0];
+            obj.toggle();
     end
     
     switch targetName

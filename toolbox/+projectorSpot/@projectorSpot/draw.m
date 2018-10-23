@@ -1,4 +1,4 @@
-function addSpot(obj,varargin)
+function draw(obj,varargin)
 % Add central white spot and black annulus to a GLWindow
 %
 % Syntax:
@@ -59,6 +59,6 @@ projectorWindow = obj.projectorWindow;
 projectorWindow.addRectangle([0 0], projectorWindow.SceneDimensions, obj.fieldRGB);
 for c = obj.children.values()
     child = c{:};
-    child.add(projectorWindow);
+    child.draw(projectorWindow);
 end
 end

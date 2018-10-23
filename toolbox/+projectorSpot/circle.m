@@ -32,7 +32,7 @@ classdef circle < handle
             end
         end
         
-        function add(obj,window)
+        function draw(obj,window)      
             % Does the circle already exist? If not, add it.
             if window.findObjectIndex(obj.name) == -1
                 window.addOval(obj.center, [obj.diameter obj.diameter], obj.RGB,'Name',obj.name);

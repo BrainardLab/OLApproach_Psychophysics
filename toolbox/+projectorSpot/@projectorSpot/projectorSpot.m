@@ -32,9 +32,6 @@ classdef projectorSpot < handle
             %% make projectorWindow
             obj.makeProjectorWindow(varargin{:});
             
-            %% Add spot
-            obj.addSpot;
-            
             %% Show
             obj.show;
         end
@@ -72,7 +69,7 @@ classdef projectorSpot < handle
             %    09/01/18  jv   turn into projectorSpot.show method.  
             if ~obj.isOpen
                 obj.open();
-                obj.addSpot();
+                obj.draw();
             end
             obj.projectorWindow.enableAllObjects();
             obj.projectorWindow.draw();

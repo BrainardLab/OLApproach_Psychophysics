@@ -32,8 +32,18 @@ classdef circle < handle
             end
         end
         
-        function add(obj,projectorWindow)
-            projectorWindow.addOval(obj.center, [obj.diameter obj.diameter], obj.RGB,'Name',obj.name);            
+        function add(obj,window)
+            % Does the circle already exist? If not, add it.
+            if window.findObjectIndex(obj.name) == -1
+                window.addOval(obj.center, [obj.diameter obj.diameter], obj.RGB,'Name',obj.name);
+            end
+            
+            % Set properties
+            window.setObjectProperty(obj.name,'Dimensions',[obj.diameter, obj.diameter]);
+            window.setObjectProperty(obj.name,'Center',obj.center);
+            window.setObjectProperty(obj.name,'Color',obj.RGB);
+            window.setObjectProperty(obj.name,'Name',obj.name);
+            window.draw();
         end
     end
 end

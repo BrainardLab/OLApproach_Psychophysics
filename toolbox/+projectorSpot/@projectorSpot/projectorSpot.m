@@ -174,6 +174,40 @@ classdef projectorSpot < handle
         end
     end
     
+    methods % Setters
+        function set.annulusRGB(obj, RGB)
+            annulus = obj.children('annulus');
+            annulus.RGB = RGB;
+            annulus.draw(obj.projectorWindow);
+        end
+        function set.annulusDiameter(obj, diameter)
+            annulus = obj.children('annulus');
+            annulus.diameter = diameter;
+            annulus.draw(obj.projectorWindow);
+        end
+        function set.annulusCenter(obj, center)
+            annulus = obj.children('annulus');
+            annulus.center = center;
+            annulus.draw(obj.projectorWindow);
+        end
+        
+         function set.spotRGB(obj, RGB)
+            spot = obj.children('spot');
+            spot.RGB = RGB;
+            spot.draw(obj.projectorWindow);
+        end
+        function set.spotDiameter(obj, diameter)
+            spot = obj.children('spot');
+            spot.diameter = diameter;
+            spot.draw(obj.projectorWindow);
+        end
+        function set.spotCenter(obj, center)
+            spot = obj.children('spot');
+            spot.center = center;
+            spot.draw(obj.projectorWindow);
+        end       
+    end
+    
     methods (Access = protected)       
         function projectorWindow = makeProjectorWindow(obj, varargin)
             % Create GLWindow to control display

@@ -2,7 +2,7 @@ classdef circle < handle
     %CIRCLE Summary of this class goes here
     %   Detailed explanation goes here
     
-    properties (SetAccess = protected)
+    properties
         name;
         RGB = [1 1 1];
         center = [0 0];

@@ -121,6 +121,9 @@ else
 end
 trialResponseSys = responseSystem(trialKeyBindings,gamePad);
 
+%% Adjust projectorSpot
+projectorSpot.adjust(pSpot,gamePad);
+
 %% Run
 pSpot.show();
 for acquisition = acquisitions

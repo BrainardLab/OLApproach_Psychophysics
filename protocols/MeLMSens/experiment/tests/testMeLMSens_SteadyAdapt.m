@@ -74,6 +74,8 @@ trialKeyBindings('P') = [0 1];
 if ~simulate.gamepad
     gamePad = GamePad();
     trialKeyBindings('GP:B') = 'abort';
+    trialKeyBindings('GP:UPPERLEFTTRIGGER') = [1 0];
+    trialKeyBindings('GP:UPPERRIGHTTRIGGER') = [0 1];    
     trialKeyBindings('GP:LOWERLEFTTRIGGER') = [1 0];
     trialKeyBindings('GP:LOWERRIGHTTRIGGER') = [0 1];
 else

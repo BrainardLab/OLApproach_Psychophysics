@@ -1,4 +1,4 @@
-function addSpot(obj,varargin)
+function draw(obj,varargin)
 % Add central white spot and black annulus to a GLWindow
 %
 % Syntax:
@@ -31,32 +31,34 @@ parser = inputParser;
 parser.addRequired('obj');
 
 % Colors
-parser.addParameter('backgroundRGB',[0 0 0],@isnumeric);
 parser.addParameter('annulusRGB',[0 0 0],@isnumeric);
-parser.addParameter('fieldRGB',[1 1 1],@isnumeric);
 parser.addParameter('spotRGB',[1 1 1],@isnumeric);
 
 % Sizes
 parser.addParameter('spotDiameter',160,@isnumeric);
 parser.addParameter('annulusDiameter',530,@isnumeric);
-parser.addParameter('centerPosition',[0 0],@isnumeric);
+parser.addParameter('spotCenter',[0 0],@isnumeric);
+parser.addParameter('annulusCenter',[0 0],@isnumeric);
 
 parser.parse(obj, varargin{:});
 
-%% Set params
-% Find parameters for which we're not using the defaults:
-overwrites = setdiff(parser.Parameters,['obj',parser.UsingDefaults]);
-
-% Assign to obj.properties
-for p = overwrites
-    obj.(p{:}) = parser.Results.(p{:});
-end
+%% Create child-elements
+obj.children('annulus') = projectorSpot.circle('RGB',parser.Results.annulusRGB,...
+                               'center',parser.Results.annulusCenter,...
+                               'diameter',parser.Results.annulusDiameter,...
+                               'name','annulus');
+obj.children('spot') = projectorSpot.circle('RGB',parser.Results.spotRGB,...
+                            'center',parser.Results.spotCenter,...
+                            'diameter',parser.Results.spotDiameter,...
+                            'name','spot');    
 
 %% Get GLWindow
 projectorWindow = obj.projectorWindow;
 
 %% Add objects
-projectorWindow.addRectangle(parser.Results.centerPosition, projectorWindow.SceneDimensions, parser.Results.fieldRGB, 'Name', 'field');
-projectorWindow.addOval(parser.Results.centerPosition, [parser.Results.annulusDiameter parser.Results.annulusDiameter], parser.Results.annulusRGB, 'Name', 'annulusOuterCircle');
-projectorWindow.addOval(parser.Results.centerPosition, [parser.Results.spotDiameter parser.Results.spotDiameter], parser.Results.spotRGB, 'Name', 'centralSpot');
+projectorWindow.addRectangle([0 0], projectorWindow.SceneDimensions, obj.fieldRGB);
+for c = obj.children.values()
+    child = c{:};
+    child.draw(projectorWindow);
+end
 end

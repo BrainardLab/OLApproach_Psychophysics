@@ -83,9 +83,11 @@ else
 end
 trialResponseSys = responseSystem(trialKeyBindings,gamePad);
 
+%% Adjust projectorSpot
+projectorSpot.adjust(pSpot,gamePad);
+
 %% Run
-projectorWindow = makeProjectorSpot('Fullscreen',~simulate.projector); % make projector spot window object
-toggleProjectorSpot(projectorWindow,true); % toggle on
+pSpot.show();
 for acquisition = acquisitions
     fprintf('Running acquisition %s...\n',acquisition.name)
     acquisition.initializeStaircases();

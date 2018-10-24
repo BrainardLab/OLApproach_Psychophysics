@@ -108,6 +108,8 @@ trialKeyBindings('ESCAPE') = 'abort';
 trialKeyBindings('GP:B') = 'abort';
 trialKeyBindings('GP:LOWERLEFTTRIGGER') = [1 0];
 trialKeyBindings('GP:LOWERRIGHTTRIGGER') = [0 1];
+trialKeyBindings('GP:UPPERLEFTTRIGGER') = [1 0];
+trialKeyBindings('GP:UPPERRIGHTTRIGGER') = [0 1];  
 trialKeyBindings('Q') = [1 0];
 trialKeyBindings('P') = [0 1];
 

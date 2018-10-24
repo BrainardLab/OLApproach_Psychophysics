@@ -74,6 +74,8 @@ trialKeyBindings('P') = [0 1];
 if ~simulate.gamepad
     gamePad = GamePad();
     trialKeyBindings('GP:B') = 'abort';
+    trialKeyBindings('GP:UPPERLEFTTRIGGER') = [1 0];
+    trialKeyBindings('GP:UPPERRIGHTTRIGGER') = [0 1];    
     trialKeyBindings('GP:LOWERLEFTTRIGGER') = [1 0];
     trialKeyBindings('GP:LOWERRIGHTTRIGGER') = [0 1];
 else
@@ -81,9 +83,11 @@ else
 end
 trialResponseSys = responseSystem(trialKeyBindings,gamePad);
 
+%% Adjust projectorSpot
+projectorSpot.adjust(pSpot,gamePad);
+
 %% Run
-projectorWindow = makeProjectorSpot('Fullscreen',~simulate.projector); % make projector spot window object
-toggleProjectorSpot(projectorWindow,true); % toggle on
+pSpot.show();
 for acquisition = acquisitions
     fprintf('Running acquisition %s...\n',acquisition.name)
     acquisition.initializeStaircases();

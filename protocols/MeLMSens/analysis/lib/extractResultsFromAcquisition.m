@@ -54,12 +54,12 @@ nominalThresholdContrast = mean(acquisition.thresholds);
 end
 
 function nominalJND = nominalJND(acquisition)
-nominalThresholdDir = exctractNominalThresholdDirection(acquisition);
-[~,~,excitationDiff] = nominalThresholdDir.ToDesiredReceptorContrast(acquisition.background, acquisition.receptors);
+thresholdDirection = exctractThresholdDirection(acquisition);
+[~,~,excitationDiff] = thresholdDirection.ToDesiredReceptorContrast(acquisition.background, acquisition.receptors);
 nominalJND = excitationDiffToJND(excitationDiff);
 end
 
-function nominalThresholdDirection = exctractNominalThresholdDirection(acquisition)
+function thresholdDirection = exctractThresholdDirection(acquisition)
 direction = acquisition.direction;
 background = acquisition.background;
 receptors = acquisition.receptors;
@@ -67,7 +67,7 @@ receptors = acquisition.receptors;
 nominalThresholdCont = exctractNominalThresholdContrast(acquisition);
 
 targetContrasts = nominalThresholdCont * [1 1 1 0; -1 -1 -1 0]';
-nominalThresholdDirection = direction.ScaleToReceptorContrast(background,receptors,targetContrasts);
+thresholdDirection = direction.ScaleToReceptorContrast(background,receptors,targetContrasts);
 end
 
 function validatedThresholdContrast = extractValidatedThresholdContrast(acquisition)

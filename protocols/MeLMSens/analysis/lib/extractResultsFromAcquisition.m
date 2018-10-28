@@ -73,19 +73,27 @@ end
 function validatedThresholdContrast = extractValidatedThresholdContrast(acquisition)
 validations = acquisition.validationAtThreshold;
 
-contrast = cat(3,validations.contrastActual);
-contrast = mean(contrast,3);
-contrast = contrast(1:3,:);
-validatedThresholdContrast = mean(abs(contrast(:)));
+if ~isempty(validations)
+    contrast = cat(3,validations.contrastActual);
+    contrast = mean(contrast,3);
+    contrast = contrast(1:3,:);
+    validatedThresholdContrast = mean(abs(contrast(:)));
+else
+    validatedThresholdContrast = NaN;
+end
 end
 
 function validatedJND = extractValidatedJND(acquisition)
 validations = acquisition.validationAtThreshold;
 
-excitation = cat(3,validations.excitationActual);
-excitation = mean(excitation,3);
-excitationDiff = excitation(:,4:5);
-validatedJND = excitationDiffToJND(excitationDiff);
+if ~isempty(validations)
+    excitation = cat(3,validations.excitationActual);
+    excitation = mean(excitation,3);
+    excitationDiff = excitation(:,4:5);
+    validatedJND = excitationDiffToJND(excitationDiff);
+else
+    validatedJND = NaN;
+end
 end
 
 function JND = excitationDiffToJND(excitationDiff)

@@ -1,4 +1,4 @@
-matfiles = dir('../../data/raw/*/*/*.mat');
+matfiles = dir('../../data/raw/*/*/data-*.mat');
 for m = 1:numel(matfiles)
     dirEntry = matfiles(m);
     inputFile = fullfile(dirEntry.folder,dirEntry.name);

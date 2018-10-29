@@ -1,5 +1,5 @@
 ---
-title: "MeLMSens pilot data analysis"
+title: "MeLMSens initial data analysis"
 author: "Joris Vincent"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output:
@@ -15,60 +15,106 @@ output:
 library(tidyverse)
 library(knitr)
 ```
+```{r merge, echo=FALSE}
+csvspath = "../../data/processed/"
+csvfiles = list.files(csvspath, recursive = TRUE)
+results_all = lapply(csvfiles,function(x) {
+   read_csv(paste0(csvspath,x), col_types = cols())
+  }) %>%
+  bind_rows
+```
 ```{r munge, echo=FALSE}
-results_all = read_csv('../../data/processed/results_all.csv',col_types=cols())
+#results_all = read_csv('../../data/processed/results_all.csv',col_types=cols())
 results_all = results_all %>%
-  separate(filename,into=c("tmp1","participant","session","tmp2"),sep="-") %>%
+  separate(datafile,into=c("tmp1","participant","session","tmp2"),sep="-") %>%
   select(-tmp1, -tmp2)
 
+# Filter out pilot sessions
 results_all = results_all %>%
   filter(session != "pilot_1")
 
-# Separate 'condition' into 'axis' and 'adaptation'
-results_all = results_all %>%
-  separate(condition,into=c("axis","adaptation"),sep="_") %>%
-  mutate(adaptation=factor(.$adaptation,levels=c('low','high')))
-```
-
-```{r echo=FALSE}
-# Combine L, M, S excitation
-results_all  = results_all %>%
-  mutate(excitationPos_LMS = excitationPos_L + excitationPos_M + excitationPos_S) %>%
-  mutate(excitationNeg_LMS = excitationNeg_L + excitationNeg_M + excitationNeg_S) %>%
-  mutate(excitationBackground_LMS = excitationBackground_L + excitationBackground_M + excitationBackground_S)
-
-# Subtract background LMS
-results_all = results_all %>%
-  mutate(excitationPos_LMS_diff = excitationPos_LMS - excitationBackground_LMS) %>%
-  mutate(excitationNeg_LMS_diff = excitationNeg_LMS - excitationBackground_LMS)
-```
-# Plot
-```{r plot_line_condition_per_session, echo=FALSE}
-results_all %>%
-  ggplot() +
-  aes(adaptation, excitationPos_LMS_diff, group=interaction(session,axis),color=axis) +
-  geom_line() +
-  facet_wrap( ~ participant)
+# Recode adaptationLevel as factor
+results_all = mutate(results_all,adaptationLevel=factor(results_all$adaptationLevel,levels=c('low','high')))
 ```
 
 ```{r echo=FALSE}
 # Average over sessions
-results_mean = results_all %>% 
-  select(participant, session, axis, adaptation, excitationPos_LMS_diff, excitationNeg_LMS_diff) %>%
-  group_by(participant, axis, adaptation) %>%
-  summarise(mean_excitation_LMS_diff_pos = mean(excitationPos_LMS_diff), sem = sd(excitationPos_LMS_diff)/sqrt(n()))
+results_avg = results_all %>% 
+  group_by(participant, axis, adaptationLevel) %>%
+  summarise(
+    nominalThresholdContrast = median(nominalThresholdContrast, na.rm = TRUE), 
+    SEMNominalThresholdContrast = 1.253*sd(.$nominalThresholdContrast, na.rm = TRUE)/sqrt(n()),
+    validatedThresholdContrast = median(validatedThresholdContrast, na.rm = TRUE),
+    SEMValidatedThresholdContrast = 1.253*sd(.$validatedThresholdContrast, na.rm = TRUE)/sqrt(n()),
+    nominalJND = median(nominalJND, na.rm = TRUE),
+    SEMNominalJND = 1.253*sd(.$nominalJND, na.rm = TRUE)/sqrt(n()),
+    validatedJND = median(validatedJND, na.rm = TRUE),
+    SEMValidatedJND = 1.253*sd(.$validatedJND, na.rm = TRUE)/sqrt(n()),
+    session = 'mean'
+  )
 ```
-```{r echo=FALSE}
-results_mean %>%
+# Plots
+## Nominal JNDs
+```{r plot_participant_nominal_JNDs, echo=FALSE}
+results_all %>%
   ggplot() +
-  aes(adaptation, mean_excitation_LMS_diff_pos, group=axis,color=axis) +
-  geom_line() +
-  geom_pointrange(aes(ymax = mean_excitation_LMS_diff_pos+sem, ymin = mean_excitation_LMS_diff_pos-sem)) +
-  facet_wrap( ~ participant)
+  aes(adaptationLevel, nominalJND, group=interaction(session,axis),color=axis) +
+  geom_line(alpha = .4) +
+  geom_line(data = results_avg, size = 1) +
+  geom_pointrange(data = results_avg, aes(ymax = nominalJND+SEMNominalJND, ymin = nominalJND-SEMNominalJND)) +
+  facet_wrap( ~ participant) +
+  ylab("Nominal JND") +
+  xlab("Adaptation level") +
+  theme_minimal()
+```
+\pagebreak
+
+## Validated JNDs
+```{r plot_participant_validated_JNDs, echo=FALSE}
+results_all %>%
+  ggplot() +
+  aes(adaptationLevel, validatedJND, group=interaction(session,axis),color=axis) +
+  geom_line(alpha = .4) +
+  geom_line(data = results_avg, size = 1) +
+  geom_pointrange(data = results_avg, aes(ymax = validatedJND+SEMValidatedJND, ymin = nominalJND-SEMValidatedJND)) +
+  facet_wrap( ~ participant) +
+  ylab("Validated JND") +
+  xlab("Adaptation level") +
+  theme_minimal()
+```
+\pagebreak
+
+## Nominal threshold contrasts
+```{r plot_participant_nominal_contrasts, echo=FALSE}
+results_all %>%
+  ggplot() +
+  aes(adaptationLevel, nominalThresholdContrast, group=interaction(session,axis),color=axis) +
+  geom_line(alpha = .4) +
+  geom_line(data = results_avg, size = 1) +
+  geom_pointrange(data = results_avg, aes(ymax = nominalThresholdContrast+SEMNominalThresholdContrast, ymin = nominalThresholdContrast-SEMNominalThresholdContrast)) +
+  facet_wrap( ~ participant)  +
+  ylab("Nominal threshold contrast (fraction)") +
+  xlab("Adaptation level") +
+  theme_minimal()
+```
+\pagebreak
+
+## Validated threshold contrasts
+```{r plot_participant_validated_contrasts, echo=FALSE}
+results_all %>%
+  ggplot() +
+  aes(adaptationLevel, validatedThresholdContrast, group=interaction(session,axis),color=axis) +
+  geom_line(alpha = .4) +
+  geom_line(data = results_avg, size = 1) +
+  geom_pointrange(data = results_avg, aes(ymax = validatedThresholdContrast+SEMValidatedThresholdContrast, ymin = validatedThresholdContrast-SEMValidatedThresholdContrast)) +
+  facet_wrap( ~ participant) +
+  ylab("Validated threshold contrast (fraction)") +
+  xlab("Adaptation level") +
+  theme_minimal()
 ```
 
 # Statistics
-```{r summary_statistics, tidy=TRUE, echo=FALSE}
+```{r summary_statistics, tidy=TRUE, echo=FALSE, eval=FALSE}
 ttests = results_all %>% 
   select(participant, adaptation, axis, excitationPos_LMS_diff) %>%
   gather(key = variable, value = value, -adaptation, -axis, -participant) %>%

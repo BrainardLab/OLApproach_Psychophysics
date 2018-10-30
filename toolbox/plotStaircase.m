@@ -48,7 +48,7 @@ end
 
 %% Extract values, correct/incorrect
 for k = 1:numel(staircase)
-    [value(:,k) correct(:,k)] = getTrials(staircase(k));
+    [value(:,k), correct(:,k)] = getTrials(staircase(k));
 end
 correct = logical(correct);
 
@@ -72,5 +72,4 @@ for k = 1:size(value,2)
 end
 xlabel('Trial number');
 ylabel('Value');
-hold off;
 end

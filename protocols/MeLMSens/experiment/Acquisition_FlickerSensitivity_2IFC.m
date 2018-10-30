@@ -93,7 +93,7 @@ classdef Acquisition_FlickerSensitivity_2IFC < handle
         
         function initializeStaircases(obj)
             %% Initialize staircases
-                       
+            
             %% Setup contrast levels
             obj.contrastLevels = (0:obj.contrastStep:obj.maxContrast);
             obj.stepSizes = [4*obj.contrastStep 2*obj.contrastStep obj.contrastStep];
@@ -175,6 +175,50 @@ classdef Acquisition_FlickerSensitivity_2IFC < handle
                 obj.validationAtThreshold = OLValidateDirection(scaledDirection,obj.background, oneLight, radiometer, 'receptors', obj.receptors);
             end
         end
+        
+        function F = plot(obj, varargin)
+            % Plot all trials of this acquisition
+            
+            % Parse input
+            parser = inputParser();
+            parser.addRequired('obj',@(x)isa(x,'Acquisition_FlickerSensitivity_2IFC'));
+            parser.addParameter('F',figure(),@(x) isgraphics(x) && strcmp(x.Type,'figure'));
+            parser.parse(obj,varargin{:});
+            F = parser.Results.F;
+            
+            % Plot staircases
+            figure(F);
+            ax_staircases = subplot(1,2,1); hold on;
+            ax_staircases = plotStaircase([obj.staircases{1:3}],'ax',ax_staircases);
+            ylabel('LMS contrast (ratio)');
+            title('Staircase trials');
+            plot(xlim,mean(obj.thresholds)*[1 1],'--');
+            text(0,mean(obj.thresholds),sprintf('Mean threshold = %.3f',mean(obj.thresholds)));
+            hold off;
+            
+            % Fit psychometric function
+            psychometricFunction = @PAL_Weibull;
+            PFParams = obj.fitPsychometricFunction(psychometricFunction);
+            
+            % Plot psychometric function 
+            % Make a smooth curve with the parameters for all contrast
+            % levels
+            ax_PF = subplot(1,2,2); hold on;
+            probabilityCorrectPF = psychometricFunction(PFParams,obj.contrastLevels);
+            plot(obj.contrastLevels,probabilityCorrectPF);
+            title('Weibull function, fitted');
+            ylabel('Percent correct');
+            xlabel('LMS contrast (ratio)');
+            
+            % PF-based threshold
+            criterion = 0.7071;
+            threshold = obj.psychometricFunctionThreshold(psychometricFunction,PFParams,criterion);
+            plot([0 threshold],criterion*[1 1],'--');
+            plot(threshold*[1 1],[0.5 criterion],'--');
+            text(threshold,criterion,sprintf(' Threshold = %.3f (%.2f %%correct)',threshold,criterion*100));
+            hold off;
+        end
+        
         function PFParams = fitPsychometricFunction(obj, psychometricFunction)
             % Fit with Palemedes Toolbox. Really want to plot the fit
             % against the data to make sure it is reasonable in practice.

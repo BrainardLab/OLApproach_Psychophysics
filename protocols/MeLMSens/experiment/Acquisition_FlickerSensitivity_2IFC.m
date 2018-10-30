@@ -177,5 +177,78 @@ classdef Acquisition_FlickerSensitivity_2IFC < handle
                 obj.validationAtThreshold = OLValidateDirection(scaledDirection,obj.background, oneLight, radiometer, 'receptors', obj.receptors);
             end
         end
+        function PFParams = fitPsychometricFunction(obj, psychometricFunction)
+            % Fit with Palemedes Toolbox. Really want to plot the fit
+            % against the data to make sure it is reasonable in practice.
+            
+            % Define what psychometric functional form to fit.
+            % Alternatives: PAL_Gumbel, PAL_Weibull, PAL_CumulativeNormal,
+            % PAL_HyperbolicSecant
+            
+            % Extract values, correct/incorrect
+            for k = 1:numel(obj.staircases)
+                [contrastValue(:,k), correct(:,k)] = getTrials(obj.staircases{k});
+            end
+            correct = logical(correct);
+            contrastValue = round(contrastValue,6);
+            
+            % Put data in format for PAL:
+            % `stimLevels` vector of contrastValues/levels used
+            % `nCorrect` number of correct responses for each stim level
+            % `n` number of total trials for each stim level
+            % `PF` handle to psychometric function
+            % `paramsFree` vector of which PF parameters to vary
+            % `initialParamsGuess` initial guess of parameter values
+            stimLevels = unique(contrastValue(:));
+            for i = 1:length(stimLevels)
+                n(i) = sum(contrastValue(:) == stimLevels(i));
+                nCorrect(i) = sum(correct(contrastValue == stimLevels(i)));
+            end
+            
+            % Define initial parameter guesses.
+            initialParamsGuess = [];
+            
+            % The first two parameters of the Weibull define its shape.
+            % Setting the first parameter to the middle of the stimulus
+            % range and the second to 1 puts things into a reasonable
+            % ballpark here.
+            initialParamsGuess(1) = mean([obj.maxContrast,obj.minContrast]);
+            initialParamsGuess(2) = 1;
+            
+            % The third is the guess rate, which determines the value the
+            % function takes on at x = 0.  For 2IFC, this should be locked
+            % at 0.5.
+            guessRate = .5;
+            initialParamsGuess(3) = guessRate;
+            
+            % The fourth parameter is the lapse rate - the asymptotic
+            % performance at high values of x.  For a perfect subject, this
+            % would be 0, but sometimes subjects have a "lapse" and get the
+            % answer wrong even when the stimulus is easy to see.  We can
+            % search over this, but shouldn't allow it to take on
+            % unreasonable values.  0.05 as an upper limit isn't crazy.
+            lapseLimits = [0 0.05];
+            initialParamsGuess(4) = mean(lapseLimits);
+            
+            % paramsFree is a boolean vector that determins what parameters
+            % get searched over. 1: free parameter, 0: fixed parameter
+            paramsFree = [1 1 0 1];
+            
+            % Set up standard options for Palamedes search
+            options = PAL_minimize('options');
+            
+            % Do the search to get the parameters
+            PFParams = PAL_PFML_Fit(...
+                stimLevels,nCorrect',n', ...
+                initialParamsGuess,paramsFree,...
+                psychometricFunction,...
+                'searchOptions',options,...
+                'lapseLimits',lapseLimits);
+        end
+    end
+    methods (Static)
+        function threshold = psychometricFunctionThreshold(PF,params,criterion)
+            threshold = PF(params,criterion,'inverse');
+        end
     end
 end

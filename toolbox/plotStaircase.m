@@ -1,4 +1,4 @@
-function plotStaircase(staircase, varargin)
+function ax = plotStaircase(staircase, varargin)
 %PLOTSTAIRCASE Plot values of (array of) staircase object(s)
 %   plotStaircase(staircase) plot the values of the staircase in order of
 %   appearance as a solid line. Incorrect trials are marked with an
@@ -10,6 +10,9 @@ function plotStaircase(staircase, varargin)
 %
 %   plotStaircase(...,'ax',ax) plot in the specified axes; ax is must be a
 %   valid axes-object (i.e., open).
+%
+%   ax = plotStaircase(...) returns a handle to the axes-object containing
+%   the plot.
 %
 %   plotStaircase(...,'threshold',threshold) plots a horizontal dashed line
 %   indicated the given threshold value. If no threshold value is supplied,

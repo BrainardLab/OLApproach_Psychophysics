@@ -17,8 +17,6 @@ classdef Acquisition_FlickerSensitivity_2IFC < handle
         
         % Post-validation
         validationAtThreshold;
-        validatedContrastAtThresholdPos;
-        validatedContrastAtThresholdNeg;
     end
     properties (Dependent)
         maxContrast;

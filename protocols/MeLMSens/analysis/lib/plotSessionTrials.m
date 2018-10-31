@@ -65,14 +65,6 @@ LMS_low.plotPsychometricFunction('ax',LMS_low_psychometric); title('LMS low psyc
 LMS_high.plotPsychometricFunction('ax',LMS_high_psychometric); title('LMS high psychometric function');
 
 % Plot combined psychometric functions
-% Ask the acquisitions to plot the psychometric functions into the same
-% axes, so that they're all in one plot. Add legend (but only for the fits,
-% not also for the threshold-indicating dashed lines.
-psychometricFunctions = subplot(1,2,2);
-Mel_low.plotPsychometricFunction('ax',psychometricFunctions);
-Mel_high.plotPsychometricFunction('ax',psychometricFunctions);
-LMS_low.plotPsychometricFunction('ax',psychometricFunctions);
-LMS_high.plotPsychometricFunction('ax',psychometricFunctions);
-subset = findobj(psychometricFunctions.Children,'Tag','Psychometric Function');
-legend(subset,{'Mel low','Mel high','LMS low','LMS high'});
+ax_psychometricFunctions = subplot(1,2,2);
+plotSessionPsychometricFunctions(session,'ax',ax_psychometricFunctions);
 end

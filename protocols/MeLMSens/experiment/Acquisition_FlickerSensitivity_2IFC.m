@@ -234,7 +234,8 @@ classdef Acquisition_FlickerSensitivity_2IFC < handle
             % levels
             axes(ax); hold on;
             probabilityCorrectPF = psychometricFunction(PFParams,obj.contrastLevels);
-            plot(obj.contrastLevels,probabilityCorrectPF);
+            p = plot(obj.contrastLevels,probabilityCorrectPF);
+            p.Tag = [char(obj.name) ' Psychometric Function'];
             title('Weibull function, fitted');
             ylabel('Percent correct');
             xlabel('LMS contrast (ratio)');
@@ -242,9 +243,11 @@ classdef Acquisition_FlickerSensitivity_2IFC < handle
             % PF-based threshold
             criterion = 0.7071;
             threshold = obj.psychometricFunctionThreshold(psychometricFunction,PFParams,criterion);
+            ax.ColorOrderIndex = ax.ColorOrderIndex-1;
             plot([0 threshold],criterion*[1 1],'--');
+            ax.ColorOrderIndex = ax.ColorOrderIndex-1;            
             plot(threshold*[1 1],[0.5 criterion],'--');
-            text(threshold,criterion,sprintf(' Threshold = %.3f (%.2f %%correct)',threshold,criterion*100));
+            text(threshold,0,sprintf('%s Threshold = %.3f (%.2f %%correct)',obj.name,threshold,criterion*100));
             hold off;            
         end
         

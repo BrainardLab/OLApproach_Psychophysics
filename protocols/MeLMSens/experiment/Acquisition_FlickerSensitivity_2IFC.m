@@ -185,27 +185,61 @@ classdef Acquisition_FlickerSensitivity_2IFC < handle
             parser.addParameter('F',figure(),@(x) isgraphics(x) && strcmp(x.Type,'figure'));
             parser.parse(obj,varargin{:});
             F = parser.Results.F;
+            figure(F);
             
             % Plot staircases
-            figure(F);
-            ax_staircases = subplot(1,2,1); hold on;
-            ax_staircases = plotStaircase([obj.staircases{1:3}],'ax',ax_staircases);
+            ax_staircases = subplot(1,2,1);
+            obj.plotStaircases('ax',ax_staircases);
+            
+            % Plot psychometric function
+            ax_psychometricFunction = subplot(1,2,2);
+            obj.plotPsychometricFunction('ax',ax_psychometricFunction);
+        end
+        
+        function ax = plotStaircases(obj,varargin)
+            % Plot all trials of this acquisition
+            
+            % Parse input
+            parser = inputParser();
+            parser.addRequired('obj',@(x)isa(x,'Acquisition_FlickerSensitivity_2IFC'));
+            parser.addParameter('ax',gca,@(x) isgraphics(x) && strcmp(x.Type,'axes'));
+            parser.parse(obj,varargin{:});
+            ax = parser.Results.ax;
+            
+            % Plot staircases
+            axes(ax); hold on;
+            plotStaircase([obj.staircases{1:3}],'ax',ax);
             ylabel('LMS contrast (ratio)');
+            ylim([0,0.05]);
             title('Staircase trials');
             plot(xlim,mean(obj.thresholds)*[1 1],'--');
-            text(0,mean(obj.thresholds),sprintf('Mean threshold = %.3f',mean(obj.thresholds)));
+            text(10,mean(obj.thresholds)+0.001,...
+                sprintf('Mean threshold = %.3f',mean(obj.thresholds)),...
+                'Color',ax.ColorOrder(ax.ColorOrderIndex-1,:),...
+                'FontWeight','bold');
             hold off;
+        end
+        
+        function ax = plotPsychometricFunction(obj,varargin)
+             % Plot psychometric function fit to this acquisition
+            
+            % Parse input
+            parser = inputParser();
+            parser.addRequired('obj',@(x)isa(x,'Acquisition_FlickerSensitivity_2IFC'));
+            parser.addParameter('ax',gca,@(x) isgraphics(x) && strcmp(x.Type,'axes'));
+            parser.parse(obj,varargin{:});
+            ax = parser.Results.ax;            
             
             % Fit psychometric function
             psychometricFunction = @PAL_Weibull;
             PFParams = obj.fitPsychometricFunction(psychometricFunction);
             
-            % Plot psychometric function 
             % Make a smooth curve with the parameters for all contrast
             % levels
-            ax_PF = subplot(1,2,2); hold on;
+            axes(ax); hold on;
             probabilityCorrectPF = psychometricFunction(PFParams,obj.contrastLevels);
-            plot(obj.contrastLevels,probabilityCorrectPF);
+            p = plot(obj.contrastLevels,probabilityCorrectPF);
+            p.Tag = [char(obj.name) ' Psychometric Function'];
             title('Weibull function, fitted');
             ylabel('Percent correct');
             xlabel('LMS contrast (ratio)');
@@ -213,10 +247,12 @@ classdef Acquisition_FlickerSensitivity_2IFC < handle
             % PF-based threshold
             criterion = 0.7071;
             threshold = obj.psychometricFunctionThreshold(psychometricFunction,PFParams,criterion);
+            ax.ColorOrderIndex = ax.ColorOrderIndex-1;
             plot([0 threshold],criterion*[1 1],'--');
+            ax.ColorOrderIndex = ax.ColorOrderIndex-1;            
             plot(threshold*[1 1],[0.5 criterion],'--');
-            text(threshold,criterion,sprintf(' Threshold = %.3f (%.2f %%correct)',threshold,criterion*100));
-            hold off;
+            text(threshold,0,sprintf('%s Threshold = %.3f (%.2f %%correct)',obj.name,threshold,criterion*100));
+            hold off;            
         end
         
         function PFParams = fitPsychometricFunction(obj, psychometricFunction)
@@ -272,8 +308,9 @@ classdef Acquisition_FlickerSensitivity_2IFC < handle
             lapseLimits = [0 0.05];
             initialParamsGuess(4) = mean(lapseLimits);
             
-            % paramsFree is a boolean vector that determins what parameters
-            % get searched over. 1: free parameter, 0: fixed parameter
+            % paramsFree is a boolean vector that determines what
+            % parameters get searched over. 1: free parameter, 0: fixed
+            % parameter
             paramsFree = [1 1 0 1];
             
             % Set up standard options for Palamedes search
@@ -289,8 +326,11 @@ classdef Acquisition_FlickerSensitivity_2IFC < handle
         end
     end
     methods (Static)
-        function threshold = psychometricFunctionThreshold(PF,params,criterion)
-            threshold = PF(params,criterion,'inverse');
+        function threshold = psychometricFunctionThreshold(psychometricFunction,params,criterion)
+            % Get threshold from given parameterized psychometric function
+            
+            % Inverse of function at criterion
+            threshold = psychometricFunction(params,criterion,'inverse');
         end
     end
 end

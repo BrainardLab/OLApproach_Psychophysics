@@ -210,9 +210,13 @@ classdef Acquisition_FlickerSensitivity_2IFC < handle
             axes(ax); hold on;
             plotStaircase([obj.staircases{1:3}],'ax',ax);
             ylabel('LMS contrast (ratio)');
+            ylim([0,0.05]);
             title('Staircase trials');
             plot(xlim,mean(obj.thresholds)*[1 1],'--');
-            text(0,mean(obj.thresholds),sprintf('Mean threshold = %.3f',mean(obj.thresholds)));
+            text(10,mean(obj.thresholds)+0.001,...
+                sprintf('Mean threshold = %.3f',mean(obj.thresholds)),...
+                'Color',ax.ColorOrder(ax.ColorOrderIndex-1,:),...
+                'FontWeight','bold');
             hold off;
         end
         

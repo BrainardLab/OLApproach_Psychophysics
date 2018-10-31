@@ -1,4 +1,4 @@
-function [acquisitions, metadata] = loadSession(sessionPath)
+function [acquisitions, metadata] = loadSessionFromPath(sessionPath)
 %LOADSESSION Summary of this function goes here
 %   Detailed explanation goes here
 

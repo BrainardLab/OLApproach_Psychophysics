@@ -4,5 +4,5 @@ function sessionPath = sessionPathFromName(participant,sessionName)
 rawDataPath = getpref('MeLMSens','ProtocolDataRawPath');
 participantPath = fullfile(rawDataPath,participant);
 sessionFSEntry = dir(fullfile(participantPath,['*' sessionName]));
-sessionPath = fullfile(sessionFSEntry.folder, sessionFSEntry.name);
+sessionPath = fullfile(participantPath, sessionFSEntry.name);
 end

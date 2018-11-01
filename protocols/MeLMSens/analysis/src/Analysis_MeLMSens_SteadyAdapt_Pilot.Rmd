@@ -17,7 +17,7 @@ library(knitr)
 ```
 ```{r merge, echo=FALSE}
 csvspath = "../../data/processed/"
-csvfiles = list.files(csvspath, recursive = TRUE)
+csvfiles = list.files(csvspath, recursive = TRUE, pattern = ".*.csv")
 results_all = lapply(csvfiles,function(x) {
    read_csv(paste0(csvspath,x), col_types = cols())
   }) %>%

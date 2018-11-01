@@ -324,6 +324,16 @@ classdef Acquisition_FlickerSensitivity_2IFC < handle
                 'searchOptions',options,...
                 'lapseLimits',lapseLimits);
         end
+        
+        function threshold = fitPsychometricFunctionThreshold(obj)
+            % Fit psychometric function
+            psychometricFunction = @PAL_Weibull;
+            PFParams = obj.fitPsychometricFunction(psychometricFunction);
+            
+            % PF-based threshold
+            criterion = 0.7071;
+            threshold = obj.psychometricFunctionThreshold(psychometricFunction,PFParams,criterion);            
+        end
     end
     methods (Static)
         function threshold = psychometricFunctionThreshold(psychometricFunction,params,criterion)

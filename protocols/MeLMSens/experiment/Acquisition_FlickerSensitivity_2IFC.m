@@ -235,6 +235,7 @@ classdef Acquisition_FlickerSensitivity_2IFC < handle
             parser.parse(obj,varargin{:});
             ax = parser.Results.ax;            
             
+            color = ax.ColorOrder(ax.ColorOrderIndex,:);
             % Fit psychometric function
             psychometricFunction = @PAL_Weibull;
             PFParams = obj.fitPsychometricFunction(psychometricFunction);
@@ -245,13 +246,17 @@ classdef Acquisition_FlickerSensitivity_2IFC < handle
             
             % Plot a smooth curve with the parameters for all contrast
             % levels
-            PFLine = plotPsychometricFunction(psychometricFunction,PFParams,obj.contrastLevels,'ax',ax);
+            PFLine = plotPsychometricFunction(psychometricFunction,PFParams,obj.contrastLevels,...
+                'ax',ax,...
+                'color',color);
             PFLine.Parent = PFGroup;
          
             % PF-based threshold
             criterion = 0.7071;
             ax.ColorOrderIndex = ax.ColorOrderIndex -1; % plot threshold in same color as fitline
-            thresholdGroup = plotPFThreshold(psychometricFunction,PFParams,criterion,'ax',ax);
+            thresholdGroup = plotPFThreshold(psychometricFunction,PFParams,criterion,...
+                'ax',ax,...
+                'color',color);
             thresholdGroup.Parent = PFGroup;
             
             % Annotate

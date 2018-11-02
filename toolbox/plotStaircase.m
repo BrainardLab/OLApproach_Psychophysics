@@ -20,7 +20,7 @@ function ax = plotStaircase(staircase, varargin)
 %   staircases are provided, threshold must be a vector of
 %   numel(staircases).
 %
-%   This function tries to forward unmatched input arguments to plot,
+%   This function tries to forward unmatched input arguments to plot(),
 %   although no guarantee is made that those will work well.
 %
 %   See also getThresholdEstimate

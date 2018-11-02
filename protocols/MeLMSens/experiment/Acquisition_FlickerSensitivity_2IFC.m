@@ -205,18 +205,23 @@ classdef Acquisition_FlickerSensitivity_2IFC < handle
             parser.addParameter('ax',gca,@(x) isgraphics(x) && strcmp(x.Type,'axes'));
             parser.parse(obj,varargin{:});
             ax = parser.Results.ax;
+            axes(ax); hold on;
             
             % Plot staircases
-            axes(ax); hold on;
             plotStaircase([obj.staircases{1:3}],'ax',ax);
+            
+            % Plot mean threshold
+            color = ax.ColorOrder(ax.ColorOrderIndex,:); % current plot color, which we'll reuse)
+            plot(xlim,mean(obj.thresholds)*[1 1],'--','Color',color);
+            text(10,mean(obj.thresholds)+0.001,...
+                sprintf('Mean threshold = %.3f',mean(obj.thresholds)),...
+                'Color',color,...
+                'FontWeight','bold');
+            
+            % Finish up
             ylabel('LMS contrast (ratio)');
             ylim([0,0.05]);
             title('Staircase trials');
-            plot(xlim,mean(obj.thresholds)*[1 1],'--');
-            text(10,mean(obj.thresholds)+0.001,...
-                sprintf('Mean threshold = %.3f',mean(obj.thresholds)),...
-                'Color',ax.ColorOrder(ax.ColorOrderIndex-1,:),...
-                'FontWeight','bold');
             hold off;
         end
         

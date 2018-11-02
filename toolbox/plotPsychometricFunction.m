@@ -20,16 +20,16 @@ function PFLine = plotPsychometricFunction(psychometricFunction, PFParams, X, va
 parser = inputParser();
 parser.addRequired('psychometricFunction',@(x)validateattributes(x,{'function_handle'},{}));
 parser.addRequired('PFParams',@(x)validateattributes(x,{'numeric'},{}));
-parser.addRequired('x',@(x)validateattributes(x,{'numeric'},{}));
+parser.addRequired('X',@(x)validateattributes(x,{'numeric'},{}));
 parser.addParameter('ax',gca,@(x)validateattributes(x,{'matlab.graphics.axis.Axes'},{},'isvalid'));
 parser.KeepUnmatched = true;
-parser.parse(psychometricFunction,PFParams,x,varargin{:});
+parser.parse(psychometricFunction,PFParams,X,varargin{:});
 ax = parser.Results.ax;
 
 % Make a smooth curve with the parameters for all contrast
 % levels
 axes(ax); hold on;
-probabilityCorrectPF = psychometricFunction(PFParams,x);
+probabilityCorrectPF = psychometricFunction(PFParams,X);
 PFLine = plot(ax,X,probabilityCorrectPF,'DisplayName',[func2str(psychometricFunction) ' fit line'],parser.Unmatched);
 
 % Label

@@ -207,8 +207,8 @@ classdef Acquisition_FlickerSensitivity_2IFC < handle
             ax = parser.Results.ax;
             axes(ax); hold on;
             
-            % Plot staircases
-            plotStaircase([obj.staircases{1:3}],'ax',ax);
+            % Plot staircases trialseries
+            plotStaircaseTrialseries([obj.staircases{1:3}],'ax',ax);
             
             % Plot mean threshold
             color = ax.ColorOrder(ax.ColorOrderIndex,:); % current plot color, which we'll reuse)

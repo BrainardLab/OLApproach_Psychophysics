@@ -11,7 +11,7 @@ function PFLine = plotPsychometricFunction(psychometricFunction, PFParams, X, va
 %   PFLine = plotPsychometricFunction(...) returns a handle to the
 %   Line-object of the psychometric function plot.
 %
-%   See also plotStaircase, plotStaircaseProportionCorrect, plotThreshold
+%   See also plotStaircaseProportionCorrect, plotThreshold
 
 % History:
 %   2018-11-02  J.Vincent wrote plotPsychometricFunction.

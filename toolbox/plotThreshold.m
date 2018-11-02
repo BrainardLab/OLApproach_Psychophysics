@@ -17,7 +17,7 @@ function thresholdGroup = plotThreshold(threshold, varargin)
 %   thresholdGroup = plotThreshold(...) returns a handle a graphics
 %   Group-object containing the indicator line(s) and the marker.
 %
-%   See also getThresholdEstimate, plotStaircase, plotStaircaseProportionCorrect,
+%   See also getThresholdEstimate, plotStaircaseProportionCorrect,
 %   plotPsychometricFunction
 
 % History:

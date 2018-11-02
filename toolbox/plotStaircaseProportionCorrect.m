@@ -20,8 +20,8 @@ function S = plotStaircaseProportionCorrect(staircase,varargin)
 %   This function tries to forward unmatched input arguments to scatter(),
 %   although no guarantee is made that those will work well.
 %
-%   See also plotStaircase, plotThreshold, plotPsychometricFunction,
-%   getThresholdEstimate
+%   See also plotStaircaseTrialSeries, plotThreshold,
+%   plotPsychometricFunction, getThresholdEstimate
 
 % History:
 %   2018-11-02  J.Vincent wrote plotStaircaseProportionCorrect.

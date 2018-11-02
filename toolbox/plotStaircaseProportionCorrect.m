@@ -50,5 +50,6 @@ proportionCorrect = nCorrect./nTrials;
 hold(ax,'on');
 S = scatter(ax,meanValues,proportionCorrect,...
     nTrials*10,... % size is 10 * number of trials in bin
-    'filled');
+    'filled',...
+    'DisplayName','Aggregated proportion correct');
 end

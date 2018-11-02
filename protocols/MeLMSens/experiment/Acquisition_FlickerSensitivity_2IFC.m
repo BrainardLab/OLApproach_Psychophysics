@@ -241,6 +241,7 @@ classdef Acquisition_FlickerSensitivity_2IFC < handle
             dataPoints = plotStaircaseProportionCorrect(staircase,...
                 'ax',ax,...
                 'binSize',10);
+            dataPoints.DisplayName = sprintf('%s %s',obj.name,dataPoints.DisplayName);
             
             % Fit psychometric function
             psychometricFunction = @PAL_Weibull;

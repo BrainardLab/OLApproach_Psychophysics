@@ -332,15 +332,7 @@ classdef Acquisition_FlickerSensitivity_2IFC < handle
             
             % PF-based threshold
             criterion = 0.7071;
-            threshold = obj.psychometricFunctionThreshold(psychometricFunction,PFParams,criterion);            
-        end
-    end
-    methods (Static)
-        function threshold = psychometricFunctionThreshold(psychometricFunction,params,criterion)
-            % Get threshold from given parameterized psychometric function
-            
-            % Inverse of function at criterion
-            threshold = psychometricFunction(params,criterion,'inverse');
+            threshold = thresholdFromPsychometricFunction(psychometricFunction,PFParams,criterion);            
         end
     end
 end

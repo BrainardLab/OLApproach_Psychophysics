@@ -53,13 +53,13 @@ end
 correct = logical(correct);
 
 %% Plot
-axes(ax); hold on;
+hold(ax,'on');
 for k = 1:size(value,2)
     
     % Plot values for all trials of staircase
     % Plot all values in a contiguous solid line.
     % Place markers only at trials where response was incorrect
-    plot(value(:,k),'-*','MarkerIndices',find(~correct(:,k)),'MarkerSize',10,parser.Unmatched);
+    plot(ax,value(:,k),'-*','MarkerIndices',find(~correct(:,k)),'MarkerSize',10,parser.Unmatched);
     
     % Plot threshold estimate for staircase
     % Draw a dashed horizontal line at the value of the threshold estimate
@@ -68,8 +68,8 @@ for k = 1:size(value,2)
     if ax.ColorOrderIndex > 1
         ax.ColorOrderIndex = ax.ColorOrderIndex-1;
     end
-    plot(xlim,threshold(k)*[1 1],'--');
+    plot(ax,xlim,threshold(k)*[1 1],'--');
 end
-xlabel('Trial number');
-ylabel('Value');
+xlabel(ax,'Trial number');
+ylabel(ax,'Value');
 end

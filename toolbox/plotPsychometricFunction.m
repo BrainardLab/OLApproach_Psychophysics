@@ -8,6 +8,7 @@ parser.addRequired('psychometricFunction',@(x)validateattributes(x,{'function_ha
 parser.addRequired('PFParams',@(x)validateattributes(x,{'numeric'},{}));
 parser.addRequired('x',@(x)validateattributes(x,{'numeric'},{}));
 parser.addParameter('ax',gca,@(x)validateattributes(x,{'matlab.graphics.axis.Axes'},{},'isvalid'));
+parser.KeepUnmatched = true;
 parser.parse(psychometricFunction,PFParams,x,varargin{:});
 ax = parser.Results.ax;
 
@@ -15,10 +16,10 @@ ax = parser.Results.ax;
 % levels
 axes(ax); hold on;
 probabilityCorrectPF = psychometricFunction(PFParams,x);
-PFLine = plot(x,probabilityCorrectPF,'DisplayName',[func2str(psychometricFunction) ' fit line']);
+PFLine = plot(ax,x,probabilityCorrectPF,'DisplayName',[func2str(psychometricFunction) ' fit line'],parser.Unmatched);
 
 % Label
-title(func2str(psychometricFunction));
-ylabel('Response');
-xlabel('Stimulus value');
+title(ax,func2str(psychometricFunction));
+ylabel(ax,'Response');
+xlabel(ax,'Stimulus value');
 end

@@ -220,7 +220,7 @@ classdef Acquisition_FlickerSensitivity_2IFC < handle
             hold off;
         end
         
-        function ax = plotPsychometricFunction(obj,varargin)
+        function PFGroup = plotPsychometricFunction(obj,varargin)
              % Plot psychometric function fit to this acquisition
             
             % Parse input
@@ -234,15 +234,14 @@ classdef Acquisition_FlickerSensitivity_2IFC < handle
             psychometricFunction = @PAL_Weibull;
             PFParams = obj.fitPsychometricFunction(psychometricFunction);
             
-            % Make a smooth curve with the parameters for all contrast
+            % Create group
+            PFGroup = hggroup();
+            PFGroup.DisplayName = sprintf('%s psychometric function fit',obj.name);
+            
+            % Plot a smooth curve with the parameters for all contrast
             % levels
-            axes(ax); hold on;
-            probabilityCorrectPF = psychometricFunction(PFParams,obj.contrastLevels);
-            p = plot(obj.contrastLevels,probabilityCorrectPF);
-            p.Tag = [char(obj.name) ' Psychometric Function'];
-            title('Weibull function, fitted');
-            ylabel('Percent correct');
-            xlabel('LMS contrast (ratio)');
+            PFLine = plotPsychometricFunction(psychometricFunction,PFParams,obj.contrastLevels,'ax',ax);
+            PFLine.Parent = PFGroup;
             
             % PF-based threshold
             criterion = 0.7071;

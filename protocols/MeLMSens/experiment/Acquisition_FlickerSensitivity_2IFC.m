@@ -242,16 +242,18 @@ classdef Acquisition_FlickerSensitivity_2IFC < handle
             % levels
             PFLine = plotPsychometricFunction(psychometricFunction,PFParams,obj.contrastLevels,'ax',ax);
             PFLine.Parent = PFGroup;
-            
+         
             % PF-based threshold
             criterion = 0.7071;
-            threshold = obj.psychometricFunctionThreshold(psychometricFunction,PFParams,criterion);
-            ax.ColorOrderIndex = ax.ColorOrderIndex-1;
-            plot([0 threshold],criterion*[1 1],'--');
-            ax.ColorOrderIndex = ax.ColorOrderIndex-1;            
-            plot(threshold*[1 1],[0.5 criterion],'--');
-            text(threshold,0,sprintf('%s Threshold = %.3f (%.2f %%correct)',obj.name,threshold,criterion*100));
-            hold off;            
+            ax.ColorOrderIndex = ax.ColorOrderIndex -1; % plot threshold in same color as fitline
+            thresholdGroup = plotPFThreshold(psychometricFunction,PFParams,criterion,'ax',ax);
+            thresholdGroup.Parent = PFGroup;
+            
+            % Annotate
+            title('Weibull function, fitted');
+            xlabel('LMS contrast (ratio)');
+            ylabel('Percent correct');
+            hold off;
         end
         
         function PFParams = fitPsychometricFunction(obj, psychometricFunction)

@@ -233,9 +233,15 @@ classdef Acquisition_FlickerSensitivity_2IFC < handle
             parser.addRequired('obj',@(x)isa(x,'Acquisition_FlickerSensitivity_2IFC'));
             parser.addParameter('ax',gca,@(x) isgraphics(x) && strcmp(x.Type,'axes'));
             parser.parse(obj,varargin{:});
-            ax = parser.Results.ax;            
+            ax = parser.Results.ax;
             
+            % Plot proportionCorrect
             color = ax.ColorOrder(ax.ColorOrderIndex,:);
+            staircase = [obj.staircases{1} obj.staircases{2} obj.staircases{3}];
+            dataPoints = plotStaircaseProportionCorrect(staircase,...
+                'ax',ax,...
+                'binSize',10);
+            
             % Fit psychometric function
             psychometricFunction = @PAL_Weibull;
             PFParams = obj.fitPsychometricFunction(psychometricFunction);

@@ -23,7 +23,7 @@ function ax = plotStaircase(staircase, varargin)
 %   This function tries to forward unmatched input arguments to plot(),
 %   although no guarantee is made that those will work well.
 %
-%   See also getThresholdEstimate
+%   See also getThresholdEstimate, plotStaircaseProportionCorrect
 
 % History:
 %   2018-10-29  J.Vincent wrote plotStaircase.

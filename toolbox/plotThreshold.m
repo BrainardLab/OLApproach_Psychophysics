@@ -1,6 +1,27 @@
 function thresholdGroup = plotThreshold(threshold, varargin)
-%PLOTTHRESHOLD Summary of this function goes here
-%   Detailed explanation goes here
+%PLOTTHRESHOLD Plot indicator of a threshold on e.g. psychometric function
+%   plotThreshold(threshold) plots a dashed vertical line indicating the
+%   threshold at x = threshold. Thus, it assumes the threshold is some X
+%   value, and Y represents e.g., percent correct. Also places a marker
+%   with the threshold value.
+%
+%   plotThreshold(...,'ax',ax) plots in the specified axes; ax is must be a
+%   valid axes-object (i.e., open).
+%
+%   plotThreshold(...,'criterion',Y) also plots a dashed horizontal line
+%   indicatign the criterion value that the threshold is based on. The
+%   dashed threshold and indicator lines are drawn only until their point
+%   of intersection, and don't extend further upwards or rightwards,
+%   respectively. The text marker is plot at the intersect location.
+%
+%   thresholdGroup = plotThreshold(...) returns a handle a graphics
+%   Group-object containing the indicator line(s) and the marker.
+%
+%   See also getThresholdEstimate, plotStaircase, plotStaircaseProportionCorrect,
+%   plotPsychometricFunction
+
+% History:
+%   2018-11-02  J.Vincent wrote plotThreshold.
 
 % Parse input
 parser = inputParser();

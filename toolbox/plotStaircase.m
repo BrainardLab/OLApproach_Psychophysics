@@ -9,7 +9,8 @@ function ax = plotStaircase(staircase, varargin)
 %   each in a different color.
 %
 %   plotStaircase(...,'ax',ax) plot in the specified axes; ax is must be a
-%   valid axes-object (i.e., open).
+%   valid axes-object (i.e., open). Default plots in the current axes,
+%   i.e., ax = gca().
 %
 %   ax = plotStaircase(...) returns a handle to the axes-object containing
 %   the plot.

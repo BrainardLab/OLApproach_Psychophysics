@@ -50,12 +50,12 @@ Mel_low.plotPsychometricFunction('ax',ax);
 Mel_high.plotPsychometricFunction('ax',ax);
 LMS_low.plotPsychometricFunction('ax',ax);
 LMS_high.plotPsychometricFunction('ax',ax);
-subset = findobj(ax.Children,'-regexp','Tag','.*Psychometric Function');
-tags = {subset.Tag}';
+subset = findobj(ax.Children,'-regexp','DisplayName','.*psychometric function fit');
+names = {subset.DisplayName}';
 texts = findobj(ax.Children,'Type','text');
 thresholdsStrings = {texts.String}';
+thresholdsStrings = strrep(names,'psychometric function fit',thresholdsStrings);
 thresholdsStrings = strrep(thresholdsStrings,'_',' ');
 
 legend(subset,thresholdsStrings);
 end
-

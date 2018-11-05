@@ -205,22 +205,27 @@ classdef Acquisition_FlickerSensitivity_2IFC < handle
             parser.addParameter('ax',gca,@(x) isgraphics(x) && strcmp(x.Type,'axes'));
             parser.parse(obj,varargin{:});
             ax = parser.Results.ax;
-            
-            % Plot staircases
             axes(ax); hold on;
-            plotStaircase([obj.staircases{1:3}],'ax',ax);
+            
+            % Plot staircases trialseries
+            plotStaircaseTrialseries([obj.staircases{1:3}],'ax',ax);
+            
+            % Plot mean threshold
+            color = ax.ColorOrder(ax.ColorOrderIndex,:); % current plot color, which we'll reuse)
+            plot(xlim,mean(obj.thresholds)*[1 1],'--','Color',color);
+            text(10,mean(obj.thresholds)+0.001,...
+                sprintf('Mean threshold = %.3f',mean(obj.thresholds)),...
+                'Color',color,...
+                'FontWeight','bold');
+            
+            % Finish up
             ylabel('LMS contrast (ratio)');
             ylim([0,0.05]);
             title('Staircase trials');
-            plot(xlim,mean(obj.thresholds)*[1 1],'--');
-            text(10,mean(obj.thresholds)+0.001,...
-                sprintf('Mean threshold = %.3f',mean(obj.thresholds)),...
-                'Color',ax.ColorOrder(ax.ColorOrderIndex-1,:),...
-                'FontWeight','bold');
             hold off;
         end
         
-        function ax = plotPsychometricFunction(obj,varargin)
+        function PFGroup = plotPsychometricFunction(obj,varargin)
              % Plot psychometric function fit to this acquisition
             
             % Parse input
@@ -228,31 +233,44 @@ classdef Acquisition_FlickerSensitivity_2IFC < handle
             parser.addRequired('obj',@(x)isa(x,'Acquisition_FlickerSensitivity_2IFC'));
             parser.addParameter('ax',gca,@(x) isgraphics(x) && strcmp(x.Type,'axes'));
             parser.parse(obj,varargin{:});
-            ax = parser.Results.ax;            
+            ax = parser.Results.ax;
+            
+            % Plot proportionCorrect
+            color = ax.ColorOrder(ax.ColorOrderIndex,:);
+            staircase = [obj.staircases{1} obj.staircases{2} obj.staircases{3}];
+            dataPoints = plotStaircaseProportionCorrect(staircase,...
+                'ax',ax,...
+                'binSize',10);
+            dataPoints.DisplayName = sprintf('%s %s',obj.name,dataPoints.DisplayName);
             
             % Fit psychometric function
             psychometricFunction = @PAL_Weibull;
             PFParams = obj.fitPsychometricFunction(psychometricFunction);
             
-            % Make a smooth curve with the parameters for all contrast
-            % levels
-            axes(ax); hold on;
-            probabilityCorrectPF = psychometricFunction(PFParams,obj.contrastLevels);
-            p = plot(obj.contrastLevels,probabilityCorrectPF);
-            p.Tag = [char(obj.name) ' Psychometric Function'];
-            title('Weibull function, fitted');
-            ylabel('Percent correct');
-            xlabel('LMS contrast (ratio)');
+            % Create group
+            PFGroup = hggroup();
+            PFGroup.DisplayName = sprintf('%s psychometric function fit',obj.name);
             
+            % Plot a smooth curve with the parameters for all contrast
+            % levels
+            PFLine = plotPsychometricFunction(psychometricFunction,PFParams,obj.contrastLevels,...
+                'ax',ax,...
+                'color',color);
+            PFLine.Parent = PFGroup;
+         
             % PF-based threshold
             criterion = 0.7071;
-            threshold = obj.psychometricFunctionThreshold(psychometricFunction,PFParams,criterion);
-            ax.ColorOrderIndex = ax.ColorOrderIndex-1;
-            plot([0 threshold],criterion*[1 1],'--');
-            ax.ColorOrderIndex = ax.ColorOrderIndex-1;            
-            plot(threshold*[1 1],[0.5 criterion],'--');
-            text(threshold,0,sprintf('%s Threshold = %.3f (%.2f %%correct)',obj.name,threshold,criterion*100));
-            hold off;            
+            ax.ColorOrderIndex = ax.ColorOrderIndex -1; % plot threshold in same color as fitline
+            thresholdGroup = plotPFThreshold(psychometricFunction,PFParams,criterion,...
+                'ax',ax,...
+                'color',color);
+            thresholdGroup.Parent = PFGroup;
+            
+            % Annotate
+            title('Weibull function, fitted');
+            xlabel('LMS contrast (ratio)');
+            ylabel('Percent correct');
+            hold off;
         end
         
         function PFParams = fitPsychometricFunction(obj, psychometricFunction)
@@ -332,15 +350,7 @@ classdef Acquisition_FlickerSensitivity_2IFC < handle
             
             % PF-based threshold
             criterion = 0.7071;
-            threshold = obj.psychometricFunctionThreshold(psychometricFunction,PFParams,criterion);            
-        end
-    end
-    methods (Static)
-        function threshold = psychometricFunctionThreshold(psychometricFunction,params,criterion)
-            % Get threshold from given parameterized psychometric function
-            
-            % Inverse of function at criterion
-            threshold = psychometricFunction(params,criterion,'inverse');
+            threshold = thresholdFromPsychometricFunction(psychometricFunction,PFParams,criterion);            
         end
     end
 end

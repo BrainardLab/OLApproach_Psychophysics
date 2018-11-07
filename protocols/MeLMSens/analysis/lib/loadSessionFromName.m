@@ -1,7 +1,6 @@
-function [acquisitions, metadata] = loadSessionFromName(participant,sessionName)
+function [acquisitions, materials, metadata] = loadSessionFromName(participant,sessionName)
 %LOADSESSIONFROMNAME Summary of this function goes here
 %   Detailed explanation goes here
 sessionPath = sessionPathFromName(participant, sessionName);
-[acquisitions, metadata] = loadSessionFromPath(sessionPath);
+[acquisitions, materials, metadata] = loadSessionFromPath(sessionPath);
 end
-

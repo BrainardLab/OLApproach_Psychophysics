@@ -4,8 +4,8 @@ function sessionFig(participant,sessionName)
 
 % Get figure
 sessionPath = sessionPathFromName(participant,sessionName);
-session = loadSessionFromPath(sessionPath);
-fig = plotSessionTrials(session);
+acquisitions = loadSessionAcquisitionsFromPath(sessionPath);
+fig = plotSessionTrials(acquisitions);
 
 % Add title
 t = annotation(fig,'textbox',...

@@ -1,4 +1,4 @@
-function [acquisitions, materials, metadata] = loadSessionFromPath(sessionPath)
+function [acquisitions, metadata] = loadSessionAcquisitionsFromPath(sessionPath)
 %LOADSESSION Summary of this function goes here
 %   Detailed explanation goes here
 
@@ -18,8 +18,4 @@ for a = acquisitionNames
     acquisitions(char(a)) = metadatum.acquisition;
 end
 
-% Load materials
-materialsFilename = sprintf("materials-*.mat");
-materialsFile = dir(fullfile(sessionPath,materialsFilename));
-materials = load(fullfile(materialsFile.folder, materialsFile.name));
 end

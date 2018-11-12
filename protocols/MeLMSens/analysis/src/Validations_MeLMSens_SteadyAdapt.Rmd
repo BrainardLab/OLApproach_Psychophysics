@@ -1,0 +1,77 @@
+---
+title: "Validation plots"
+output:
+  pdf_document: default
+  html_notebook: default
+---
+```{r, echo = FALSE, message = FALSE}
+library(readr)
+library(tidyverse)
+```
+# Background luminance
+```{r, echo = FALSE}
+luminancesBackgrounds <- read_csv("~/Documents/MATLAB/projects/Experiments/OLApproach_Psychophysics/protocols/MeLMSens/data/processed/HERO_GKA/20181019_session_3/HERO_GKA-session_3-luminancesBackgrounds.csv", 
+  col_types = cols(label = col_factor(levels = c("PreCorrection", "PostCorrection", "PostSession")),
+                   direction = col_factor(levels = c("LMS_low","LMS_high","Mel_low","Mel_high"))))
+
+luminancesBackgrounds %>% ggplot() +
+  aes(x = direction, group = label, fill = label, y = lumActual) +
+  geom_bar(stat = "summary", fun.y = "median",position = "dodge")
+```
+
+\pagebreak
+
+# Background contrast
+
+```{r, echo = FALSE}
+contrastsBackgrounds <- read_csv("~/Documents/MATLAB/projects/Experiments/OLApproach_Psychophysics/protocols/MeLMSens/data/processed/HERO_GKA/20181019_session_3/HERO_GKA-session_3-contrastsBackgrounds.csv", 
+    col_types = cols(axis = col_factor(levels = c("LMS-directed backgrounds", "Mel-directed backgrounds")), 
+                     label = col_factor(levels = c("PreCorrection", "PostCorrection", "PostSession"))))
+
+contrastsBackgrounds %>%
+  gather(key=receptor,value=contrast,-axis,-label,factor_key = TRUE) %>%
+  ggplot() +
+  aes(x = receptor, y = contrast) +
+  geom_bar(stat = "summary", fun.y= "median", position = "dodge") +
+  facet_grid(axis~label)
+```
+
+\pagebreak
+
+# Flicker contrast
+
+```{r, echo = FALSE}
+contrastsFlicker <- read_csv("~/Documents/MATLAB/projects/Experiments/OLApproach_Psychophysics/protocols/MeLMSens/data/processed/HERO_GKA/20181019_session_3/HERO_GKA-session_3-contrastsFlicker.csv", 
+    col_types = cols(direction = col_factor(levels = c("FlickerDirection_LMS_high", "FlickerDirection_LMS_low", "FlickerDirection_Mel_high", "FlickerDirection_Mel_low")), 
+                     label = col_factor(levels = c("PreCorrection", "PostCorrection", "PostSession")),
+                     receptor = col_factor(levels = c("L","M","S","Mel"))))
+
+contrastsFlicker %>%
+  ggplot() +
+  aes(x = receptor, y = actual_1) + 
+  geom_bar(stat = "summary", fun.y= "median", position = "dodge") +
+  facet_grid(direction ~ label)
+
+contrastsFlicker = contrastsFlicker %>%
+  select(-desired_1,-desired_2) %>%
+  gather(key=component,value=contrast,actual_2,actual_1) %>%
+  mutate(component = recode(component,'actual_2'='negative','actual_1'='positive')) %>%
+  spread(receptor,contrast)
+
+contrastsFlicker = contrastsFlicker %>%
+  mutate(LMS = (L+M+S)/3) %>%
+  mutate(SoverLplusM = S/(L+M)) %>%
+  mutate(LminusM = L-M)
+
+contrastsFlicker %>%
+  ggplot() +
+  aes(x = LMS, y = LminusM, color = direction, shape=label) +
+  geom_point(stat = 'identity',alpha = 0.5) +
+  scale_y_continuous(limits=c(-7,7)) +
+  scale_x_continuous(limits=c(-7,7)) +
+  geom_hline(yintercept = 0, alpha = .5) +
+  geom_vline(xintercept = 0, alpha = .5) +
+  geom_vline(xintercept = 5, alpha = .5, linetype='dashed') +
+  geom_vline(xintercept = -5, alpha = .5, linetype='dashed') +
+  theme_bw()
+```

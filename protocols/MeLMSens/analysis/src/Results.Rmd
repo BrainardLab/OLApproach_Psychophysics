@@ -14,6 +14,7 @@ output:
 ```{r setup, echo=FALSE, message=FALSE}
 library(tidyverse)
 library(knitr)
+source('../lib/median_SEM.R')
 ```
 ```{r merge, echo=FALSE}
 csvsPath = normalizePath("../../data/processed")
@@ -37,80 +38,89 @@ results_all = results_all %>%
 results_all = mutate(results_all,adaptationLevel=factor(results_all$adaptationLevel,levels=c('low','high')))
 ```
 
-```{r echo=FALSE}
-# Average over sessions
-results_avg = results_all %>% 
-  group_by(participant, axis, adaptationLevel) %>%
-  summarise(
-    nominalThresholdContrast = median(nominalThresholdContrast, na.rm = TRUE), 
-    SEMNominalThresholdContrast = 1.253*sd(.$nominalThresholdContrast, na.rm = TRUE)/sqrt(n()),
-    validatedThresholdContrast = median(validatedThresholdContrast, na.rm = TRUE),
-    SEMValidatedThresholdContrast = 1.253*sd(.$validatedThresholdContrast, na.rm = TRUE)/sqrt(n()),
-    nominalJND = median(nominalJND, na.rm = TRUE),
-    SEMNominalJND = 1.253*sd(.$nominalJND, na.rm = TRUE)/sqrt(n()),
-    validatedJND = median(validatedJND, na.rm = TRUE),
-    SEMValidatedJND = 1.253*sd(.$validatedJND, na.rm = TRUE)/sqrt(n()),
-    session = 'mean'
-  )
-```
-# Plots
-## Nominal JNDs
-```{r plot_participant_nominal_JNDs, echo=FALSE}
+# JNDs
+## Plot
+```{r plot_JNDs, echo=FALSE}
 results_all %>%
   ggplot() +
-  aes(adaptationLevel, nominalJND, group=interaction(session,axis),color=axis) +
-  geom_line(alpha = .4) +
-  geom_line(data = results_avg, size = 1) +
-  geom_pointrange(data = results_avg, aes(ymax = nominalJND+SEMNominalJND, ymin = nominalJND-SEMNominalJND)) +
-  facet_wrap( ~ participant) +
-  ylab("Nominal JND") +
+  aes(x = adaptationLevel) +
+  facet_grid(participant ~ axis) +
+  ylab("Just Noticeable LMS Difference ()") +
   xlab("Adaptation level") +
-  theme_minimal()
+  theme_bw() +
+  
+  # Individual sessions
+  geom_line(mapping = aes(y = nominalJND, group=session, color = 'nominal'), alpha = .4) +
+  geom_line(mapping = aes(y = validatedJND, group=session, color = 'validated'), alpha = .4) +
+  
+  # Medians over sessions
+  stat_summary(mapping = aes(x = adaptationLevel, y = nominalJND, group=1, color = 'nominal'),
+               fun.y = median,
+               size = 1,
+               geom = "line",
+               na.rm=TRUE) +
+  stat_summary(mapping = aes(x = adaptationLevel, y = validatedJND, group=1, color = 'validated'),
+               fun.y = median,
+               size = 1,
+               geom = "line",
+               na.rm=TRUE) +
+  
+  # Point ranges median +- SEM(edian)
+  geom_pointrange(mapping = aes(y = nominalJND, color = 'nominal'),
+              stat="summary",
+              fun.y = median,
+              fun.ymin = medianMinusSEM,
+              fun.ymax = medianPlusSEM,
+              na.rm=TRUE) +  
+  geom_pointrange(mapping = aes(y = validatedJND, color = 'validated'),
+              stat="summary",
+              fun.y = median,
+              fun.ymin = medianMinusSEM,
+              fun.ymax = medianPlusSEM,
+              na.rm=TRUE)
 ```
+
 \pagebreak
 
-## Validated JNDs
-```{r plot_participant_validated_JNDs, echo=FALSE}
+# Threshold contrasts
+```{r plot_contrasts, echo=FALSE}
 results_all %>%
   ggplot() +
-  aes(adaptationLevel, validatedJND, group=interaction(session,axis),color=axis) +
-  geom_line(alpha = .4) +
-  geom_line(data = results_avg, size = 1) +
-  geom_pointrange(data = results_avg, aes(ymax = validatedJND+SEMValidatedJND, ymin = nominalJND-SEMValidatedJND)) +
-  facet_wrap( ~ participant) +
-  ylab("Validated JND") +
+  aes(x = adaptationLevel) +
+  facet_grid(participant ~ axis) +
+  ylab("LMS contrast at detection threshold (ratio)") +
   xlab("Adaptation level") +
-  theme_minimal()
-```
-\pagebreak
-
-## Nominal threshold contrasts
-```{r plot_participant_nominal_contrasts, echo=FALSE}
-results_all %>%
-  ggplot() +
-  aes(adaptationLevel, nominalThresholdContrast, group=interaction(session,axis),color=axis) +
-  geom_line(alpha = .4) +
-  geom_line(data = results_avg, size = 1) +
-  geom_pointrange(data = results_avg, aes(ymax = nominalThresholdContrast+SEMNominalThresholdContrast, ymin = nominalThresholdContrast-SEMNominalThresholdContrast)) +
-  facet_wrap( ~ participant)  +
-  ylab("Nominal threshold contrast (fraction)") +
-  xlab("Adaptation level") +
-  theme_minimal()
-```
-\pagebreak
-
-## Validated threshold contrasts
-```{r plot_participant_validated_contrasts, echo=FALSE}
-results_all %>%
-  ggplot() +
-  aes(adaptationLevel, validatedThresholdContrast, group=interaction(session,axis),color=axis) +
-  geom_line(alpha = .4) +
-  geom_line(data = results_avg, size = 1) +
-  geom_pointrange(data = results_avg, aes(ymax = validatedThresholdContrast+SEMValidatedThresholdContrast, ymin = validatedThresholdContrast-SEMValidatedThresholdContrast)) +
-  facet_wrap( ~ participant) +
-  ylab("Validated threshold contrast (fraction)") +
-  xlab("Adaptation level") +
-  theme_minimal()
+  theme_bw() +
+  
+  # Individual sessions
+  geom_line(mapping = aes(y = nominalThresholdContrast, group=session, color = 'nominal'), alpha = .4) +
+  geom_line(mapping = aes(y = validatedThresholdContrast, group=session, color = 'validated'), alpha = .4) +
+  
+  # Medians over sessions
+  stat_summary(mapping = aes(x = adaptationLevel, y = nominalThresholdContrast, group=1, color = 'nominal'),
+               fun.y = median,
+               size = 1,
+               geom = "line",
+               na.rm=TRUE) +
+  stat_summary(mapping = aes(x = adaptationLevel, y = validatedThresholdContrast, group=1, color = 'validated'),
+               fun.y = median,
+               size = 1,
+               geom = "line",
+               na.rm=TRUE) +
+  
+  # Point ranges median +- SEM(edian)
+  geom_pointrange(mapping = aes(y = nominalThresholdContrast, color = 'nominal'),
+              stat="summary",
+              fun.y = median,
+              fun.ymin = medianMinusSEM,
+              fun.ymax = medianPlusSEM,
+              na.rm=TRUE) +  
+  geom_pointrange(mapping = aes(y = validatedThresholdContrast, color = 'validated'),
+              stat="summary",
+              fun.y = median,
+              fun.ymin = medianMinusSEM,
+              fun.ymax = medianPlusSEM,
+              na.rm=TRUE)
 ```
 
 # Statistics

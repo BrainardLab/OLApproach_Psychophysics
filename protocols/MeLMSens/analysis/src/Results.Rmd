@@ -16,15 +16,15 @@ library(tidyverse)
 library(knitr)
 ```
 ```{r merge, echo=FALSE}
-csvspath = "../../data/processed/"
-csvfiles = list.files(csvspath, recursive = TRUE)
+csvsPath = normalizePath("../../data/processed")
+csvfiles = list.files(csvsPath, recursive = TRUE, pattern = 'results_.*.csv')
+
 results_all = lapply(csvfiles,function(x) {
-   read_csv(paste0(csvspath,x), col_types = cols())
+   read_csv(file.path(csvsPath,x), col_types = cols())
   }) %>%
   bind_rows
 ```
 ```{r munge, echo=FALSE}
-#results_all = read_csv('../../data/processed/results_all.csv',col_types=cols())
 results_all = results_all %>%
   separate(datafile,into=c("tmp1","participant","session","tmp2"),sep="-") %>%
   select(-tmp1, -tmp2)

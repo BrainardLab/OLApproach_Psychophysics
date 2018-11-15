@@ -72,12 +72,17 @@ contrastsFlicker = contrastsFlicker %>%
 contrastsFlicker %>%
   ggplot() +
   aes(x = LMS, y = LminusM, color = direction, shape=label) +
-  geom_point(stat = 'identity',alpha = 0.5) +
-  scale_y_continuous(limits=c(-7,7)) +
-  scale_x_continuous(limits=c(-7,7)) +
+  geom_point(stat = 'identity',alpha = 1) +
+  scale_y_continuous(limits=c(-6,6), breaks = c(-6:6)) +
+  scale_x_continuous(limits=c(-6,6), breaks = c(-6:6)) +
+  ylab('L-M contrast (%)') +
+  xlab('LMS contrast (%)') +
+  ggtitle('Flicker contrasts') +
+  coord_equal(ratio=1) +
   geom_hline(yintercept = 0, alpha = .5) +
   geom_vline(xintercept = 0, alpha = .5) +
   geom_vline(xintercept = 5, alpha = .5, linetype='dashed') +
   geom_vline(xintercept = -5, alpha = .5, linetype='dashed') +
-  theme_bw()
+  theme_bw() %>%
+  return(.)
 ```

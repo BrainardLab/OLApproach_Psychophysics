@@ -77,9 +77,6 @@ contrastsFlicker <- read_csv(flickerContrastFullPath,
                                               receptor = col_factor(levels = c("L","M","S","Mel"))))
 
 contrastsFlicker = contrastsFlicker %>%
-  select(-desired_1,-desired_2) %>%
-  gather(key=component,value=contrast,actual_2,actual_1) %>%
-  mutate(component = recode(component,'actual_2'='negative','actual_1'='positive')) %>%
   spread(receptor,contrast)
 
 contrastsFlicker = contrastsFlicker %>%

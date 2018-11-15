@@ -8,6 +8,11 @@ materials = loadSessionMaterialsFromName(participant,sessionName);
 %% Extract validation tables
 [luminancesBg, contrastsBg, contrastsFlicker] = extractValidationTablesFromMaterials(materials);
 
+%% Add participant, sessionName as columns to tables
+luminancesBg = addvarString(luminancesBg,{participant,sessionName},'VariableName',{"participant","sessionName"});
+contrastsBg = addvarString(contrastsBg,{participant,sessionName},'VariableName',{"participant","sessionName"});
+contrastsFlicker = addvarString(contrastsFlicker,{participant,sessionName},'VariableName',{"participant","sessionName"});
+
 %% Save
 if ~isfolder(outputFileDir)
     mkdir(outputFileDir)

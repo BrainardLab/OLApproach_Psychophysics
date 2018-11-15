@@ -10,7 +10,7 @@ output:
 ---  
 title: `r paste('Validation Plots',params$participant,params$session)`
 ---
-```{r, echo = FALSE, message = FALSE}
+```{r setup, echo = FALSE, message = FALSE}
 library(readr)
 library(tidyverse)
 ```

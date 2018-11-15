@@ -22,9 +22,14 @@ bgLumFullPath = file.path(params$csvDir,list.files(path = params$csvDir, recursi
                                     col_types = cols(label = col_factor(levels = c("PreCorrection", "PostCorrection", "PostSession")),
                                                      direction = col_factor(levels = c("LMS_low","LMS_high","Mel_low","Mel_high"))))
 
-luminancesBackgrounds %>% ggplot() +
-  aes(x = direction, group = label, fill = label, y = lumActual) +
-  geom_bar(stat = "summary", fun.y = "median",position = "dodge")
+  luminancesBackgrounds %>% ggplot() +
+    aes(x = direction, group = label, fill = label, y = lumActual) +
+    geom_bar(stat = "summary", fun.y = "median",position = "dodge") +
+    ylab('Measured luminance (cd/m^2)') +
+    xlab('Background') +
+    ggtitle('Background luminances') +
+    theme_bw() %>%
+    return(.)
 ```
 
 \pagebreak

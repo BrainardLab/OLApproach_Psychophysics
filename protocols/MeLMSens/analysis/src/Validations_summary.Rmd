@@ -1,0 +1,66 @@
+---
+params:
+  csvsPath: '../../data/processed'
+title: "Validations Summary"
+output: html_notebook
+---
+```{r setup, echo=FALSE, message=FALSE}
+library(tidyverse)
+library(knitr)
+library(stringr)
+source('../lib/median_SEM.R')
+```
+
+We validate the background luminances, the background-pair (hi vs. low) contrast, and the flicker contrast for the flicker direction on each background at nominally 5%. These are in files named `luminancesBackgrounds.csv`,`contrastsBackgrounds.csv`, and `contrastsFlicker.csv`, respectively, for each session -- each session being a `$PARTICIPANT/$SESSION/` subdirectory. We read in all of these, and concatenate into a single dataframe per validation-type.
+```{r merge, echo=FALSE}
+csvsPath = normalizePath(params$csvsPath)
+
+luminancesBackgroundsFiles = list.files(csvsPath, recursive = TRUE, pattern = 'luminancesBackgrounds\\.csv')
+luminancesBackgrounds = lapply(luminancesBackgroundsFiles,function(x) {
+   read_csv(file.path(csvsPath,x), col_types = cols())
+  }) %>%
+  bind_rows
+
+contrastsBackgroundsFiles = list.files(csvsPath, recursive = TRUE, pattern = 'contrastsBackgrounds\\.csv')
+contrastsBackgrounds = lapply(contrastsBackgroundsFiles,function(x) {
+   read_csv(file.path(csvsPath,x), col_types = cols())
+  }) %>%
+  bind_rows
+
+contrastsFlickerFiles = list.files(csvsPath, recursive = TRUE, pattern = 'contrastsFlicker\\.csv')
+contrastsFlicker = lapply(contrastsFlickerFiles,function(x) {
+   read_csv(file.path(csvsPath,x), col_types = cols())
+  }) %>%
+  bind_rows
+
+contrastsFlicker = contrastsFlicker %>%
+  spread(receptor,contrast)
+
+contrastsFlicker = contrastsFlicker %>%
+  mutate(LMS = (L+M+S)/3) %>%
+  mutate(SoverLplusM = S/(L+M)) %>%
+  mutate(LminusM = L-M)
+```
+
+```{r luminancesBackgrounds, echo=FALSE}
+
+```
+
+```{r contrastsFlicker, echo = FALSE}
+contrastsFlicker %>%
+  ggplot() +
+  aes(x = LMS, y = LminusM, color = direction, shape=label) +
+  geom_point(stat = 'identity',alpha = .5) +
+  scale_y_continuous(labels = scales::percent, limits=c(-.06,.06), breaks = seq(-.06,.06,.01)) +
+  scale_x_continuous(labels = scales::percent, limits=c(-.06,.06), breaks = seq(-.06,.06,.01)) +
+  ylab('L-M contrast') +
+  xlab('LMS contrast') +
+  ggtitle('Flicker contrasts') +
+  coord_equal(ratio=1) +
+  geom_hline(yintercept = 0, alpha = .5) +
+  geom_vline(xintercept = 0, alpha = .5) +
+  geom_vline(xintercept = .05, alpha = .5, linetype='dashed') +
+  geom_vline(xintercept = -.05, alpha = .5, linetype='dashed') +
+  theme_bw() +
+  facet_grid(direction ~ label)
+```

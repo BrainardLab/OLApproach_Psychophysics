@@ -1,0 +1,106 @@
+---
+params:
+  csvDir: '../../data/processed'
+  participant: HERO_JXV
+  session: session_1
+output:
+  pdf_document: default
+  html_notebook: default
+---
+---  
+title: `r paste('Validation Plots',params$participant,params$session)`
+---
+```{r setup, echo = FALSE, message = FALSE}
+library(readr)
+library(tidyverse)
+```
+# Background luminance
+```{r, echo = FALSE}
+bgLumFile = paste(params$participant,params$session,'luminancesBackgrounds.csv',sep="-")
+bgLumFullPath = file.path(params$csvDir,list.files(path = params$csvDir, recursive = TRUE, pattern = bgLumFile))
+  luminancesBackgrounds <- read_csv(bgLumFullPath, 
+                                    col_types = cols(label = col_factor(levels = c("PreCorrection", "PostCorrection", "PostSession")),
+                                                     direction = col_factor(levels = c("LMS_low","LMS_high","Mel_low","Mel_high"))))
+
+  luminancesBackgrounds %>% ggplot() +
+    aes(x = direction, group = label, fill = label, y = lumActual) +
+    geom_bar(stat = "summary", fun.y = "median",position = "dodge") +
+    ylab('Measured luminance (cd/m^2)') +
+    xlab('Background') +
+    ggtitle('Background luminances') +
+    theme_bw() %>%
+    return(.)
+```
+
+\pagebreak
+
+# Background contrast
+
+```{r, echo = FALSE}
+bgContrastFile = paste(params$participant,params$session,'contrastsBackgrounds.csv',sep="-")
+bgContrastFullPath = file.path(params$csvDir,list.files(path = params$csvDir, recursive = TRUE, pattern = bgContrastFile))
+  contrastsBackgrounds <- read_csv(bgContrastFullPath, 
+                                   col_types = cols(axis = col_factor(levels = c("LMS-directed backgrounds", "Mel-directed backgrounds")), 
+                                                    label = col_factor(levels = c("PreCorrection", "PostCorrection", "PostSession"))))
+  
+  contrastsBackgrounds = contrastsBackgrounds %>%
+    mutate(LMS = (L+M+S)/3) %>%
+    mutate(SoverLplusM = S/(L+M)) %>%
+    mutate(LminusM = L-M)
+  
+  contrastsBackgrounds %>%
+    ggplot() +
+    aes(x = LMS, y = Mel, color = label, shape = axis) +
+    geom_point() +
+    scale_y_continuous(breaks = seq(0,400,50)) +
+    scale_x_continuous(breaks = seq(0,400,50)) +
+    coord_equal(ratio=1) +  
+    ylab('Melanopsin contrast (%)') +
+    xlab('LMS contrast (%)') +  
+    ggtitle('Background pair contrasts') +
+    geom_vline(xintercept = 350, alpha = .5, linetype='dashed') +
+    geom_hline(yintercept = 350, alpha = .5, linetype='dashed') +
+    theme_bw() %>%
+    return(.)
+```
+
+\pagebreak
+
+# Flicker contrast
+
+```{r, echo = FALSE} 
+flickerContrastFile = paste(params$participant,params$session,'contrastsFlicker.csv',sep="-")
+flickerContrastFullPath = file.path(params$csvDir,list.files(path = params$csvDir, recursive = TRUE, pattern = flickerContrastFile))
+contrastsFlicker <- read_csv(flickerContrastFullPath, 
+                             col_types = cols(direction = col_factor(levels = c("FlickerDirection_LMS_high", "FlickerDirection_LMS_low", "FlickerDirection_Mel_high", "FlickerDirection_Mel_low")), 
+                                              label = col_factor(levels = c("PreCorrection", "PostCorrection", "PostSession")),
+                                              receptor = col_factor(levels = c("L","M","S","Mel"))))
+
+contrastsFlicker = contrastsFlicker %>%
+  select(-desired_1,-desired_2) %>%
+  gather(key=component,value=contrast,actual_2,actual_1) %>%
+  mutate(component = recode(component,'actual_2'='negative','actual_1'='positive')) %>%
+  spread(receptor,contrast)
+
+contrastsFlicker = contrastsFlicker %>%
+  mutate(LMS = (L+M+S)/3) %>%
+  mutate(SoverLplusM = S/(L+M)) %>%
+  mutate(LminusM = L-M)
+
+contrastsFlicker %>%
+  ggplot() +
+  aes(x = LMS, y = LminusM, color = direction, shape=label) +
+  geom_point(stat = 'identity',alpha = 1) +
+  scale_y_continuous(limits=c(-6,6), breaks = c(-6:6)) +
+  scale_x_continuous(limits=c(-6,6), breaks = c(-6:6)) +
+  ylab('L-M contrast (%)') +
+  xlab('LMS contrast (%)') +
+  ggtitle('Flicker contrasts') +
+  coord_equal(ratio=1) +
+  geom_hline(yintercept = 0, alpha = .5) +
+  geom_vline(xintercept = 0, alpha = .5) +
+  geom_vline(xintercept = 5, alpha = .5, linetype='dashed') +
+  geom_vline(xintercept = -5, alpha = .5, linetype='dashed') +
+  theme_bw() %>%
+  return(.)
+```

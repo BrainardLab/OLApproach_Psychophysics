@@ -28,8 +28,7 @@ bgLumFullPath = file.path(params$csvDir,list.files(path = params$csvDir, recursi
     ylab('Measured luminance (cd/m^2)') +
     xlab('Background') +
     ggtitle('Background luminances') +
-    theme_bw() %>%
-    return(.)
+    theme_bw()
 ```
 
 \pagebreak
@@ -60,8 +59,7 @@ bgContrastFullPath = file.path(params$csvDir,list.files(path = params$csvDir, re
     ggtitle('Background pair contrasts') +
     geom_vline(xintercept = 350, alpha = .5, linetype='dashed') +
     geom_hline(yintercept = 350, alpha = .5, linetype='dashed') +
-    theme_bw() %>%
-    return(.)
+    theme_bw()
 ```
 
 \pagebreak
@@ -98,6 +96,5 @@ contrastsFlicker %>%
   geom_vline(xintercept = 0, alpha = .5) +
   geom_vline(xintercept = .05, alpha = .5, linetype='dashed') +
   geom_vline(xintercept = -.05, alpha = .5, linetype='dashed') +
-  theme_bw() %>%
-  return(.)
+  theme_bw()
 ```

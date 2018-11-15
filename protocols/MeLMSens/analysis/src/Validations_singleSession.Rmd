@@ -43,12 +43,25 @@ bgContrastFullPath = file.path(params$csvDir,list.files(path = params$csvDir, re
                                    col_types = cols(axis = col_factor(levels = c("LMS-directed backgrounds", "Mel-directed backgrounds")), 
                                                     label = col_factor(levels = c("PreCorrection", "PostCorrection", "PostSession"))))
   
-contrastsBackgrounds %>%
-  gather(key=receptor,value=contrast,-axis,-label,factor_key = TRUE) %>%
-  ggplot() +
-  aes(x = receptor, y = contrast) +
-  geom_bar(stat = "summary", fun.y= "median", position = "dodge") +
-  facet_grid(axis~label)
+  contrastsBackgrounds = contrastsBackgrounds %>%
+    mutate(LMS = (L+M+S)/3) %>%
+    mutate(SoverLplusM = S/(L+M)) %>%
+    mutate(LminusM = L-M)
+  
+  contrastsBackgrounds %>%
+    ggplot() +
+    aes(x = LMS, y = Mel, color = label, shape = axis) +
+    geom_point() +
+    scale_y_continuous(breaks = seq(0,400,50)) +
+    scale_x_continuous(breaks = seq(0,400,50)) +
+    coord_equal(ratio=1) +  
+    ylab('Melanopsin contrast (%)') +
+    xlab('LMS contrast (%)') +  
+    ggtitle('Background pair contrasts') +
+    geom_vline(xintercept = 350, alpha = .5, linetype='dashed') +
+    geom_hline(yintercept = 350, alpha = .5, linetype='dashed') +
+    theme_bw() %>%
+    return(.)
 ```
 
 \pagebreak

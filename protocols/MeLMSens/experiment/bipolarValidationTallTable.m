@@ -9,7 +9,7 @@ time = repmat(validation.time(1),[length(receptorStrings),1]);
 %                     'VariableNames',{'time','receptor','desired'}); % convert to table
 
 contrastActual = validation.contrastActual; % measured modulation, not differential, contrast
-contrastActual = table(time, receptorStrings, contrastActual*100,...
+contrastActual = table(time, receptorStrings, contrastActual,...
                     'VariableNames',{'time','receptor','contrast'});
 contrastActual = splitvars(contrastActual, 'contrast','NewVariableNames',{'positive','negative'});
 contrastActual = stack(contrastActual,{'positive','negative'},'IndexVariableName','component','NewDataVariableName','contrast');

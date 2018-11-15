@@ -1,8 +1,14 @@
 ---
-title: "Validation plots"
+params:
+  csvDir: '../../data/processed'
+  participant: HERO_JXV
+  session: session_1
 output:
   pdf_document: default
   html_notebook: default
+---
+---  
+title: `r paste('Validation Plots',params$participant,params$session)`
 ---
 ```{r, echo = FALSE, message = FALSE}
 library(readr)
@@ -10,9 +16,11 @@ library(tidyverse)
 ```
 # Background luminance
 ```{r, echo = FALSE}
-luminancesBackgrounds <- read_csv("~/Documents/MATLAB/projects/Experiments/OLApproach_Psychophysics/protocols/MeLMSens/data/processed/HERO_GKA/20181019_session_3/HERO_GKA-session_3-luminancesBackgrounds.csv", 
-  col_types = cols(label = col_factor(levels = c("PreCorrection", "PostCorrection", "PostSession")),
-                   direction = col_factor(levels = c("LMS_low","LMS_high","Mel_low","Mel_high"))))
+bgLumFile = paste(params$participant,params$session,'luminancesBackgrounds.csv',sep="-")
+bgLumFullPath = file.path(params$csvDir,list.files(path = params$csvDir, recursive = TRUE, pattern = bgLumFile))
+  luminancesBackgrounds <- read_csv(bgLumFullPath, 
+                                    col_types = cols(label = col_factor(levels = c("PreCorrection", "PostCorrection", "PostSession")),
+                                                     direction = col_factor(levels = c("LMS_low","LMS_high","Mel_low","Mel_high"))))
 
 luminancesBackgrounds %>% ggplot() +
   aes(x = direction, group = label, fill = label, y = lumActual) +
@@ -24,10 +32,12 @@ luminancesBackgrounds %>% ggplot() +
 # Background contrast
 
 ```{r, echo = FALSE}
-contrastsBackgrounds <- read_csv("~/Documents/MATLAB/projects/Experiments/OLApproach_Psychophysics/protocols/MeLMSens/data/processed/HERO_GKA/20181019_session_3/HERO_GKA-session_3-contrastsBackgrounds.csv", 
-    col_types = cols(axis = col_factor(levels = c("LMS-directed backgrounds", "Mel-directed backgrounds")), 
-                     label = col_factor(levels = c("PreCorrection", "PostCorrection", "PostSession"))))
-
+bgContrastFile = paste(params$participant,params$session,'contrastsBackgrounds.csv',sep="-")
+bgContrastFullPath = file.path(params$csvDir,list.files(path = params$csvDir, recursive = TRUE, pattern = bgContrastFile))
+  contrastsBackgrounds <- read_csv(bgContrastFullPath, 
+                                   col_types = cols(axis = col_factor(levels = c("LMS-directed backgrounds", "Mel-directed backgrounds")), 
+                                                    label = col_factor(levels = c("PreCorrection", "PostCorrection", "PostSession"))))
+  
 contrastsBackgrounds %>%
   gather(key=receptor,value=contrast,-axis,-label,factor_key = TRUE) %>%
   ggplot() +
@@ -40,17 +50,13 @@ contrastsBackgrounds %>%
 
 # Flicker contrast
 
-```{r, echo = FALSE}
-contrastsFlicker <- read_csv("~/Documents/MATLAB/projects/Experiments/OLApproach_Psychophysics/protocols/MeLMSens/data/processed/HERO_GKA/20181019_session_3/HERO_GKA-session_3-contrastsFlicker.csv", 
-    col_types = cols(direction = col_factor(levels = c("FlickerDirection_LMS_high", "FlickerDirection_LMS_low", "FlickerDirection_Mel_high", "FlickerDirection_Mel_low")), 
-                     label = col_factor(levels = c("PreCorrection", "PostCorrection", "PostSession")),
-                     receptor = col_factor(levels = c("L","M","S","Mel"))))
-
-contrastsFlicker %>%
-  ggplot() +
-  aes(x = receptor, y = actual_1) + 
-  geom_bar(stat = "summary", fun.y= "median", position = "dodge") +
-  facet_grid(direction ~ label)
+```{r, echo = FALSE} 
+flickerContrastFile = paste(params$participant,params$session,'contrastsFlicker.csv',sep="-")
+flickerContrastFullPath = file.path(params$csvDir,list.files(path = params$csvDir, recursive = TRUE, pattern = flickerContrastFile))
+contrastsFlicker <- read_csv(flickerContrastFullPath, 
+                             col_types = cols(direction = col_factor(levels = c("FlickerDirection_LMS_high", "FlickerDirection_LMS_low", "FlickerDirection_Mel_high", "FlickerDirection_Mel_low")), 
+                                              label = col_factor(levels = c("PreCorrection", "PostCorrection", "PostSession")),
+                                              receptor = col_factor(levels = c("L","M","S","Mel"))))
 
 contrastsFlicker = contrastsFlicker %>%
   select(-desired_1,-desired_2) %>%

@@ -1,8 +1,10 @@
 ---
-params:
-  csvsPath: '../../data/processed'
 title: "Validations Summary"
-output: html_notebook
+params:
+  csvsPath: ../../data/processed
+output:
+  pdf_document: default
+  html_notebook: default
 ---
 ```{r setup, echo=FALSE, message=FALSE}
 library(tidyverse)
@@ -36,14 +38,46 @@ contrastsFlicker = lapply(contrastsFlickerFiles,function(x) {
 contrastsFlicker = contrastsFlicker %>%
   spread(receptor,contrast)
 
+  contrastsBackgrounds = contrastsBackgrounds %>%
+    mutate(LMS = (L+M+S)/3) %>%
+    mutate(SoverLplusM = S/(L+M)) %>%
+    mutate(LminusM = L-M)
+
 contrastsFlicker = contrastsFlicker %>%
   mutate(LMS = (L+M+S)/3) %>%
   mutate(SoverLplusM = S/(L+M)) %>%
   mutate(LminusM = L-M)
 ```
+```{r filter_out_preCorrecton, echo = FALSE}
+luminancesBackgrounds = luminancesBackgrounds %>% filter(label != 'PreCorrection')
+contrastsBackgrounds = contrastsBackgrounds %>% filter(label != 'PreCorrection')
+contrastsFlicker = contrastsFlicker %>% filter(label != 'PreCorrection')
+```
 
 ```{r luminancesBackgrounds, echo=FALSE}
-
+  luminancesBackgrounds %>% 
+  ggplot() +
+    aes(x = direction, shape = label, y = lumActual) +
+    geom_jitter() +
+    ylab('Measured luminance (cd/m^2)') +
+    xlab('Background') +
+    ggtitle('Background luminances') +
+    theme_bw()
+```
+```{r contrastBackgrounds, echo = FALSE}
+  contrastsBackgrounds %>%
+    ggplot() +
+    aes(x = LMS, y = Mel, color = label, shape = axis) +
+    geom_point(alpha = .3) +
+    scale_y_continuous(breaks = seq(0,400,50)) +
+    scale_x_continuous(breaks = seq(0,400,50)) +
+    coord_equal(ratio=1) +  
+    ylab('Melanopsin contrast (%)') +
+    xlab('LMS contrast (%)') +  
+    ggtitle('Background pair contrasts') +
+    geom_vline(xintercept = 350, alpha = .5, linetype='dashed') +
+    geom_hline(yintercept = 350, alpha = .5, linetype='dashed') +
+    theme_bw()
 ```
 
 ```{r contrastsFlicker, echo = FALSE}
@@ -61,6 +95,5 @@ contrastsFlicker %>%
   geom_vline(xintercept = 0, alpha = .5) +
   geom_vline(xintercept = .05, alpha = .5, linetype='dashed') +
   geom_vline(xintercept = -.05, alpha = .5, linetype='dashed') +
-  theme_bw() +
-  facet_grid(direction ~ label)
+  theme_bw()
 ```

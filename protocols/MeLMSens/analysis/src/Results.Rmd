@@ -95,7 +95,9 @@ results_all %>%
             high_SEM = SEMedian(high),
             low_median = median(low, na.rm=TRUE),
             high_median = median(high, na.rm=TRUE)) %>%
-  arrange(validated, axis)
+  arrange(validated, axis) %>%
+  select(participant, axis, validated, low_median, low_SEM, high_median, high_SEM, t_value, p_value) %>%
+  kable(digits = 4)
 ```
 
 \pagebreak
@@ -147,7 +149,7 @@ results_all %>%
   select(-nominalJND, -validatedJND, -quickThresholdContrast) %>%
   gather(key = "validated", value = "thresholdContrast", nominalThresholdContrast, validatedThresholdContrast) %>%
   spread(adaptationLevel, thresholdContrast) %>%
-  mutate(validated = str_replace(validated,'thresholdContrast','')) %>%
+  mutate(validated = str_replace(validated,'ThresholdContrast','')) %>%
   group_by(participant, axis, validated) %>%
   summarise(p_value = t.test(high,low,paired=TRUE)$p.value,
             t_value = t.test(high,low,paired=TRUE)$statistic,
@@ -155,5 +157,7 @@ results_all %>%
             high_SEM = SEMedian(high),
             low_median = median(low, na.rm=TRUE),
             high_median = median(high, na.rm=TRUE)) %>%
-  arrange(validated, axis)
+  arrange(validated, axis) %>%
+  select(participant, axis, validated, low_median, low_SEM, high_median, high_SEM, t_value, p_value) %>%
+  kable(digits = 4)
 ```

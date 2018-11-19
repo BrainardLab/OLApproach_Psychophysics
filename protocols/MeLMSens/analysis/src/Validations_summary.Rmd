@@ -82,11 +82,13 @@ contrastsFlicker = contrastsFlicker %>% filter(label != 'PreCorrection')
 
 ```{r contrastsFlicker, echo = FALSE}
 contrastsFlicker %>%
+  group_by(participant,sessionName,label,direction,component) %>%
+  summarise(LMS = median(LMS), LminusM = median(LminusM)) %>%
   ggplot() +
-  aes(x = LMS, y = LminusM, color = direction, shape=label) +
+  aes(x = LMS, y = LminusM, color = label) +
   geom_point(stat = 'identity',alpha = .5) +
-  scale_y_continuous(labels = scales::percent, limits=c(-.06,.06), breaks = seq(-.06,.06,.01)) +
-  scale_x_continuous(labels = scales::percent, limits=c(-.06,.06), breaks = seq(-.06,.06,.01)) +
+  scale_y_continuous(labels = scales::percent, limits=c(-.06,.06), breaks = seq(-.06,.06,.02)) +
+  scale_x_continuous(labels = scales::percent, limits=c(-.06,.06), breaks = seq(-.06,.06,.02)) +
   ylab('L-M contrast') +
   xlab('LMS contrast') +
   ggtitle('Flicker contrasts') +
@@ -95,5 +97,6 @@ contrastsFlicker %>%
   geom_vline(xintercept = 0, alpha = .5) +
   geom_vline(xintercept = .05, alpha = .5, linetype='dashed') +
   geom_vline(xintercept = -.05, alpha = .5, linetype='dashed') +
-  theme_bw()
+  theme_bw() +
+  facet_grid(~ direction)
 ```

@@ -49,20 +49,24 @@ contrastsFlicker = contrastsFlicker %>%
   mutate(LminusM = L-M)
 ```
 ```{r filter_out_preCorrecton, echo = FALSE}
-luminancesBackgrounds = luminancesBackgrounds %>% filter(label != 'PreCorrection')
-contrastsBackgrounds = contrastsBackgrounds %>% filter(label != 'PreCorrection')
-contrastsFlicker = contrastsFlicker %>% filter(label != 'PreCorrection')
+luminancesBackgrounds = luminancesBackgrounds %>% filter(label != 'PreCorrection') %>% mutate(label = str_replace(label,'PostCorrection','PreSession'))
+contrastsBackgrounds = contrastsBackgrounds %>% filter(label != 'PreCorrection') %>% mutate(label = str_replace(label,'PostCorrection','PreSession'))
+contrastsFlicker = contrastsFlicker %>% filter(label != 'PreCorrection') %>% mutate(label = str_replace(label,'PostCorrection','PreSession')) %>% mutate(direction = str_replace(direction,'FlickerDirection_',''))
 ```
 
 ```{r luminancesBackgrounds, echo=FALSE}
   luminancesBackgrounds %>% 
+    group_by(participant,sessionName,label,direction) %>%
+    summarise(luminance = median(lumActual)) %>%
+    group_by(participant,sessionName,direction) %>%
   ggplot() +
-    aes(x = direction, shape = label, y = lumActual) +
-    geom_jitter() +
+    aes(x = interaction(sessionName), y = luminance) +
+    geom_line() +
     ylab('Measured luminance (cd/m^2)') +
     xlab('Background') +
     ggtitle('Background luminances') +
-    theme_bw()
+    theme_bw() +
+    facet_grid(participant ~ direction)
 ```
 ```{r contrastBackgrounds, echo = FALSE}
   contrastsBackgrounds %>%

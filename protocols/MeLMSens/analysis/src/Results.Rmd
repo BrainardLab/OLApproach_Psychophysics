@@ -134,9 +134,12 @@ results_all %>%
             low_SEM = SEMedian(low),
             high_SEM = SEMedian(high),
             low_median = median(low, na.rm=TRUE),
-            high_median = median(high, na.rm=TRUE)) %>%
+            high_median = median(high, na.rm=TRUE),
+            high_median_normalized = median(high/median(low)),
+            low_SEM_normalized = low_SEM / median(low),
+            high_SEM_normalized = high_SEM / median(low)) %>%
   arrange(validated, axis) %>%
-  select(participant, axis, validated, low_median, low_SEM, high_median, high_SEM, t_value, p_value) %>%
+  select(participant, axis, validated, low_median, low_SEM, low_SEM_normalized, high_median, high_SEM, high_median_normalized, high_SEM_normalized, t_value, p_value) %>%
   kable(digits = 4)
 ```
 

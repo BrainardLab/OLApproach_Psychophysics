@@ -37,12 +37,36 @@ results_all = mutate(results_all,adaptationLevel=factor(results_all$adaptationLe
 
 # JNDs
 ## Plot
+```{r normalize_JNDs, echo=FALSE}
+JNDs = results_all %>%
+  # Convert to wide-format: separate columns for high/low, nominal/validated JND
+  select(-quickThresholdContrast, -nominalThresholdContrast, -validatedThresholdContrast) %>%
+  unite(nominalJND,validatedJND, col = "JND") %>%
+  spread(key = adaptationLevel, value = JND) %>%
+  separate(low, into = c('low_nominal','low_validated'), sep = "_", convert=TRUE) %>%
+  separate(high, into = c('high_nominal','high_validated'), sep = "_", convert=TRUE) %>%
+
+  # Normalize to median(low_nominal) -- median across sessions per participant per axis
+  group_by(participant,axis) %>%
+  mutate(low_validated = low_validated/median(low_nominal),
+         high_nominal = high_nominal/median(low_nominal),
+         high_validated = high_validated/median(low_nominal),
+         low_nominal = low_nominal/median(low_nominal))
+```
 ```{r plot_JNDs, echo=FALSE}
-results_all %>%
+JNDs %>% 
+  # Convert back to tall: separate columns for validated and nominalJND, but separate rows for high/low
+  unite(low_nominal,low_validated,col='low') %>%
+  unite(high_nominal,high_validated,col='high') %>%
+  gather(low,high,key='adaptationLevel',value='JND') %>%
+  separate(JND, into=c('nominalJND','validatedJND'), sep = "_", convert=TRUE) %>%
+  mutate(adaptationLevel=factor(adaptationLevel,levels=c('low','high'))) %>%
+
+  # Plot
   ggplot() +
   aes(x = adaptationLevel) +
   facet_grid(participant ~ axis) +
-  ylab("Just Noticeable LMS Difference ()") +
+  ylab("Just Noticeable LMS Difference \n(normalized to participant-median of low condition)") +
   xlab("Adaptation level") +
   theme_bw() +
   

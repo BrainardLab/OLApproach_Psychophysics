@@ -10,6 +10,7 @@ output:
 library(tidyverse)
 library(knitr)
 library(stringr)
+library(grid)
 source('../lib/median_SEM.R')
 ```
 
@@ -19,20 +20,20 @@ csvsPath = normalizePath(params$csvsPath)
 
 luminancesBackgroundsFiles = list.files(csvsPath, recursive = TRUE, pattern = 'luminancesBackgrounds\\.csv')
 luminancesBackgrounds = lapply(luminancesBackgroundsFiles,function(x) {
-   read_csv(file.path(csvsPath,x), col_types = cols())
-  }) %>%
+  read_csv(file.path(csvsPath,x), col_types = cols())
+}) %>%
   bind_rows
 
 contrastsBackgroundsFiles = list.files(csvsPath, recursive = TRUE, pattern = 'contrastsBackgrounds\\.csv')
 contrastsBackgrounds = lapply(contrastsBackgroundsFiles,function(x) {
-   read_csv(file.path(csvsPath,x), col_types = cols())
-  }) %>%
+  read_csv(file.path(csvsPath,x), col_types = cols())
+}) %>%
   bind_rows
 
 contrastsFlickerFiles = list.files(csvsPath, recursive = TRUE, pattern = 'contrastsFlicker\\.csv')
 contrastsFlicker = lapply(contrastsFlickerFiles,function(x) {
-   read_csv(file.path(csvsPath,x), col_types = cols())
-  }) %>%
+  read_csv(file.path(csvsPath,x), col_types = cols())
+}) %>%
   bind_rows
 
 contrastsFlicker = contrastsFlicker %>%
@@ -58,9 +59,9 @@ contrastsFlicker = contrastsFlicker %>% filter(label != 'PreCorrection') %>% mut
 ```{r luminancesBackgrounds, echo=FALSE}
   luminancesBackgrounds %>% 
   mutate(sessionName = str_replace(sessionName,'session_','')) %>%
-    group_by(participant,sessionName,label,direction) %>%
-    summarise(luminance = median(lumActual)) %>%
-    group_by(participant,sessionName,direction) %>%
+  group_by(participant,sessionName,label,direction) %>%
+  summarise(luminance = median(lumActual)) %>%
+  group_by(participant,sessionName,direction) %>%
   spread(key = label, value = luminance) %>%
   ggplot() +
     geom_segment(aes(x = sessionName, xend = sessionName, y = PreSession, yend = PostSession), arrow = arrow(length = unit(0.03, "npc"))) +
@@ -75,22 +76,22 @@ contrastsFlicker = contrastsFlicker %>% filter(label != 'PreCorrection') %>% mut
   group_by(participant,sessionName,label,axis) %>%
   summarise(LMS = median(LMS),
             Mel = median(Mel)) %>%
-    ggplot() +
-    aes(x = LMS, y = Mel, color = label, shape = axis) +
+  ggplot() +
+  aes(x = LMS, y = Mel, color = label, shape = axis) +
   geom_point(alpha = .8) +
-    scale_y_continuous(breaks = seq(0,400,50)) +
-    scale_x_continuous(breaks = seq(0,400,50)) +
-    coord_equal(ratio=1) +  
-    ylab('Melanopsin contrast (%)') +
-    xlab('LMS contrast (%)') +  
-    ggtitle('Background pair contrasts') +
-    geom_vline(xintercept = 350, alpha = .5, linetype='dashed') +
-    geom_hline(yintercept = 350, alpha = .5, linetype='dashed') +
-    theme_bw()
+  scale_y_continuous(breaks = seq(0,400,50)) +
+  scale_x_continuous(breaks = seq(0,400,50)) +
+  coord_equal(ratio=1) +  
+  ylab('Melanopsin contrast (%)') +
+  xlab('LMS contrast (%)') +  
+  ggtitle('Background pair contrasts') +
+  geom_vline(xintercept = 350, alpha = .5, linetype='dashed') +
+  geom_hline(yintercept = 350, alpha = .5, linetype='dashed') +
+  theme_bw()
 ```
 
 ```{r contrastsFlicker, echo = FALSE}
-contrastsFlicker %>%
+pLM = contrastsFlicker %>%
   group_by(participant,sessionName,label,direction,component) %>%
   summarise(LMS = median(LMS), LminusM = median(LminusM)) %>%
   ggplot() +
@@ -99,18 +100,18 @@ contrastsFlicker %>%
   scale_y_continuous(labels = scales::percent, limits=c(-.07,.07), breaks = seq(-.07,.07,.02)) +
   scale_x_continuous(labels = scales::percent, limits=c(-.07,.07), breaks = seq(-.07,.07,.02)) +
   ylab('L-M contrast') +
-  xlab('LMS contrast') +
+  xlab('') +
   ggtitle('Flicker contrasts') +
   coord_equal(ratio=1) +
   geom_hline(yintercept = 0, alpha = .5) +
   geom_vline(xintercept = 0, alpha = .5) +
   geom_vline(xintercept = .05, alpha = .5, linetype='dashed') +
   geom_vline(xintercept = -.05, alpha = .5, linetype='dashed') +
-  theme_bw() +
+  theme_bw() + theme(legend.position = "none") +
   facet_grid(~ direction)
 ```
 ```{r contrastsFlicker_S, echo = FALSE}
-contrastsFlicker %>%
+pS = contrastsFlicker %>%
   group_by(participant,sessionName,label,direction,component) %>%
   summarise(LMS = median(LMS), S = median(SminusLplusM)) %>%
   ggplot() +
@@ -127,4 +128,8 @@ contrastsFlicker %>%
   geom_vline(xintercept = -.05, alpha = .5, linetype='dashed') +
   theme_bw() + theme(legend.position = "bottom") +
   facet_grid(~ direction)
+```
+```{r contrastsFlicker_combine, echo = FALSE}
+grid.newpage()
+grid.draw(rbind(ggplotGrob(pLM), ggplotGrob(pS), size = "last"))
 ```

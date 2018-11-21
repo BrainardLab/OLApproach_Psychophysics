@@ -56,14 +56,15 @@ contrastsFlicker = contrastsFlicker %>% filter(label != 'PreCorrection') %>% mut
 
 ```{r luminancesBackgrounds, echo=FALSE}
   luminancesBackgrounds %>% 
+  mutate(sessionName = str_replace(sessionName,'session_','')) %>%
     group_by(participant,sessionName,label,direction) %>%
     summarise(luminance = median(lumActual)) %>%
     group_by(participant,sessionName,direction) %>%
+  spread(key = label, value = luminance) %>%
   ggplot() +
-    aes(x = interaction(sessionName), y = luminance) +
-    geom_line() +
+    geom_segment(aes(x = sessionName, xend = sessionName, y = PreSession, yend = PostSession), arrow = arrow(length = unit(0.03, "npc"))) +
     ylab('Measured luminance (cd/m^2)') +
-    xlab('Background') +
+    xlab('session') +
     ggtitle('Background luminances') +
     theme_bw() +
     facet_grid(participant ~ direction)

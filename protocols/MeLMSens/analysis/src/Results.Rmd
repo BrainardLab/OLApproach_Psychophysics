@@ -53,6 +53,26 @@ JNDs = results_all %>%
          high_validated = high_validated/median(low_nominal),
          low_nominal = low_nominal/median(low_nominal))
 ```
+```{r}
+JNDs %>%
+  ggplot() +
+  aes(x = low_nominal, xend = high_nominal, y = low_validated, yend = high_validated) +
+  facet_grid(participant ~ axis) +
+  xlab("Nominal LMS JND\n(normalized to participant-median of low condition)") +
+  ylab("Validated LMS JND\n(normalized to nominal participant-median of low condition)") +
+  scale_x_continuous(limits = c(0,8)) +
+  scale_y_continuous(limits = c(0,8)) +
+  theme_bw() +
+  coord_fixed(ratio = 1) +
+  
+  # Plot individual sessions
+  geom_segment(arrow = arrow(length = unit(0.03,"npc")), alpha = .8) +
+
+  # Guides
+  geom_abline(slope = 1, intercept = 0, alpha = .5, linetype = 'dashed') +
+  geom_hline(yintercept = 3.5, alpha = .5, linetype = 'dashed') +
+  geom_vline(xintercept = 3.5, alpha = .5, linetype = 'dashed')
+```
 ```{r plot_JNDs, echo=FALSE}
 JNDs %>% 
   # Convert back to tall: separate columns for validated and nominalJND, but separate rows for high/low

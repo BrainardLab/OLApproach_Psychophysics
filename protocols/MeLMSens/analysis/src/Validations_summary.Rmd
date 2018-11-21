@@ -71,9 +71,12 @@ contrastsFlicker = contrastsFlicker %>% filter(label != 'PreCorrection') %>% mut
 ```
 ```{r contrastBackgrounds, echo = FALSE}
   contrastsBackgrounds %>%
+  group_by(participant,sessionName,label,axis) %>%
+  summarise(LMS = median(LMS),
+            Mel = median(Mel)) %>%
     ggplot() +
     aes(x = LMS, y = Mel, color = label, shape = axis) +
-    geom_point(alpha = .3) +
+  geom_point(alpha = .8) +
     scale_y_continuous(breaks = seq(0,400,50)) +
     scale_x_continuous(breaks = seq(0,400,50)) +
     coord_equal(ratio=1) +  

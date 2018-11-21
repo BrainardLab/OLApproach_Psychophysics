@@ -96,8 +96,8 @@ contrastsFlicker %>%
   ggplot() +
   aes(x = LMS, y = LminusM, color = label) +
   geom_point(stat = 'identity',alpha = .5) +
-  scale_y_continuous(labels = scales::percent, limits=c(-.06,.06), breaks = seq(-.06,.06,.02)) +
-  scale_x_continuous(labels = scales::percent, limits=c(-.06,.06), breaks = seq(-.06,.06,.02)) +
+  scale_y_continuous(labels = scales::percent, limits=c(-.07,.07), breaks = seq(-.07,.07,.02)) +
+  scale_x_continuous(labels = scales::percent, limits=c(-.07,.07), breaks = seq(-.07,.07,.02)) +
   ylab('L-M contrast') +
   xlab('LMS contrast') +
   ggtitle('Flicker contrasts') +

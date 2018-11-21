@@ -37,15 +37,16 @@ contrastsFlicker = lapply(contrastsFlickerFiles,function(x) {
 
 contrastsFlicker = contrastsFlicker %>%
   spread(receptor,contrast)
-
-  contrastsBackgrounds = contrastsBackgrounds %>%
-    mutate(LMS = (L+M+S)/3) %>%
-    mutate(SoverLplusM = S/(L+M)) %>%
-    mutate(LminusM = L-M)
+```
+```{r postreceptorals, echo=FALSE}
+contrastsBackgrounds = contrastsBackgrounds %>%
+  mutate(LMS = (L+M+S)/3) %>%
+  mutate(SminusLplusM = S-.5*(L+M)) %>%
+  mutate(LminusM = L-M)
 
 contrastsFlicker = contrastsFlicker %>%
   mutate(LMS = (L+M+S)/3) %>%
-  mutate(SoverLplusM = S/(L+M)) %>%
+  mutate(SminusLplusM = S-.5*(L+M)) %>%
   mutate(LminusM = L-M)
 ```
 ```{r filter_out_preCorrecton, echo = FALSE}
@@ -106,5 +107,24 @@ contrastsFlicker %>%
   geom_vline(xintercept = .05, alpha = .5, linetype='dashed') +
   geom_vline(xintercept = -.05, alpha = .5, linetype='dashed') +
   theme_bw() +
+  facet_grid(~ direction)
+```
+```{r contrastsFlicker_S, echo = FALSE}
+contrastsFlicker %>%
+  group_by(participant,sessionName,label,direction,component) %>%
+  summarise(LMS = median(LMS), S = median(SminusLplusM)) %>%
+  ggplot() +
+  aes(x = LMS, y = S, color = label) +
+  geom_point(stat = 'identity',alpha = .5) +
+  scale_y_continuous(labels = scales::percent, limits=c(-.08,.08), breaks = seq(-.09,.09,.02)) +
+  scale_x_continuous(labels = scales::percent, limits=c(-.07,.07), breaks = seq(-.07,.07,.02)) +
+  ylab(expression(paste("S - ", frac('L+M', 2)))) +
+  xlab('LMS contrast') +
+  coord_equal(ratio=1) +
+  geom_hline(yintercept = 0, alpha = .5) +
+  geom_vline(xintercept = 0, alpha = .5) +
+  geom_vline(xintercept = .05, alpha = .5, linetype='dashed') +
+  geom_vline(xintercept = -.05, alpha = .5, linetype='dashed') +
+  theme_bw() + theme(legend.position = "bottom") +
   facet_grid(~ direction)
 ```

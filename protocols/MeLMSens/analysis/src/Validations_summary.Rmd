@@ -12,6 +12,7 @@ library(knitr)
 library(stringr)
 library(grid)
 source('../lib/median_SEM.R')
+knitr::opts_chunk$set(fig.width=10, fig.height=8) 
 ```
 
 We validate the background luminances, the background-pair (hi vs. low) contrast, and the flicker contrast for the flicker direction on each background at nominally 5%. These are in files named `luminancesBackgrounds.csv`,`contrastsBackgrounds.csv`, and `contrastsFlicker.csv`, respectively, for each session -- each session being a `$PARTICIPANT/$SESSION/` subdirectory. We read in all of these, and concatenate into a single dataframe per validation-type.
@@ -56,8 +57,9 @@ contrastsBackgrounds = contrastsBackgrounds %>% filter(label != 'PreCorrection')
 contrastsFlicker = contrastsFlicker %>% filter(label != 'PreCorrection') %>% mutate(label = str_replace(label,'PostCorrection','PreSession')) %>% mutate(direction = str_replace(direction,'FlickerDirection_',''))
 ```
 
+# Backgrounds
 ```{r luminancesBackgrounds, echo=FALSE}
-  luminancesBackgrounds %>% 
+luminancesBackgrounds %>% 
   mutate(sessionName = str_replace(sessionName,'session_','')) %>%
   group_by(participant,sessionName,label,direction) %>%
   summarise(luminance = median(lumActual)) %>%
@@ -71,8 +73,10 @@ contrastsFlicker = contrastsFlicker %>% filter(label != 'PreCorrection') %>% mut
     theme_bw() +
     facet_grid(participant ~ direction)
 ```
+First, we plot the measured luminance of each of the backgrounds. In this figure, each panel is one background-type (`LMS/Mel` `high/low`), for one participant. In each panel, there is 1 arrow per session, pointing from the pre-experiment (post-correction) measured luminance, to the post-experiment measured luminance.
+
 ```{r contrastBackgrounds, echo = FALSE}
-  contrastsBackgrounds %>%
+contrastsBackgrounds %>%
   group_by(participant,sessionName,label,axis) %>%
   summarise(LMS = median(LMS),
             Mel = median(Mel)) %>%
@@ -90,6 +94,10 @@ contrastsFlicker = contrastsFlicker %>% filter(label != 'PreCorrection') %>% mut
   theme_bw()
 ```
 
+Here we plot the photoreceptor contrast (calculated from measured spectral power distribution) for each background-pair (`LMS`-directed and `Mel`-directed). Each datapoint in the figure is the photoreceptor contrast increase when going from the `low` to the `high` background of that pair; nominal target is 350%. Colors indicate pre- and post-session measurements, and symbols indicate different background-pair.
+\pagebreak
+
+# Flicker contrast
 ```{r contrastsFlicker, echo = FALSE}
 pLM = contrastsFlicker %>%
   group_by(participant,sessionName,label,direction,component) %>%
@@ -133,3 +141,5 @@ pS = contrastsFlicker %>%
 grid.newpage()
 grid.draw(rbind(ggplotGrob(pLM), ggplotGrob(pS), size = "last"))
 ```
+
+Here we plot the photoreceptor contrast of the flicker directions, one for each background-type (`LMS/Mel` `high/low`), at nominally 5% `LMS` contrast. In the first row of panel, the contrast on the `L-M` postreceptoral channel is graphed vertically; the second row of panels plots the contrast on the S-cone compared to the average of the L- and M-cones (`S-.5*(L+M)`) vertically. In both rows, the horizontal position indicates the `LMS` contrast as the mean of the L-, M-, and S-cone contrasts. Color indicates whether datapoint is based on measurements made pre-session or post-session.

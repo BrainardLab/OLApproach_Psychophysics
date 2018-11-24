@@ -105,25 +105,27 @@ JNDs %>%
               na.rm=TRUE)
 ```
 
-## Table
+\pagebreak
+
+## Summary table
 ```{r table_JNDs, echo=FALSE}
-results_all %>%
-  select(-nominalThresholdContrast, -validatedThresholdContrast, -quickThresholdContrast) %>%
-  gather(key = "validated", value = "JND", nominalJND, validatedJND) %>%
-  spread(adaptationLevel, JND) %>%
-  mutate(validated = str_replace(validated,'JND','')) %>%
-  group_by(participant, axis, validated) %>%
-  summarise(p_value = t.test(high,low,paired=TRUE)$p.value,
-            t_value = t.test(high,low,paired=TRUE)$statistic,
-            low_SEM = SEMedian(low),
-            high_SEM = SEMedian(high),
-            low_median = median(low, na.rm=TRUE),
-            high_median = median(high, na.rm=TRUE),
-            high_median_normalized = median(high/median(low)),
-            low_SEM_normalized = low_SEM / median(low),
-            high_SEM_normalized = high_SEM / median(low)) %>%
-  arrange(validated, axis) %>%
-  select(participant, axis, validated, low_median, low_SEM, low_SEM_normalized, high_median, high_SEM, high_median_normalized, high_SEM_normalized, t_value, p_value) %>%
+JNDs %>% 
+  # Convert back to tall: separate columns for high/low, but separate rows for nominal/measured
+  unite(low_nominal,high_nominal,col='nominal') %>%
+  unite(low_measured,high_measured,col='measured') %>%
+  gather(nominal,measured,key = 'measured',value='JND', factor_key = FALSE) %>%
+  separate(JND, into=c('low','high'), sep='_', convert=TRUE) %>%
+  mutate(measured = factor(measured, levels = c('nominal','measured'))) %>%
+  
+  group_by(participant, axis, measured) %>%
+  summarise(p = t.test(high,low,paired=TRUE)$p.value,
+            t = t.test(high,low,paired=TRUE)$statistic,
+            low_sem = SEMedian(low),
+            high_sem = SEMedian(high),
+            low = median(low, na.rm=TRUE),
+            high = median(high, na.rm=TRUE)) %>%
+  arrange(measured, axis) %>%
+  select(participant, axis, measured, low, low_sem, high, high_sem, t, p) %>%
   kable(digits = 4)
 ```
 

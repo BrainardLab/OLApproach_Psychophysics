@@ -29,28 +29,32 @@ results_all = lapply(csvfiles,function(x) {
 ```{r munge, echo=FALSE}
 results_all = results_all %>%
   separate(datafile,into=c("tmp1","participant","session","tmp2"),sep="-") %>%
-  select(-tmp1, -tmp2)
+  select(-tmp1, -tmp2) %>%
 
-# Recode adaptationLevel as factor
-results_all = mutate(results_all,adaptationLevel=factor(results_all$adaptationLevel,levels=c('low','high')))
+  # Recode adaptationLevel as factor
+  mutate(adaptationLevel= factor(adaptationLevel,levels=c('low','high'))) %>%
+
+  # Rename participants
+  mutate(participant = str_replace(participant,'HERO_','')) %>%
+
+  # Rename sessions
+  mutate(session = str_replace(session,'session_',''))
 ```
-
-# JNDs
 ## Plot
 ```{r normalize_JNDs, echo=FALSE}
 JNDs = results_all %>%
-  # Convert to wide-format: separate columns for high/low, nominal/validated JND
+  # Convert to wide-format: separate columns for high/low, nominal/measured JND
   select(-quickThresholdContrast, -nominalThresholdContrast, -validatedThresholdContrast) %>%
   unite(nominalJND,validatedJND, col = "JND") %>%
   spread(key = adaptationLevel, value = JND) %>%
-  separate(low, into = c('low_nominal','low_validated'), sep = "_", convert=TRUE) %>%
-  separate(high, into = c('high_nominal','high_validated'), sep = "_", convert=TRUE) %>%
+  separate(low, into = c('low_nominal','low_measured'), sep = "_", convert=TRUE) %>%
+  separate(high, into = c('high_nominal','high_measured'), sep = "_", convert=TRUE) %>%
 
   # Normalize to median(low_nominal) -- median across sessions per participant per axis
   group_by(participant,axis) %>%
-  mutate(low_validated = low_validated/median(low_nominal),
+  mutate(low_measured = low_measured/median(low_nominal),
          high_nominal = high_nominal/median(low_nominal),
-         high_validated = high_validated/median(low_nominal),
+         high_measured = high_measured/median(low_nominal),
          low_nominal = low_nominal/median(low_nominal))
 ```
 ```{r}
@@ -75,11 +79,11 @@ JNDs %>%
 ```
 ```{r plot_JNDs, echo=FALSE}
 JNDs %>% 
-  # Convert back to tall: separate columns for validated and nominalJND, but separate rows for high/low
-  unite(low_nominal,low_validated,col='low') %>%
-  unite(high_nominal,high_validated,col='high') %>%
+  # Convert back to tall: separate columns for measured and nominalJND, but separate rows for high/low
+  unite(low_nominal,low_measured,col='low') %>%
+  unite(high_nominal,high_measured,col='high') %>%
   gather(low,high,key='adaptationLevel',value='JND') %>%
-  separate(JND, into=c('nominalJND','validatedJND'), sep = "_", convert=TRUE) %>%
+  separate(JND, into=c('nominalJND','measuredJND'), sep = "_", convert=TRUE) %>%
   mutate(adaptationLevel=factor(adaptationLevel,levels=c('low','high'))) %>%
 
   # Plot
@@ -92,7 +96,7 @@ JNDs %>%
   
   # Individual sessions
   geom_line(mapping = aes(y = nominalJND, group=session, color = 'nominal'), alpha = .4) +
-  geom_line(mapping = aes(y = validatedJND, group=session, color = 'validated'), alpha = .4) +
+  geom_line(mapping = aes(y = measuredJND, group=session, color = 'measured'), alpha = .4) +
   
   # Medians over sessions
   stat_summary(mapping = aes(x = adaptationLevel, y = nominalJND, group=1, color = 'nominal'),
@@ -100,7 +104,7 @@ JNDs %>%
                size = 1,
                geom = "line",
                na.rm=TRUE) +
-  stat_summary(mapping = aes(x = adaptationLevel, y = validatedJND, group=1, color = 'validated'),
+  stat_summary(mapping = aes(x = adaptationLevel, y = measuredJND, group=1, color = 'measured'),
                fun.y = median,
                size = 1,
                geom = "line",
@@ -113,7 +117,7 @@ JNDs %>%
               fun.ymin = medianMinusSEM,
               fun.ymax = medianPlusSEM,
               na.rm=TRUE) +  
-  geom_pointrange(mapping = aes(y = validatedJND, color = 'validated'),
+  geom_pointrange(mapping = aes(y = measuredJND, color = 'measured'),
               stat="summary",
               fun.y = median,
               fun.ymin = medianMinusSEM,
@@ -157,7 +161,7 @@ results_all %>%
   
   # Individual sessions
   geom_line(mapping = aes(y = nominalThresholdContrast, group=session, color = 'nominal'), alpha = .4) +
-  geom_line(mapping = aes(y = validatedThresholdContrast, group=session, color = 'validated'), alpha = .4) +
+  geom_line(mapping = aes(y = measuredThresholdContrast, group=session, color = 'measured'), alpha = .4) +
   
   # Medians over sessions
   stat_summary(mapping = aes(x = adaptationLevel, y = nominalThresholdContrast, group=1, color = 'nominal'),
@@ -165,7 +169,7 @@ results_all %>%
                size = 1,
                geom = "line",
                na.rm=TRUE) +
-  stat_summary(mapping = aes(x = adaptationLevel, y = validatedThresholdContrast, group=1, color = 'validated'),
+  stat_summary(mapping = aes(x = adaptationLevel, y = measuredThresholdContrast, group=1, color = 'measured'),
                fun.y = median,
                size = 1,
                geom = "line",
@@ -178,7 +182,7 @@ results_all %>%
               fun.ymin = medianMinusSEM,
               fun.ymax = medianPlusSEM,
               na.rm=TRUE) +  
-  geom_pointrange(mapping = aes(y = validatedThresholdContrast, color = 'validated'),
+  geom_pointrange(mapping = aes(y = measuredThresholdContrast, color = 'measured'),
               stat="summary",
               fun.y = median,
               fun.ymin = medianMinusSEM,
@@ -186,21 +190,20 @@ results_all %>%
               na.rm=TRUE)
 ```
 
-## Table
-```{r table_Contrasts, echo=FALSE}
+```{r table_Contrasts, eval = FALSE, echo=FALSE}
 results_all %>%
-  select(-nominalJND, -validatedJND, -quickThresholdContrast) %>%
-  gather(key = "validated", value = "thresholdContrast", nominalThresholdContrast, validatedThresholdContrast) %>%
+  select(-nominalJND, -measuredJND, -quickThresholdContrast) %>%
+  gather(key = "measured", value = "thresholdContrast", nominalThresholdContrast, measuredThresholdContrast) %>%
   spread(adaptationLevel, thresholdContrast) %>%
-  mutate(validated = str_replace(validated,'ThresholdContrast','')) %>%
-  group_by(participant, axis, validated) %>%
+  mutate(measured = str_replace(measured,'ThresholdContrast','')) %>%
+  group_by(participant, axis, measured) %>%
   summarise(p_value = t.test(high,low,paired=TRUE)$p.value,
             t_value = t.test(high,low,paired=TRUE)$statistic,
             low_SEM = SEMedian(low),
             high_SEM = SEMedian(high),
             low_median = median(low, na.rm=TRUE),
             high_median = median(high, na.rm=TRUE)) %>%
-  arrange(validated, axis) %>%
-  select(participant, axis, validated, low_median, low_SEM, high_median, high_SEM, t_value, p_value) %>%
+  arrange(measured, axis) %>%
+  select(participant, axis, measured, low_median, low_SEM, high_median, high_SEM, t_value, p_value) %>%
   kable(digits = 4)
 ```

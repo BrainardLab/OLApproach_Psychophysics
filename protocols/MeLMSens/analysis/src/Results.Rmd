@@ -1,15 +1,9 @@
 ---
 title: "MeLMSens initial data analysis"
-author: "Joris Vincent"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output:
   pdf_document:
     toc: no
-  html_notebook:
-    number_sections: yes
-    toc: yes
-  html_document:
-    toc: yes
 ---
 ```{r setup, echo=FALSE, message=FALSE}
 library(tidyverse)
@@ -104,6 +98,7 @@ JNDs %>%
               fun.ymax = medianPlusSEM,
               na.rm=TRUE)
 ```
+Just Noticeable Differences in (flickering) LMS excitation, expressed as the mean change in LMS excitation across L, M, and S-cone photoreceptors and across increment and decrement components of flicker stimulus. JNDs are normalized to each participants' median (across sessions) nominal JND on the `low` excitation backgrounds (separately for LMS and melanopic background pairs). Thick lines indicate median JNDs per participant per condition -- thin lines indicate separate sessions. Data plotted in blue are based on the nominal spectral power distribution of the stimulus at detection threshold -- data plotted in red are based on the measured SPD of this stimulus.  
 
 \pagebreak
 
@@ -129,6 +124,12 @@ JNDs %>%
   kable(digits = 4)
 ```
 
+Median nominal JND was higher on the high LMS background than on the low background for each participant (DHB, GKA and JXV; by a factor of 4.70, 4.39 and 2.78 respectively). The JNDs calculated from the measured stimulus change the scaling factors (3.90, 4.55 and 2.55, respectively), but not the overall pattern that JNDs are higher on the high background than on the low background. Weber's law would predict that JNDs would increase by a factor of 4.5; for the nominal JNDs, this seems to hold roughly true for 2 of 3 participants.
+
+On the high melanopic background, median nominal JND was higher than on the low melanopic background for 2 of 3 observers (1.63, 0.88 and 1.14, respectively). These factors indicate a smaller difference than for the LMS-directed backgrounds. The JNDs calculated from the measured stimulus change the scaling factors (1.38, 0.72 and 1.06, respectively), but not the overall pattern that JNDs are slightly higher. 
+
+Student' t-statistics and corresponding p-values are presented in the table, but since these represent 4 pairs of samples per participant per axis, interpretation of these is cautioned against.
+
 \pagebreak
 
 ## Nominal vs. measured JND plot
@@ -153,6 +154,7 @@ JNDs %>%
   geom_vline(xintercept = 3.5, alpha = .5, linetype = 'dashed')
 ```
 
+This figure plots the same data as the previous, but plots the relationship between nominal JND (on the abscissa) and measured JND (on the ordinate) for each session. Arrows point from the JND on the `low` background, to the JND on the `high` background.
 ```{r plot_contrasts, eval = FALSE, echo=FALSE}
 results_all %>%
   ggplot() +

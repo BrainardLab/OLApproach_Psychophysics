@@ -93,23 +93,23 @@ Just Noticeable Differences in (flickering) LMS excitation, expressed as the mea
 ## Summary table
 ```{r table_JNDs, echo=FALSE}
 summaryJNDs = JNDs %>% 
-  # Convert back to tall: separate columns for high/low, but separate rows for quick/fit/measured
-  unite(low_fit,high_fit,col='fit') %>%
-  unite(low_quick, high_quick, col='quick') %>%
-  unite(low_measured,high_measured,col='measured') %>%
-  gather(quick,fit,measured,key = 'measured',value='JND', factor_key = FALSE) %>%
-  separate(JND, into=c('low','high'), sep='_', convert=TRUE) %>%
-  mutate(measured = factor(measured, levels = c('quick','fit','measured'))) %>%
+  # # Convert back to tall: separate columns for high/low, but separate rows for quick/fit/measured
+  # unite(low_fit,high_fit,col='fit') %>%
+  # unite(low_quick, high_quick, col='quick') %>%
+  # unite(low_measured,high_measured,col='measured') %>%
+  # gather(quick,fit,measured,key = 'measured',value='JND', factor_key = FALSE) %>%
+  # separate(JND, into=c('low','high'), sep='_', convert=TRUE) %>%
+  # mutate(measured = factor(measured, levels = c('quick','fit','measured'))) %>%
   
-  group_by(participant, axis, measured) %>%
+  group_by(participant, axis) %>%
   summarise(p = t.test(high,low,paired=TRUE)$p.value,
             t = t.test(high,low,paired=TRUE)$statistic,
             low_sem = SEMedian(low),
             high_sem = SEMedian(high),
             low = median(low, na.rm=TRUE),
             high = median(high, na.rm=TRUE)) %>%
-  arrange(measured, axis) %>%
-  select(participant, axis, measured, low, low_sem, high, high_sem, t, p)
+  arrange(axis, participant) %>%
+  select(participant, axis, low, low_sem, high, high_sem, t, p)
 
 summaryJNDs %>%
   kable(digits = 4)

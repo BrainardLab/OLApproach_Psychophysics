@@ -86,7 +86,7 @@ JNDs %>%
                 fun.ymax = medianPlusSEM,
                 na.rm=TRUE) 
 ```
-Just Noticeable Differences in (flickering) LMS excitation, expressed as the mean change in LMS excitation across L, M, and S-cone photoreceptors and across increment and decrement components of flicker stimulus. JNDs are normalized to each participants' median (across sessions) fit JND on the `low` excitation backgrounds (separately for LMS and melanopic background pairs). Thick lines indicate median JNDs per participant per condition -- thin lines indicate separate sessions. Data plotted in blue are based on the nominal spectral power distribution of the stimulus at detection threshold as determined by psychometric function fit -- data plotted in red are based on the measured SPD of a stimulus at a quick estimate of threshold.
+Just Noticeable Differences in (flickering) LMS excitation, expressed as the mean change in LMS excitation across L, M, and S-cone photoreceptors and across increment and decrement components of flicker stimulus. JNDs are normalized to each participants' median (across sessions) fit JND on the `low` excitation backgrounds (separately for LMS and melanopic background pairs). Lines indicate separate sessions, bold points indicate median across sessions with vertical error bars indicating +-1 Standard Error of the Median.
 
 \pagebreak
 

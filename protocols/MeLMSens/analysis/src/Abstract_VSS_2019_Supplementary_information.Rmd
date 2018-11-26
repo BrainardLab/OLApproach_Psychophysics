@@ -40,25 +40,18 @@ results_clean = results_all %>%
 
 # JNDs
 ```{r extract_JNDs, echo=FALSE}
-JNDs = results_all %>%
-  # Convert to wide-format: separate columns for high/low, nominal/measured JND
-  select(-quickThresholdContrast, -fitThresholdContrast, -measuredThresholdContrast) %>%
-  unite(quickJND,fitJND, measuredJND, col = "JND") %>%
-  spread(key = adaptationLevel, value = JND) %>%
-  separate(low, into = c('low_quick','low_fit','low_measured'), sep = "_", convert=TRUE) %>%
-  separate(high, into = c('high_quick','high_fit','high_measured'), sep = "_", convert=TRUE)
+JNDs = results_clean %>%
+  # Convert to wide-format: separate columns for high/low
+  select(-fitThresholdContrast) %>%
+  spread(key = adaptationLevel, value = fitJND)
 ```
 
 ```{r normalize_JNDs, echo=FALSE}
 JNDs = JNDs %>%
-  # Normalize to median(low_fit) -- median across sessions per participant per axis
+  # Normalize to median(low) -- median across sessions per participant per axis
   group_by(participant,axis) %>%
-  mutate(low_quick = low_quick/median(low_fit),
-         low_measured = low_measured/median(low_fit),
-         high_quick = high_quick/median(low_fit),
-         high_fit = high_fit/median(low_fit),
-         high_measured = high_measured/median(low_fit),
-         low_fit = low_fit/median(low_fit))
+  mutate(high = high/median(low),
+         low = low/median(low))
 ```
 
 ## Plot

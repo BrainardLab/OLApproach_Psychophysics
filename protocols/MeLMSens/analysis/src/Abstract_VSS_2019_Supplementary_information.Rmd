@@ -57,50 +57,34 @@ JNDs = JNDs %>%
 ## Plot
 ```{r plot_JNDs, echo=FALSE}
 JNDs %>% 
-  # Convert back to tall: separate columns for measured and fitJND, but separate rows for high/low
-  unite(low_fit,low_measured,col='low') %>%
-  unite(high_fit,high_measured,col='high') %>%
+  # Convert back to tall: separate rows for high/low
   gather(low,high,key='adaptationLevel',value='JND') %>%
-  separate(JND, into=c('fitJND','measuredJND'), sep = "_", convert=TRUE) %>%
   mutate(adaptationLevel=factor(adaptationLevel,levels=c('low','high'))) %>%
 
   # Plot
   ggplot() +
-  aes(x = adaptationLevel) +
+  aes(x = adaptationLevel, y = JND) +
   facet_grid(participant ~ axis) +
   ylab("Just Noticeable LMS Difference \n(normalized to participant-median of low condition)") +
   xlab("Adaptation level") +
   theme_bw() +
   
   # Individual sessions
-  geom_line(mapping = aes(y = fitJND, group=session, color = 'fit'), alpha = .4) +
-  geom_line(mapping = aes(y = measuredJND, group=session, color = 'measured'), alpha = .4) +
-  
-  # Medians over sessions
-  stat_summary(mapping = aes(x = adaptationLevel, y = fitJND, group=1, color = 'fit'),
-               fun.y = median,
-               size = 1,
-               geom = "line",
-               na.rm=TRUE) +
-  stat_summary(mapping = aes(x = adaptationLevel, y = measuredJND, group=1, color = 'measured'),
-               fun.y = median,
-               size = 1,
-               geom = "line",
-               na.rm=TRUE) +
+  geom_line(aes(group=session), alpha = .4) +
+
+  # # Medians over sessions
+  # stat_summary(aes(group=1),
+  #              fun.y = median,
+  #              size = 1,
+  #              geom = "line",
+  #              na.rm=TRUE) +
   
   # Point ranges median +- SEM(edian)
-  geom_pointrange(mapping = aes(y = fitJND, color = 'fit'),
-              stat="summary",
-              fun.y = median,
-              fun.ymin = medianMinusSEM,
-              fun.ymax = medianPlusSEM,
-              na.rm=TRUE) +  
-  geom_pointrange(mapping = aes(y = measuredJND, color = 'measured'),
-              stat="summary",
-              fun.y = median,
-              fun.ymin = medianMinusSEM,
-              fun.ymax = medianPlusSEM,
-              na.rm=TRUE)
+  geom_pointrange(stat="summary",
+                fun.y = median,
+                fun.ymin = medianMinusSEM,
+                fun.ymax = medianPlusSEM,
+                na.rm=TRUE) 
 ```
 Just Noticeable Differences in (flickering) LMS excitation, expressed as the mean change in LMS excitation across L, M, and S-cone photoreceptors and across increment and decrement components of flicker stimulus. JNDs are normalized to each participants' median (across sessions) fit JND on the `low` excitation backgrounds (separately for LMS and melanopic background pairs). Thick lines indicate median JNDs per participant per condition -- thin lines indicate separate sessions. Data plotted in blue are based on the nominal spectral power distribution of the stimulus at detection threshold as determined by psychometric function fit -- data plotted in red are based on the measured SPD of a stimulus at a quick estimate of threshold.
 

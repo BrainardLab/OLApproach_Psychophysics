@@ -8,7 +8,7 @@ acquisitionResults = table();
 for i = 1:numel(acquisition)
     acquisitionResults = extractResultsFromAcquisition(acquisition(i));
 end
-acquisitionResults = addvarString(acquisitionResults,inputFileName,'VariableName','datafile');
+acquisitionResults = addvarString(acquisitionResults,inputFileName,'VariableName',"datafile");
 
 %% Save
 outputFileDir = fileparts(outputFilePath);

@@ -32,32 +32,47 @@ results_all = results_all %>%
   mutate(participant = str_replace(participant,'HERO_','')) %>%
 
   # Rename sessions
-  mutate(session = str_replace(session,'session_',''))
+  mutate(session = str_replace(session,'session_','')) %>%
+
+  # Rename validated -> measured
+  mutate(measuredJND = validatedJND,
+         measuredThresholdContrast = validatedThresholdContrast,
+         validatedJND = NULL,
+         validatedThresholdContrast = NULL)
+    
 ```
-## Plot
-```{r normalize_JNDs, echo=FALSE}
+
+# JNDs
+```{r extract_JNDs, echo=FALSE}
 JNDs = results_all %>%
   # Convert to wide-format: separate columns for high/low, nominal/measured JND
-  select(-quickThresholdContrast, -nominalThresholdContrast, -validatedThresholdContrast) %>%
-  unite(nominalJND,validatedJND, col = "JND") %>%
+  select(-quickThresholdContrast, -fitThresholdContrast, -measuredThresholdContrast) %>%
+  unite(quickJND,fitJND, measuredJND, col = "JND") %>%
   spread(key = adaptationLevel, value = JND) %>%
-  separate(low, into = c('low_nominal','low_measured'), sep = "_", convert=TRUE) %>%
-  separate(high, into = c('high_nominal','high_measured'), sep = "_", convert=TRUE) %>%
-
-  # Normalize to median(low_nominal) -- median across sessions per participant per axis
-  group_by(participant,axis) %>%
-  mutate(low_measured = low_measured/median(low_nominal),
-         high_nominal = high_nominal/median(low_nominal),
-         high_measured = high_measured/median(low_nominal),
-         low_nominal = low_nominal/median(low_nominal))
+  separate(low, into = c('low_quick','low_fit','low_measured'), sep = "_", convert=TRUE) %>%
+  separate(high, into = c('high_quick','high_fit','high_measured'), sep = "_", convert=TRUE)
 ```
+
+```{r normalize_JNDs, echo=FALSE}
+JNDs = JNDs %>%
+  # Normalize to median(low_fit) -- median across sessions per participant per axis
+  group_by(participant,axis) %>%
+  mutate(low_quick = low_quick/median(low_fit),
+         low_measured = low_measured/median(low_fit),
+         high_quick = high_quick/median(low_fit),
+         high_fit = high_fit/median(low_fit),
+         high_measured = high_measured/median(low_fit),
+         low_fit = low_fit/median(low_fit))
+```
+
+## Plot
 ```{r plot_JNDs, echo=FALSE}
 JNDs %>% 
-  # Convert back to tall: separate columns for measured and nominalJND, but separate rows for high/low
-  unite(low_nominal,low_measured,col='low') %>%
-  unite(high_nominal,high_measured,col='high') %>%
+  # Convert back to tall: separate columns for measured and fitJND, but separate rows for high/low
+  unite(low_fit,low_measured,col='low') %>%
+  unite(high_fit,high_measured,col='high') %>%
   gather(low,high,key='adaptationLevel',value='JND') %>%
-  separate(JND, into=c('nominalJND','measuredJND'), sep = "_", convert=TRUE) %>%
+  separate(JND, into=c('fitJND','measuredJND'), sep = "_", convert=TRUE) %>%
   mutate(adaptationLevel=factor(adaptationLevel,levels=c('low','high'))) %>%
 
   # Plot
@@ -69,11 +84,11 @@ JNDs %>%
   theme_bw() +
   
   # Individual sessions
-  geom_line(mapping = aes(y = nominalJND, group=session, color = 'nominal'), alpha = .4) +
+  geom_line(mapping = aes(y = fitJND, group=session, color = 'fit'), alpha = .4) +
   geom_line(mapping = aes(y = measuredJND, group=session, color = 'measured'), alpha = .4) +
   
   # Medians over sessions
-  stat_summary(mapping = aes(x = adaptationLevel, y = nominalJND, group=1, color = 'nominal'),
+  stat_summary(mapping = aes(x = adaptationLevel, y = fitJND, group=1, color = 'fit'),
                fun.y = median,
                size = 1,
                geom = "line",
@@ -85,7 +100,7 @@ JNDs %>%
                na.rm=TRUE) +
   
   # Point ranges median +- SEM(edian)
-  geom_pointrange(mapping = aes(y = nominalJND, color = 'nominal'),
+  geom_pointrange(mapping = aes(y = fitJND, color = 'fit'),
               stat="summary",
               fun.y = median,
               fun.ymin = medianMinusSEM,
@@ -98,19 +113,20 @@ JNDs %>%
               fun.ymax = medianPlusSEM,
               na.rm=TRUE)
 ```
-Just Noticeable Differences in (flickering) LMS excitation, expressed as the mean change in LMS excitation across L, M, and S-cone photoreceptors and across increment and decrement components of flicker stimulus. JNDs are normalized to each participants' median (across sessions) nominal JND on the `low` excitation backgrounds (separately for LMS and melanopic background pairs). Thick lines indicate median JNDs per participant per condition -- thin lines indicate separate sessions. Data plotted in blue are based on the nominal spectral power distribution of the stimulus at detection threshold -- data plotted in red are based on the measured SPD of this stimulus.  
+Just Noticeable Differences in (flickering) LMS excitation, expressed as the mean change in LMS excitation across L, M, and S-cone photoreceptors and across increment and decrement components of flicker stimulus. JNDs are normalized to each participants' median (across sessions) fit JND on the `low` excitation backgrounds (separately for LMS and melanopic background pairs). Thick lines indicate median JNDs per participant per condition -- thin lines indicate separate sessions. Data plotted in blue are based on the nominal spectral power distribution of the stimulus at detection threshold as determined by psychometric function fit -- data plotted in red are based on the measured SPD of a stimulus at a quick estimate of threshold.
 
 \pagebreak
 
 ## Summary table
 ```{r table_JNDs, echo=FALSE}
-JNDs %>% 
-  # Convert back to tall: separate columns for high/low, but separate rows for nominal/measured
-  unite(low_nominal,high_nominal,col='nominal') %>%
+summaryJNDs = JNDs %>% 
+  # Convert back to tall: separate columns for high/low, but separate rows for quick/fit/measured
+  unite(low_fit,high_fit,col='fit') %>%
+  unite(low_quick, high_quick, col='quick') %>%
   unite(low_measured,high_measured,col='measured') %>%
-  gather(nominal,measured,key = 'measured',value='JND', factor_key = FALSE) %>%
+  gather(quick,fit,measured,key = 'measured',value='JND', factor_key = FALSE) %>%
   separate(JND, into=c('low','high'), sep='_', convert=TRUE) %>%
-  mutate(measured = factor(measured, levels = c('nominal','measured'))) %>%
+  mutate(measured = factor(measured, levels = c('quick','fit','measured'))) %>%
   
   group_by(participant, axis, measured) %>%
   summarise(p = t.test(high,low,paired=TRUE)$p.value,
@@ -120,13 +136,15 @@ JNDs %>%
             low = median(low, na.rm=TRUE),
             high = median(high, na.rm=TRUE)) %>%
   arrange(measured, axis) %>%
-  select(participant, axis, measured, low, low_sem, high, high_sem, t, p) %>%
+  select(participant, axis, measured, low, low_sem, high, high_sem, t, p)
+
+summaryJNDs %>%
   kable(digits = 4)
 ```
 
-Median nominal JND was higher on the high LMS background than on the low background for each participant (DHB, GKA and JXV; by a factor of 4.70, 4.39 and 2.78 respectively). The JNDs calculated from the measured stimulus change the scaling factors (3.90, 4.55 and 2.55, respectively), but not the overall pattern that JNDs are higher on the high background than on the low background. Weber's law would predict that JNDs would increase by a factor of 4.5; for the nominal JNDs, this seems to hold roughly true for 2 of 3 participants.
+Median nominal JND was higher on the high LMS background than on the low background for each participant (DHB, GKA and JXV; by a factor of 4.14, 3.81 and 4.50 respectively). The JNDs calculated from the measured stimulus change the scaling factors (3.25, 4.21 and 3.18, respectively), but not the overall pattern that JNDs are higher on the high background than on the low background. Weber's law would predict that JNDs would increase by a factor of 4.5; for the nominal JNDs, this seems to hold roughly true for 2 of 3 participants.
 
-On the high melanopic background, median nominal JND was higher than on the low melanopic background for 2 of 3 observers (1.63, 0.88 and 1.14, respectively). These factors indicate a smaller difference than for the LMS-directed backgrounds. The JNDs calculated from the measured stimulus change the scaling factors (1.38, 0.72 and 1.06, respectively), but not the overall pattern that JNDs are slightly higher. 
+Between the melanopic backgrounds, there was no single direction of difference in nominal JND; for two observers, JND was roughly equal between the high and low backgrounds (DHB = 1.02, JXV = 1.03), while for the the third observer it was lower on the high background (GKA = 0.89). The JNDs calculated from the measured stimulus change the scaling factors (1.19, 0.97 and 0.63, respectively), but no overall pattern emerges here either.
 
 Student' t-statistics and corresponding p-values are presented in the table, but since these represent 4 pairs of samples per participant per axis, interpretation of these is cautioned against.
 
@@ -136,9 +154,9 @@ Student' t-statistics and corresponding p-values are presented in the table, but
 ```{r echo = FALSE}
 JNDs %>%
   ggplot() +
-  aes(x = low_nominal, xend = high_nominal, y = low_measured, yend = high_measured) +
+  aes(x = low_fit, xend = high_fit, y = low_measured, yend = high_measured) +
   facet_grid(participant ~ axis) +
-  xlab("Nominal LMS JND\n(normalized to participant-median of low condition)") +
+  xlab("Fit LMS JND\n(normalized to participant-median of low condition)") +
   ylab("measured LMS JND\n(normalized to nominal participant-median of low condition)") +
   scale_x_continuous(limits = c(0,8)) +
   scale_y_continuous(limits = c(0,8)) +
@@ -150,13 +168,39 @@ JNDs %>%
 
   # Guides
   geom_abline(slope = 1, intercept = 0, alpha = .5, linetype = 'dashed') +
-  geom_hline(yintercept = 3.5, alpha = .5, linetype = 'dashed') +
-  geom_vline(xintercept = 3.5, alpha = .5, linetype = 'dashed')
+  geom_hline(yintercept = 4.5, alpha = .5, linetype = 'dashed') +
+  geom_vline(xintercept = 4.5, alpha = .5, linetype = 'dashed')
 ```
 
 This figure plots the same data as the previous, but plots the relationship between nominal JND (on the abscissa) and measured JND (on the ordinate) for each session. Arrows point from the JND on the `low` background, to the JND on the `high` background.
+
+\pagebreak
+
+# Contrasts
+```{r normalize_contrasts, eval = TRUE, echo=FALSE}
+contrasts = results_all %>%
+  # Convert to wide-format: separate columns for high/low, quick/fit/measured contrasts
+  select(-quickJND, -fitJND, -measuredJND) %>%
+  unite(quickThresholdContrast,fitThresholdContrast, measuredThresholdContrast, col = "ThresholdContrast") %>%
+  spread(key = adaptationLevel, value = ThresholdContrast) %>%
+  separate(low, into = c('low_quick','low_fit','low_measured'), sep = "_", convert=TRUE) %>%
+  separate(high, into = c('high_quick','high_fit','high_measured'), sep = "_", convert=TRUE)
+```
+
+```{r, eval = FALSE, echo = FALSE}
+contrasts = contrasts %>%
+  # Normalize to median(low_fit) -- median across sessions per participant per axis
+  group_by(participant,axis) %>%
+  mutate(low_quick = low_quick/median(low_fit),
+         low_measured = low_measured/median(low_fit),
+         high_quick = high_quick/median(low_fit),
+         high_fit = high_fit/median(low_fit),
+         high_measured = high_measured/median(low_fit),
+         low_fit = low_fit/median(low_fit))
+```
+
 ```{r plot_contrasts, eval = FALSE, echo=FALSE}
-results_all %>%
+contrasts %>%
   ggplot() +
   aes(x = adaptationLevel) +
   facet_grid(participant ~ axis) +
@@ -166,7 +210,7 @@ results_all %>%
   
   # Individual sessions
   geom_line(mapping = aes(y = nominalThresholdContrast, group=session, color = 'nominal'), alpha = .4) +
-  geom_line(mapping = aes(y = measuredThresholdContrast, group=session, color = 'measured'), alpha = .4) +
+  geom_line(mapping = aes(y = validatedThresholdContrast, group=session, color = 'measured'), alpha = .4) +
   
   # Medians over sessions
   stat_summary(mapping = aes(x = adaptationLevel, y = nominalThresholdContrast, group=1, color = 'nominal'),
@@ -174,7 +218,7 @@ results_all %>%
                size = 1,
                geom = "line",
                na.rm=TRUE) +
-  stat_summary(mapping = aes(x = adaptationLevel, y = measuredThresholdContrast, group=1, color = 'measured'),
+  stat_summary(mapping = aes(x = adaptationLevel, y = validatedThresholdContrast, group=1, color = 'measured'),
                fun.y = median,
                size = 1,
                geom = "line",
@@ -187,7 +231,7 @@ results_all %>%
               fun.ymin = medianMinusSEM,
               fun.ymax = medianPlusSEM,
               na.rm=TRUE) +  
-  geom_pointrange(mapping = aes(y = measuredThresholdContrast, color = 'measured'),
+  geom_pointrange(mapping = aes(y = validatedThresholdContrast, color = 'measured'),
               stat="summary",
               fun.y = median,
               fun.ymin = medianMinusSEM,
@@ -195,20 +239,25 @@ results_all %>%
               na.rm=TRUE)
 ```
 
-```{r table_Contrasts, eval = FALSE, echo=FALSE}
-results_all %>%
-  select(-nominalJND, -measuredJND, -quickThresholdContrast) %>%
-  gather(key = "measured", value = "thresholdContrast", nominalThresholdContrast, measuredThresholdContrast) %>%
-  spread(adaptationLevel, thresholdContrast) %>%
-  mutate(measured = str_replace(measured,'ThresholdContrast','')) %>%
+## Summary table
+```{r table_Contrasts, eval = TRUE, echo=FALSE}
+contrasts %>% 
+  # Convert back to tall: separate columns for high/low, but separate rows for quick/fit/measured
+  unite(low_fit,high_fit,col='fit') %>%
+  unite(low_quick, high_quick, col='quick') %>%
+  unite(low_measured,high_measured,col='measured') %>%
+  gather(quick,fit,measured,key = 'measured',value='JND', factor_key = FALSE) %>%
+  separate(JND, into=c('low','high'), sep='_', convert=TRUE) %>%
+  mutate(measured = factor(measured, levels = c('quick','fit','measured'))) %>%
+  
   group_by(participant, axis, measured) %>%
-  summarise(p_value = t.test(high,low,paired=TRUE)$p.value,
-            t_value = t.test(high,low,paired=TRUE)$statistic,
-            low_SEM = SEMedian(low),
-            high_SEM = SEMedian(high),
-            low_median = median(low, na.rm=TRUE),
-            high_median = median(high, na.rm=TRUE)) %>%
+  summarise(p = t.test(high,low,paired=TRUE)$p.value,
+            t = t.test(high,low,paired=TRUE)$statistic,
+            low_sem = SEMedian(low),
+            high_sem = SEMedian(high),
+            low = median(low, na.rm=TRUE),
+            high = median(high, na.rm=TRUE)) %>%
   arrange(measured, axis) %>%
-  select(participant, axis, measured, low_median, low_SEM, high_median, high_SEM, t_value, p_value) %>%
+  select(participant, axis, measured, low, low_sem, high, high_sem, t, p) %>%
   kable(digits = 4)
 ```

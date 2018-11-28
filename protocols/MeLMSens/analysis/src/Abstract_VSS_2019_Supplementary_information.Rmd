@@ -10,6 +10,8 @@ output:
 library(tidyverse)
 library(knitr)
 library(stringr)
+library(glue)
+options(digits = 3)
 source('../lib/median_SEM.R')
 ```
 ```{r merge, echo=FALSE}
@@ -108,11 +110,11 @@ summaryJNDs = JNDs %>%
   select(participant, axis, low, low_sem, high, high_sem, t, p)
 
 summaryJNDs %>%
-  kable(digits = 4)
+  kable()
 ```
 
-Median nominal JND was higher on the high LMS background than on the low background for each participant (DHB, GKA and JXV; by a factor of 4.14, 3.81 and 4.50 respectively). The JNDs calculated from the measured stimulus change the scaling factors (3.25, 4.21 and 3.18, respectively), but not the overall pattern that JNDs are higher on the high background than on the low background. Weber's law would predict that JNDs would increase by a factor of 4.5; for the nominal JNDs, this seems to hold roughly true for 2 of 3 participants.
+Median nominal JND was higher on the high LMS background than on the low background for each participant (`r filter(summaryJNDs,axis == 'LMS')$participant`; by a factor of `r filter(summaryJNDs,axis == 'LMS')$high %>% format(digits = 3, format = "f")` respectively). Weber's law would predict that JNDs would nominally increase by a factor of 4.5, as the high background is nominally 4.5 times more luminous than the low background; for the nominal JNDs, this seems to hold roughly true for 2 of 3 participants.
 
-Between the melanopic backgrounds, there was no single direction of difference in nominal JND; for two observers, JND was roughly equal between the high and low backgrounds (DHB = 1.02, JXV = 1.03), while for the the third observer it was lower on the high background (GKA = 0.89). The JNDs calculated from the measured stimulus change the scaling factors (1.19, 0.97 and 0.63, respectively), but no overall pattern emerges here either.
+Between the melanopic backgrounds, there was no single direction of difference in nominal JND; for two observers, JND was roughly equal between the high and low backgrounds (`r filter(summaryJNDs,axis == 'Mel', high >= .90, high < 1.1) %>% glue_data('{participant} = {format(high,digits = 3)}')`), while for the the third observer it was lower on the high background (`r filter(summaryJNDs,axis == 'Mel', high < 0.90) %>% glue_data('{participant} = {format(high,digits = 2)}')`).
 
-Student' t-statistics and corresponding p-values are presented in the table, but since these represent 4 pairs of samples per participant per axis, interpretation of these is cautioned against.
+Student' t-statistics and corresponding p-values are presented in the table, but since these represent 4 pairs of samples per participant per axis, interpretation of these is cautioned against. Values presented here are nominal, in that they are based on device calibration. Direct  spectral measurements of the stimuli were also taken -- JNDs calculated from the these measurements change the scaling factors, but not the overall pattern of effect.

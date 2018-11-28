@@ -1,0 +1,17 @@
+---
+title: "Title"
+author: "Joris Vincent, Geoffrey K. Aguirre, David H. Brainard"
+output:
+  pdf_document: default
+  word_document: default
+---
+
+```{r child = 'Abstract.md'}
+```
+
+\pagebreak
+
+# Supplementary Information
+
+```{r child = 'Abstract_VSS_2019_Supplementary_information.Rmd'}
+```

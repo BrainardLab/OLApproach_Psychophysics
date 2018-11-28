@@ -1,11 +1,10 @@
 ---
 title: "Title"
+author: "Joris Vincent, Geoffrey K. Aguirre, David H. Brainard"
 subtitle: Supplementary information
-author: Joris Vincent, Geoffrey K. Aguirre, David H. Brainard
 output:
+  pdf_document: default
   word_document: default
-  html_document:
-    df_print: paged
 ---
 ```{r setup, echo=FALSE, message=FALSE}
 library(tidyverse)

@@ -17,7 +17,7 @@ JNDs %>%
   ggplot() +
   aes(x = adaptationLevel, y = JND) +
   facet_grid(participant ~ axis) +
-  ylab("Just Noticeable LMS Difference") +
+  ylab("LMS Threshold") +
   xlab("Adaptation level") +
   theme_bw() +
   
@@ -38,4 +38,5 @@ JNDs %>%
                 fun.ymax = medianPlusSEM,
                 na.rm=TRUE)
 ```
+
 Threshold for detection of LMS flicker, expressed as the mean change in LMS excitation across L, M, and S-cone photoreceptors. Thresholds are normalized to each participants’ median (across sessions) threshold on the low backgrounds (separately for melanopsin and LMS background pairs). Points indicate median across sessions; lines show thresholds obtained in the same experimental session.  Error bars indicate +/-1 standard error of the median.

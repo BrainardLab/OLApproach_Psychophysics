@@ -7,7 +7,7 @@ output:
   word_document: default
 ---
 
-```{r plot_JNDs, echo=FALSE}
+```{r plot_JNDs, echo=FALSE, dev='pdf'}
 JNDs %>% 
   # Convert back to tall: separate rows for high/low
   gather(low,high,key='adaptationLevel',value='JND') %>%

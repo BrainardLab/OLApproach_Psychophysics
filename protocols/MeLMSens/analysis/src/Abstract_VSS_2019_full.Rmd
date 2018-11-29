@@ -6,7 +6,7 @@ output:
   word_document: default
 ---
 
-```{r child = 'Abstract.md'}
+```{r child = 'Abstract_VSS_2019.Rmd'}
 ```
 
 \pagebreak

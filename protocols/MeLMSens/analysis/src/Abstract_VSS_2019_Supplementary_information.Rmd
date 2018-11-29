@@ -66,7 +66,7 @@ JNDs %>%
   ggplot() +
   aes(x = adaptationLevel, y = JND) +
   facet_grid(participant ~ axis) +
-  ylab("Just Noticeable LMS Difference \n(normalized to participant-median of low condition)") +
+  ylab("Just Noticeable LMS Difference") +
   xlab("Adaptation level") +
   theme_bw() +
   

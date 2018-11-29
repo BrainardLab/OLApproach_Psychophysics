@@ -1,3 +1,15 @@
+---
+title: "Adaptation to melanopic stimulation does not affect cone-mediated flicker sensitivity"
+author: "Joris Vincent, Geoffrey K. Aguirre, David H. Brainard"
+output:
+  pdf_document: default
+  word_document: default
+---
+
+```{r, echo = FALSE, include = FALSE}
+source('Abstract_VSS_2019.analysis.R')
+```
+
 **Purpose** Melanopsin-containing retinal ganglion cells (ipRGCs) are known to contribute to reflexive visual functions (e.g., pupil constriction). Histological and ERG studies in rodents indicate that the ipRGCs modulate cone signals via recurrent axon collaterals. This is a mechanism by which melanopsin stimulation could alter visual perception. Here we test if changes in the melanopsin stimulation level of a steady background affect thresholds for detecting light flicker seen only by the cones.
 
 **Methods** Threshold sensitivity for 5 Hz LMS cone-directed flicker was measured on 2 pairs of adapting fields that differed only in their melanopsin stimulation or only in their LMS cone stimulation; each pair differed by a 350% isochromatic contrast step. Stimuli were generated using a digital light synthesis engine with 56 effective primaries, and presented as a 27.5° diameter field, of which the central 5° was occluded. The three authors served as participants and viewed the stimuli monocularly with a pharmacologically dilated pupil. During a each of four separate sessions the participant adapted to each background for 5 minutes prior to collection of 120 trials of a two-interval forced-choice paradigm.

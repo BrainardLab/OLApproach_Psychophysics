@@ -1,11 +1,14 @@
 ---
-title: "Adaptation to melanopic stimulation does not affect cone-mediated flicker sensitivity"
+title: "Supplementary information: Adaptation to melanopic stimulation does not affect cone-mediated flicker sensitivity"
 author: "Joris Vincent, Geoffrey K. Aguirre, David H. Brainard"
-subtitle: "Supplementary information: Adaptation to melanopic stimulation does not affect cone-mediated flicker sensitivity"
 output:
   pdf_document: default
   word_document: default
 ---
+
+```{r, echo = FALSE, include = FALSE}
+source('Abstract_VSS_2019.analysis.R')
+```
 
 ```{r plot_JNDs, echo=FALSE, dev='pdf'}
 JNDs %>% 

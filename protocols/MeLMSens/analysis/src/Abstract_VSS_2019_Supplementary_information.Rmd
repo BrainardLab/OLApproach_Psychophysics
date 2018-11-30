@@ -19,6 +19,7 @@ JNDs %>%
   ggplot() +
   aes(x = adaptationLevel, y = JND) +
   facet_grid(participant ~ axis) +
+  scale_y_continuous(breaks = seq(-1,7,1)) +
   ylab("LMS Threshold") +
   xlab("Adaptation level") +
   theme_bw() +

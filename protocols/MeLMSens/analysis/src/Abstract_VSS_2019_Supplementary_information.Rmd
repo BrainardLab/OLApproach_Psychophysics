@@ -41,4 +41,4 @@ JNDs %>%
                 na.rm=TRUE)
 ```
 
-Threshold for detection of LMS flicker, expressed as the mean change in LMS excitation across L, M, and S-cone photoreceptors. Thresholds are normalized to each participants’ median (across sessions) threshold on the low backgrounds (separately for melanopsin and LMS background pairs). Points indicate median across sessions; lines show thresholds obtained in the same experimental session.  Error bars indicate +/-1 standard error of the median.
+Threshold for detection of LMS flicker, expressed as the mean change in LMS excitation across L, M, and S-cone photoreceptors. Thresholds are normalized to each participant's median (across sessions) threshold on the low backgrounds (separately for melanopsin and LMS background pairs). Points indicate median across sessions; lines show thresholds obtained in the same experimental session.  Error bars indicate +/-1 standard error of the median.

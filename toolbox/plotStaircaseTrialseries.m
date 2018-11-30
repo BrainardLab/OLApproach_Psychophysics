@@ -1,29 +1,30 @@
-function ax = plotStaircase(staircase, varargin)
-%PLOTSTAIRCASE Plot values of (array of) staircase object(s)
-%   plotStaircase(staircase) plot the values of the staircase in order of
-%   appearance as a solid line. Incorrect trials are marked with an
-%   asterisk marker. Threshold estimate is indicate with a horizontal
+function ax = plotStaircaseTrialseries(staircase, varargin)
+%PLOTSTAIRCASETRIALSERIES Plot values of (array of) staircase object(s)
+%   plotStaircaseTrialseries(staircase) plot the values of the staircase in
+%   order of appearance as a solid line. Incorrect trials are marked with
+%   an asterisk marker. Threshold estimate is indicate with a horizontal
 %   dashed line at that value.
 %
-%   plotStaircase(staircases) plots multiple staircases in the same axes,
-%   each in a different color.
+%   plotStaircaseTrialseries(staircases) plots multiple staircases in the
+%   same axes, each in a different color.
 %
-%   plotStaircase(...,'ax',ax) plot in the specified axes; ax is must be a
-%   valid axes-object (i.e., open).
+%   plotStaircaseTrialseries(...,'ax',ax) plot in the specified axes; ax is
+%   must be a valid axes-object (i.e., open). Default plots in the current
+%   axes, i.e., ax = gca().
 %
-%   ax = plotStaircase(...) returns a handle to the axes-object containing
-%   the plot.
+%   ax = plotStaircaseTrialseries(...) returns a handle to the axes-object
+%   containing the plot.
 %
-%   plotStaircase(...,'threshold',threshold) plots a horizontal dashed line
-%   indicated the given threshold value. If no threshold value is supplied,
-%   the getThresholdEstimate(staircase) method is used. If multiple
-%   staircases are provided, threshold must be a vector of
+%   plotStaircaseTrialseries(...,'threshold',threshold) plots a horizontal
+%   dashed line indicated the given threshold value. If no threshold value
+%   is supplied, the getThresholdEstimate(staircase) method is used. If
+%   multiple staircases are provided, threshold must be a vector of
 %   numel(staircases).
 %
-%   This function tries to forward unmatched input arguments to plot,
+%   This function tries to forward unmatched input arguments to plot(),
 %   although no guarantee is made that those will work well.
 %
-%   See also getThresholdEstimate
+%   See also getThresholdEstimate, plotStaircaseProportionCorrect
 
 % History:
 %   2018-10-29  J.Vincent wrote plotStaircase.
@@ -53,13 +54,13 @@ end
 correct = logical(correct);
 
 %% Plot
-axes(ax); hold on;
+hold(ax,'on');
 for k = 1:size(value,2)
     
     % Plot values for all trials of staircase
     % Plot all values in a contiguous solid line.
     % Place markers only at trials where response was incorrect
-    plot(value(:,k),'-*','MarkerIndices',find(~correct(:,k)),'MarkerSize',10,parser.Unmatched);
+    plot(ax,value(:,k),'-*','MarkerIndices',find(~correct(:,k)),'MarkerSize',10,parser.Unmatched);
     
     % Plot threshold estimate for staircase
     % Draw a dashed horizontal line at the value of the threshold estimate
@@ -68,8 +69,8 @@ for k = 1:size(value,2)
     if ax.ColorOrderIndex > 1
         ax.ColorOrderIndex = ax.ColorOrderIndex-1;
     end
-    plot(xlim,threshold(k)*[1 1],'--');
+    plot(ax,xlim,threshold(k)*[1 1],'--');
 end
-xlabel('Trial number');
-ylabel('Value');
+xlabel(ax,'Trial number');
+ylabel(ax,'Value');
 end

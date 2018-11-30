@@ -1,7 +1,12 @@
+% Find data mat-files
 matfiles = dir('../../data/raw/*/*/data-*.mat');
 fprintf('Found files:\n');
 fprintf('\t%s\n',matfiles.name);
 
+% Load fake Staircase to initialize constructor properly for loading
+S = Staircase('standard',.05,[1],[1],[1]);
+
+% Process each mat file
 fprintf('\n');
 for m = 1:numel(matfiles)
     dirEntry = matfiles(m);

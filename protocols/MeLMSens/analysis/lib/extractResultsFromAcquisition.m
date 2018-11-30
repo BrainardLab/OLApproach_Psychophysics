@@ -25,8 +25,9 @@ function results = extractResultsFromAcquisition(acquisition)
 %
 % Outputs:
 %    results     - table(), with variables 'axis', 'adaptationLevel',
-%                  'nominalThresholdContrast', 'nominalJND',
-%                  'validatedThresholdContrast', 'validatedJND'
+%                  'quickThresholdContrast', 'fitThresholdContrast',
+%                  'validatedThresholdContrast', 'quickJND', 'fitJND',
+%                  'validatedJND'
 %
 % Optional keyword arguments:
 %    None.
@@ -43,9 +44,11 @@ results = table();
 name = split(acquisition.name,'_');
 results.axis = name(1);
 results.adaptationLevel = name(2);
-results.nominalThresholdContrast = exctractNominalThresholdContrast(acquisition);
-results.nominalJND = nominalJND(acquisition);
+results.quickThresholdContrast = exctractNominalThresholdContrast(acquisition);
+results.fitThresholdContrast = acquisition.fitPsychometricFunctionThreshold();
 results.validatedThresholdContrast = extractValidatedThresholdContrast(acquisition);
+results.quickJND = quickJND(acquisition);
+results.fitJND = fitJND(acquisition);
 results.validatedJND = extractValidatedJND(acquisition);
 end
 
@@ -53,10 +56,23 @@ function nominalThresholdContrast = exctractNominalThresholdContrast(acquisition
 nominalThresholdContrast = mean(acquisition.thresholds);
 end
 
-function nominalJND = nominalJND(acquisition)
+function quickJND = quickJND(acquisition)
 thresholdDirection = exctractThresholdDirection(acquisition);
 [~,~,excitationDiff] = thresholdDirection.ToDesiredReceptorContrast(acquisition.background, acquisition.receptors);
-nominalJND = excitationDiffToJND(excitationDiff);
+quickJND = excitationDiffToJND(excitationDiff);
+end
+
+function fitJND = fitJND(acquisition)
+direction = acquisition.direction;
+background = acquisition.background;
+receptors = acquisition.receptors;
+
+fitThresholdCont = acquisition.fitPsychometricFunctionThreshold();
+
+targetContrasts = fitThresholdCont * [1 1 1 0; -1 -1 -1 0]';
+thresholdDirection = direction.ScaleToReceptorContrast(background,receptors,targetContrasts);
+[~,~,excitationDiff] = thresholdDirection.ToDesiredReceptorContrast(acquisition.background, acquisition.receptors);
+fitJND = excitationDiffToJND(excitationDiff);
 end
 
 function thresholdDirection = exctractThresholdDirection(acquisition)

@@ -128,7 +128,7 @@
 		"localHookTemplate": "configuration/OLApproach_PsychophysicsLocalHookTemplate.m",
 		"name": "OLApproach_Psychophysics",
 		"pathPlacement": "append",
-		"subfolder": ["toolbox","protocols"],
+		"subfolder": ["toolbox","protocols","analysis"],
 		"toolboxRoot": "",
 		"type": "git",
 		"update": "",

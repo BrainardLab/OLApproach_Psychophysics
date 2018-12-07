@@ -12,7 +12,7 @@ while ~acceptAll
         oneLight.setAll(true);
         input('<strong>Point the radiometer above the blocker; press any key to start measuring</strong>\n');
         measurement = measureLocation(oneLight, pSpot, radiometer);
-        measurement = addvarString(measurement,'above','VariableName','location');
+        measurement = addvarString(measurement,'above','VariableName',"location");
         accept = projectorSpot.acceptMeasurements(measurement);
     end
     measurements = [measurements; measurement];
@@ -24,7 +24,7 @@ while ~acceptAll
         oneLight.setAll(true);
         input('<strong>Point the radiometer to the left of the blocker; press any key to start measuring</strong>\n');
         measurement = measureLocation(oneLight, pSpot, radiometer);
-        measurement = addvarString(measurement,'left','VariableName','location');
+        measurement = addvarString(measurement,'left','VariableName',"location");
         accept = projectorSpot.acceptMeasurements(measurement);
     end
     measurements = [measurements; measurement];
@@ -36,7 +36,7 @@ while ~acceptAll
         oneLight.setAll(true);
         input('<strong>Point the radiometer to the right of the blocker; press any key to start measuring</strong>\n');
         measurement = measureLocation(oneLight, pSpot, radiometer);
-        measurement = addvarString(measurement,'right','VariableName','location');
+        measurement = addvarString(measurement,'right','VariableName',"location");
         accept = projectorSpot.acceptMeasurements(measurement);
     end
     measurements = [measurements; measurement];
@@ -48,7 +48,7 @@ while ~acceptAll
         oneLight.setAll(true);
         input('<strong>Point the radiometer below blocker; press any key to start measuring</strong>\n');
         measurement = measureLocation(oneLight, pSpot, radiometer);
-        measurement = addvarString(measurement,'below','VariableName','location');
+        measurement = addvarString(measurement,'below','VariableName',"location");
         accept = projectorSpot.acceptMeasurements(measurement);
     end
     measurements = [measurements; measurement];

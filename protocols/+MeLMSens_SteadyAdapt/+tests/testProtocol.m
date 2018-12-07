@@ -1,5 +1,6 @@
-function [validationsPre, corrections, validationsPost, directions] = testMeLMSens_SteadyAdapt
+function [validationsPre, corrections, validationsPost, directions] = testProtocol
 %% Test MeLMSens_SteadyAdapt protocol
+import('MeLMSens_SteadyAdapt.*');
 approach = 'OLApproach_Psychophysics';
 protocol = 'MeLMSens';
 simulate = getpref(approach,'simulate'); % localhook defines what devices to simulate
@@ -24,36 +25,36 @@ else
 end
 
 %% Get projectorSpot
-pSpot = projectorSpotMeLMSens_SteadyAdapt(simulate.projector);
+pSpot = projectorSpot(simulate.projector);
 
 %% Update OLCalibration with pSpot
 pSpotMeasurements = projectorSpot.measure(pSpot,oneLight,radiometer);
 [calibration, pSpotSPD, pSpotLum] = projectorSpot.UpdateOLCalibrationWithProjectorSpot(calibration, pSpotMeasurements);
 
 %% Make directions
-directions = makeNominalMeLMSens_SteadyAdapt(calibration,'observerAge',32);
+directions = makeNominalDirections(calibration,'observerAge',32);
 receptors = directions('MelStep').describe.directionParams.T_receptors;
 
 %% Test directions
-t = testDirections;
+t = tests.testDirections();
 t.directions = directions;
 t.receptors = receptors;
-results = run(t);
+results = t.run();
 
 %% Validate directions pre-correction
-validationsPre = validateMeLMSens_SteadyAdapt(directions,oneLight,radiometer,...
+validationsPre = validateDirections(directions,oneLight,radiometer,...
                                                 'receptors',receptors,...
                                                 'primaryTolerance',1e-4,...
                                                 'nValidations',5);
                                             
 %% Correct directions
-corrections = correctMeLMSens_SteadyAdapt(directions,oneLight,calibration,radiometer,...
+corrections = correctDirections(directions,oneLight,calibration,radiometer,...
                             receptors,...
                             'primaryTolerance',1e-5,...
                             'smoothness',.001);
                         
 %% Validate directions post-correction
-validationsPost = validateMeLMSens_SteadyAdapt(directions,oneLight,radiometer,...
+validationsPost = validateDirections(directions,oneLight,radiometer,...
                                                 'receptors',receptors,...
                                                 'primaryTolerance',1e-5,...
                                                 'nValidations',5);                                           
@@ -61,7 +62,7 @@ validationsPost = validateMeLMSens_SteadyAdapt(directions,oneLight,radiometer,..
 %% Compare validations
 
 %% Setup acquisitions
-acquisitions = makeAcquisitionsMeLMSens_SteadyAdapt(directions, receptors,...
+acquisitions = makeAcquisitions(directions, receptors,...
                 'adaptationDuration',seconds(10),...
                 'NTrialsPerStaircase',1);
 
@@ -97,8 +98,9 @@ end
 
 %% Close connections
 fprintf('Closing devices...');
-oneLight.close;
+oneLight.close();
 radiometer.shutDown;
-gamePad.shutDown;
+pSpot.close();
+gamePad.shutDown();
 fprintf('done.\n');
 end

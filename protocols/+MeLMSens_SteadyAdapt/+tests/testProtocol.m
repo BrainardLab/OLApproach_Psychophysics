@@ -1,6 +1,6 @@
-function [validationsPre, corrections, validationsPost, directions] = test
+function [validationsPre, corrections, validationsPost, directions] = testProtocol
 %% Test MeLMSens_SteadyAdapt protocol
-import MeLMSens_SteadyAdapt.*
+import('MeLMSens_SteadyAdapt.*');
 approach = 'OLApproach_Psychophysics';
 protocol = 'MeLMSens';
 simulate = getpref(approach,'simulate'); % localhook defines what devices to simulate
@@ -36,10 +36,10 @@ directions = makeNominalDirections(calibration,'observerAge',32);
 receptors = directions('MelStep').describe.directionParams.T_receptors;
 
 %% Test directions
-t = testDirections;
+t = tests.testDirections();
 t.directions = directions;
 t.receptors = receptors;
-results = run(t);
+results = t.run();
 
 %% Validate directions pre-correction
 validationsPre = validateDirections(directions,oneLight,radiometer,...
@@ -98,8 +98,9 @@ end
 
 %% Close connections
 fprintf('Closing devices...');
-oneLight.close;
+oneLight.close();
 radiometer.shutDown;
-gamePad.shutDown;
+pSpot.close();
+gamePad.shutDown();
 fprintf('done.\n');
 end

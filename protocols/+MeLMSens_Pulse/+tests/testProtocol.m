@@ -85,7 +85,7 @@ end
 trialResponseSys = responseSystem(trialKeyBindings,gamePad);
 
 %% Adjust projectorSpot
-projectorSpot.adjust(pSpot,gamePad);
+% projectorSpot.adjust(pSpot,gamePad);
 
 %% Run
 pSpot.show();

@@ -1,4 +1,4 @@
-classdef Acquisition_FlickerSensitivity_2IFC < handle
+classdef acquisition < handle
     % Class defining an acquisition of LMSensitivity on steady adaptation
     %
     %   Detailed explanation goes here

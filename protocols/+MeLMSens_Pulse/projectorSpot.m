@@ -1,4 +1,4 @@
-function pSpot = projectorSpotMeLMSens_SteadyAdapt(simulate)
+function pSpot = projectorSpot(simulate)
 %PROJECTORSPOTMELMSENS_STEADYADAPT Summary of this function goes here
 %   Detailed explanation goes here
     pSpot = projectorSpot.projectorSpot('fullScreen',~simulate);

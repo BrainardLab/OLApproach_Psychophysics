@@ -2,19 +2,21 @@ classdef Trial_NIFC
     % Class defining a single N-interval forced-choice trial
     %   Detailed explanation goes here
     
-    properties (SetAccess = immutable)
+    properties
         nIntervals;
         targetModulation;
         referenceModulation;
+        interstimulusModulation;        
+        preModulation;
+        postModulation;
         
-        targetPresent;
         targetInterval;
-        modulations;
-        
-        ISI;
     end
     
     properties (SetAccess = protected)
+        intervals;
+        modulations; 
+        targetPresent;        
         response;
         correct = false;
         done = false;
@@ -57,35 +59,59 @@ classdef Trial_NIFC
             obj.targetModulation = parser.Results.targetModulation;
             obj.referenceModulation = parser.Results.referenceModulation;
             obj.ISI = parser.Results.ISI;
-            
-            %% Assign target vs. reference interval
-            obj.targetPresent = false(1,obj.nIntervals);
-            if isempty(parser.Results.targetInterval)
+        end
+        
+        function obj = initializeIntervals(obj)
+            %% Initialize intervals
+            % initialize Nx1 struct-array with fields 
+            % targetPresent: boolean indicating whether this interval
+            %                contains a target,
+            % modulation   : the modulation for that interval
+            %
+            % initialize all as target-absent intervals, containing the
+            % reference modulation
+            obj.intervals = struct('targetPresent',repmat({false},[obj.nIntervals,1]),...
+                                   'modulation',repmat({obj.referenceModulation},[obj.nIntervals,1]));
+        end
+        
+        function obj = assignTargetInterval(obj)           
+            %% Assign target interval
+            if isempty(obj.targetInterval)
                 obj.targetInterval = randi(obj.nIntervals);
-            else
-                obj.targetInterval = parser.Results.targetInterval;
             end
-            obj.targetPresent(obj.targetInterval) = true;
-            
-            %% Assign modulations to intervals
-            obj.modulations = repmat(obj.referenceModulation,[obj.nIntervals, 1]);
-            obj.modulations(obj.targetPresent) = repmat(obj.targetModulation,[sum(obj.targetPresent), 1]);
-            
+            obj.intervals(obj.targetInterval).targetPresent = true;
+            obj.intervals(obj.targetInterval).modulation = obj.targetModulation;
+        end
+        
+        function obj = assembleModulations(obj)
+            %% Collapes modulations, add pre, post, interstimulusModulation
+            % pre, I(1), IS, I(2), IS,...,I(N), post
+            obj.modulations(1) = obj.preModulation;
+            obj.modulations(2) = obj.intervals(1).modulation;
+            for i = 2:length(obj.intervals)
+                obj.modulations(i*2-1) = obj.interstimulusModulation;
+                obj.modulations(i*2) = obj.intervals(i).modulation;
+            end
+            obj.modulations(end+1) = obj.postModulation;
+        end
+        
+        function obj = initialize(obj)
             %% Intialize
-            obj.response = false(1,obj.nIntervals);
+            obj.initializeIntervals();
+            obj.assignTargetInterval();
+            obj.assembleModulations();
+            obj.response = false(1,obj.nIntervals); 
         end
         
         function [abort, obj] = run(obj, oneLight, samplingFq, responseSys)
             % Summary of this method goes here
             %   Detailed explanation goes here
-            
             if obj.done
                 error('Trial already completed');
             end
             
-            %% Show modulations
+            %% Show modulations      
             for m = 1:length(obj.modulations)
-                mglWaitSecs(obj.ISI);
                 Beeper;
                 OLFlicker(oneLight, obj.modulations(m).starts, obj.modulations(m).stops, 1/samplingFq, 1);
             end

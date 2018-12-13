@@ -1,4 +1,4 @@
-function directions = makeNominalMeLMSens_SteadyAdapt(calibration, varargin)
+function directions = makeNominalDirections(calibration, varargin)
 % Make nominal directions for MeLMSens_SteadyAdapt protocol
 %
 % Syntax:
@@ -67,13 +67,13 @@ fprintf('done.\n');
 %% LMS directed high and low
 %  Create a 350% Mel-contrast background+step pair
 %  'low' = background, 'high' = background+step.
-LMSDirectionParams = OLDirectionParamsFromName('MaxLMS_unipolar_275_60_667','alternateDictionaryFunc','OLDirectionParamsDictionary_Psychophysics');
-LMSDirectionParams.primaryHeadRoom = 0;
-LMSDirectionParams.modulationContrast = OLUnipolarToBipolarContrast([3.5 3.5 3.5]);
-fprintf('Making LMS low and high directions, [%.2f %.2f %.2f]%% contrast...',OLBipolarToUnipolarContrast(LMSDirectionParams.modulationContrast)*100);
-[directions('LMSStep'), directions('LMS_low')] = OLDirectionNominalFromParams(LMSDirectionParams, calibration, 'observerAge', parser.Results.observerAge);
-directions('LMS_high') = directions('LMS_low') + directions('LMSStep');
-fprintf('done.\n');
+% LMSDirectionParams = OLDirectionParamsFromName('MaxLMS_unipolar_275_60_667','alternateDictionaryFunc','OLDirectionParamsDictionary_Psychophysics');
+% LMSDirectionParams.primaryHeadRoom = 0;
+% LMSDirectionParams.modulationContrast = OLUnipolarToBipolarContrast([3.5 3.5 3.5]);
+% fprintf('Making LMS low and high directions, [%.2f %.2f %.2f]%% contrast...',OLBipolarToUnipolarContrast(LMSDirectionParams.modulationContrast)*100);
+% [directions('LMSStep'), directions('LMS_low')] = OLDirectionNominalFromParams(LMSDirectionParams, calibration, 'observerAge', parser.Results.observerAge);
+% directions('LMS_high') = directions('LMS_low') + directions('LMSStep');
+% fprintf('done.\n');
 
 %% LMS flicker directions
 % One 5% flicker direction on each of Mel/LMS high/low
@@ -88,13 +88,13 @@ fprintf("Making flicker direction on Mel_high, [%.2f %.2f %.2f]%% contrast...",F
 directions('FlickerDirection_Mel_high') = OLDirectionNominalFromParams(FlickerDirectionParams, calibration, 'background', directions('Mel_high'), 'observerAge', parser.Results.observerAge);
 fprintf("done.\n");
 
-fprintf("Making flicker direction on LMS_low, [%.2f %.2f %.2f]%% contrast...",FlickerDirectionParams.modulationContrast*100);
-directions('FlickerDirection_LMS_low') = OLDirectionNominalFromParams(FlickerDirectionParams, calibration, 'background', directions('LMS_low'), 'observerAge', parser.Results.observerAge);
-fprintf("done.\n");
-
-fprintf("Making flicker direction on LMS_high, [%.2f %.2f %.2f]%% contrast...",FlickerDirectionParams.modulationContrast*100);
-directions('FlickerDirection_LMS_high') = OLDirectionNominalFromParams(FlickerDirectionParams, calibration, 'background', directions('LMS_high'), 'observerAge', parser.Results.observerAge);
-fprintf("done.\n");
+% fprintf("Making flicker direction on LMS_low, [%.2f %.2f %.2f]%% contrast...",FlickerDirectionParams.modulationContrast*100);
+% directions('FlickerDirection_LMS_low') = OLDirectionNominalFromParams(FlickerDirectionParams, calibration, 'background', directions('LMS_low'), 'observerAge', parser.Results.observerAge);
+% fprintf("done.\n");
+% 
+% fprintf("Making flicker direction on LMS_high, [%.2f %.2f %.2f]%% contrast...",FlickerDirectionParams.modulationContrast*100);
+% directions('FlickerDirection_LMS_high') = OLDirectionNominalFromParams(FlickerDirectionParams, calibration, 'background', directions('LMS_high'), 'observerAge', parser.Results.observerAge);
+% fprintf("done.\n");
 
 %%
 fprintf("<strong>Nominal directions succesfully created.</strong>\n\n");

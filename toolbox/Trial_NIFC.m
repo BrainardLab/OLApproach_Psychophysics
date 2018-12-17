@@ -50,6 +50,9 @@ classdef Trial_NIFC < handle
             parser.addRequired('nIntervals',@isnumeric);
             parser.addRequired('targetModulation');
             parser.addRequired('referenceModulation');
+            parser.addParameter('preModulation',[]);
+            parser.addParameter('postModulation',[]);
+            parser.addParameter('interstimulusModulation',[]);
             parser.addParameter('targetInterval',[],@isnumeric);
             parser.addParameter('ISI',.5,@isnumeric);
             parser.parse(nIntervals, targetModulation, referenceModulation, varargin{:});
@@ -58,7 +61,6 @@ classdef Trial_NIFC < handle
             obj.nIntervals = parser.Results.nIntervals;
             obj.targetModulation = parser.Results.targetModulation;
             obj.referenceModulation = parser.Results.referenceModulation;
-            obj.ISI = parser.Results.ISI;
         end
         
         function obj = initializeIntervals(obj)

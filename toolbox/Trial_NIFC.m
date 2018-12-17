@@ -15,7 +15,7 @@ classdef Trial_NIFC < handle
     
     properties (SetAccess = protected)
         intervals;
-        modulations; 
+        modulations = struct([]);         
         targetPresent;        
         response;
         correct = false;
@@ -88,13 +88,13 @@ classdef Trial_NIFC < handle
         function obj = assembleModulations(obj)
             %% Collapes modulations, add pre, post, interstimulusModulation
             % pre, I(1), IS, I(2), IS,...,I(N), post
-            obj.modulations(1) = obj.preModulation;
-            obj.modulations(2) = obj.intervals(1).modulation;
+            obj.modulations = obj.preModulation;
+            obj.modulations = [obj.modulations obj.intervals(1).modulation];
             for i = 2:length(obj.intervals)
-                obj.modulations(i*2-1) = obj.interstimulusModulation;
-                obj.modulations(i*2) = obj.intervals(i).modulation;
+                obj.modulations = [obj.modulations obj.interstimulusModulation];
+                obj.modulations = [obj.modulations obj.intervals(i).modulation];
             end
-            obj.modulations(end+1) = obj.postModulation;
+            obj.modulations = [obj.modulations obj.postModulation];
         end
         
         function obj = initialize(obj)

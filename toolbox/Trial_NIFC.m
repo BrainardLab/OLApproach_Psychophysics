@@ -16,7 +16,6 @@ classdef Trial_NIFC < handle
     properties (SetAccess = protected)
         intervals;
         modulations = struct([]);         
-        targetPresent;        
         response;
         correct = false;
         done = false;
@@ -128,7 +127,7 @@ classdef Trial_NIFC < handle
             else
                 abort = false;
                 % Correct? Compare only first response
-                obj.correct = all(obj.response{1} == obj.targetPresent);
+                obj.correct = all(obj.response{1} == [obj.intervals.targetPresent]);
             end
             
             %% Finalize

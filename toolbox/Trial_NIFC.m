@@ -1,4 +1,4 @@
-classdef Trial_NIFC
+classdef Trial_NIFC < handle
     % Class defining a single N-interval forced-choice trial
     %   Detailed explanation goes here
     

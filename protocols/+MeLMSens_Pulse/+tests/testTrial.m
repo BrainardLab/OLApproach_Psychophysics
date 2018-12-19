@@ -32,13 +32,19 @@ rampOnWaveform = [cosineWaveform, constant(seconds(.25),samplingFq)];
 % cosine-window 1 -> 0
 rampOffWaveform = [constant(seconds(.25),samplingFq), fliplr(cosineWaveform)];
 
+%% Scale direction to contrast
+receptors = directions('MelStep').describe.directionParams.T_receptors;
+flickerContrast = .015;
+flickerDirection = directions('FlickerDirection_Mel_high');
+scaledDirection = flickerDirection.ScaleToReceptorContrast(directions('Mel_high'), receptors, flickerContrast * [1, -1; 1, -1; 1, -1; 0, 0]);
+
 %% Construct modulations
 preModulation = OLAssembleModulation([directions('Mel_low') directions('MelStep')],[constant(seconds(.75),samplingFq); rampOnWaveform]);
 postModulation = OLAssembleModulation([directions('Mel_low') directions('MelStep')],[constant(seconds(.75),samplingFq); rampOffWaveform]);
 referenceModulation = OLAssembleModulation([directions('Mel_low') directions('MelStep')],[referenceWaveform; referenceWaveform]);
 interstimulusModulation = referenceModulation;
 
-targetModulation = OLAssembleModulation([directions('Mel_low') directions('MelStep') directions('FlickerDirection_Mel_high')],[referenceWaveform; referenceWaveform; flickerWaveform]);
+targetModulation = OLAssembleModulation([directions('Mel_low') directions('MelStep') scaledDirection],[referenceWaveform; referenceWaveform; flickerWaveform]);
 
 %% Construct trial
 t = Trial_NIFC(2,targetModulation,referenceModulation);

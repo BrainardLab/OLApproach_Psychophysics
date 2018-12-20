@@ -55,6 +55,11 @@ classdef acquisition < handle
         nDowns = [1 1 1];
         rngSettings;
     end
+    properties %(Access = protected)
+        currentStaircase = 1;
+        nTrialsRemaining;
+    end
+    
     properties
         trials = [];
     end
@@ -107,6 +112,8 @@ classdef acquisition < handle
         function initializeStaircases(obj)
             % Initialize staircases
             
+            assert(isempty(obj.nTrialsRemaining),'Staircases have alread been initialized');
+            
             % Setup contrast levels
             obj.contrastLevels = (0:obj.contrastStep:obj.maxContrast);
             obj.stepSizes = [4*obj.contrastStep 2*obj.contrastStep obj.contrastStep];
@@ -117,6 +124,7 @@ classdef acquisition < handle
                 obj.staircases{k} = Staircase(obj.staircaseType,initialGuess, ...
                     'StepSizes', obj.stepSizes, 'NUp', obj.nUps(k), 'NDown', obj.nDowns(k), ...
                     'MaxValue', obj.maxContrast, 'MinValue', obj.minContrast);
+                obj.nTrialsRemaining(k) = obj.NTrialsPerStaircase;
             end
         end
         
@@ -141,15 +149,8 @@ classdef acquisition < handle
             for ntrial = 1:obj.NTrialsPerStaircase % loop over trial numbers
                 for k = Shuffle(1:obj.NInterleavedStaircases) % loop over staircases, in randomized order
                     if ~abort                   
-                        % Get contrast value
-                        flickerContrast = getCurrentValue(obj.staircases{k});
-                        
                         % Run trial
-                        [correct, abort, trial] = obj.runTrial(flickerContrast, oneLight, responseSys);
-                        obj.trials = [obj.trials trial];
-                        
-                        % Update modulation parameters, according to staircase
-                        obj.staircases{k} = updateForTrial(obj.staircases{k}, flickerContrast, correct);
+                        [~, abort, ~] = obj.runTrial(flickerContrast, oneLight, responseSys);                       
                     end
                 end
             end
@@ -159,12 +160,41 @@ classdef acquisition < handle
             end
         end
         
-        function bool = hasNextTrial(obj)
+        function staircaseValue = getNextStaircaseValue(obj)
+            % Find available (non-completed) staircases
+            availableStaircases = obj.nTrialsRemaining > 0;
+            assert(~isempty(availableStaircases),'No trails remaining');
             
+            % Pick one
+            obj.currentStaircase = randi(numel(availableStaircases)+1)-1;
+                        
+            % Get staircase value
+            staircaseValue = getCurrentStaircaseValue(obj); 
         end
         
-        function [correct, abort, trial] = runTrial(obj, flickerContrast, oneLight, trialResponseSys)
-            % Assemble trial
+        function bool = hasNextTrial(obj)
+            bool = any(obj.nTrialsRemaining > 0);            
+        end
+        
+        function staircaseValue = getCurrentStaircaseValue(obj)
+            staircaseValue = getCurrentValue(obj.staircases{obj.currentStaircase});
+        end
+        
+        function updateStaircase(obj, correct)
+            obj.staircases{obj.currentStaircase} = updateForTrial(obj.staircases{obj.currentStaircase},...
+                obj.getCurrentStaircaseValue,...
+                correct);
+            
+            % Update nTrialsRemaining
+            obj.nTrialsRemaining(obj.currentStaircase) = obj.nTrialsRemaining(obj.currentStaircase)-1;            
+        end
+        
+        function [correct, abort, trial] = runNextTrial(obj, oneLight, trialResponseSys)
+            % Run next trial in acquisition
+            
+            % Get contrast value
+            flickerContrast = obj.getNextStaircaseValue();
+            
             % Assemble modulations
             trial = MeLMSens_Pulse.assembleTrial(obj.background,obj.pedestalDirection,obj.flickerDirection,obj.pedestalPresent,flickerContrast,obj.receptors);
             
@@ -172,8 +202,13 @@ classdef acquisition < handle
             OLShowDirection(obj.background, oneLight);
             [abort, trial] = trial.run(oneLight,obj.samplingFq,trialResponseSys);
             OLShowDirection(obj.background, oneLight);
-            
+
+            % Update staircases
             correct = trial.correct;
+            obj.updateStaircase(trial.correct);
+            
+            % Save to list
+            obj.trials = [obj.trials trial];
         end
         
         function postAcquisition(obj, oneLight, radiometer)

@@ -41,4 +41,6 @@ trialResponseSys = responseSystem(trialKeyBindings,[]);
 oneLight = OneLight('simulate',true);
 
 %% Try
-[correct, abort] = acquisition_pedestal.runTrial(.01, oneLight, trialResponseSys)
+acquisition_pedestal.hasNextTrial()
+[correct, abort] = acquisition_pedestal.runNextTrial(oneLight, trialResponseSys)
+acquisition_pedestal.nTrialsRemaining

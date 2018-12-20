@@ -1,4 +1,4 @@
-function trial = assembleTrial(background, pedestalDirection, flickerDirection, stepPresent,flickerContrast)
+function trial = assembleTrial(background, pedestalDirection, flickerDirection, stepPresent, flickerContrast, receptors)
 % Parametrically assemble a trial in this protocol
 
 %% Set up waveforms
@@ -21,7 +21,6 @@ rampOnWaveform = [cosineWaveform, constant(seconds(.25),samplingFq)];
 rampOffWaveform = [constant(seconds(.25),samplingFq), fliplr(cosineWaveform)];
 
 %% Scale direction to contrast
-receptors = pedestalDirection.describe.directionParams.T_receptors;
 scaledDirection = flickerDirection.ScaleToReceptorContrast(background, receptors, flickerContrast * [1, -1; 1, -1; 1, -1; 0, 0]);
 
 %% Construct modulations

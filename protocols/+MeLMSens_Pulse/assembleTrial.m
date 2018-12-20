@@ -1,4 +1,4 @@
-function trial = assembleTrial(directions, stepPresent,flickerContrast)
+function trial = assembleTrial(background, pedestalDirection, flickerDirection, stepPresent,flickerContrast)
 % Parametrically assemble a trial in this protocol
 
 %% Set up waveforms
@@ -21,31 +21,24 @@ rampOnWaveform = [cosineWaveform, constant(seconds(.25),samplingFq)];
 rampOffWaveform = [constant(seconds(.25),samplingFq), fliplr(cosineWaveform)];
 
 %% Scale direction to contrast
-receptors = directions('MelStep').describe.directionParams.T_receptors;
-if stepPresent
-    flickerDirection = directions('FlickerDirection_Mel_high');
-    backgroundDirection = directions('Mel_high');
-else
-    flickerDirection = directions('FlickerDirection_Mel_low');
-    backgroundDirection = directions('Mel_low');
-end
-scaledDirection = flickerDirection.ScaleToReceptorContrast(backgroundDirection, receptors, flickerContrast * [1, -1; 1, -1; 1, -1; 0, 0]);
+receptors = pedestalDirection.describe.directionParams.T_receptors;
+scaledDirection = flickerDirection.ScaleToReceptorContrast(background, receptors, flickerContrast * [1, -1; 1, -1; 1, -1; 0, 0]);
 
 %% Construct modulations
 if stepPresent
-    preModulation = OLAssembleModulation([directions('Mel_low') directions('MelStep')],[constant(seconds(.75),samplingFq); rampOnWaveform]);
-    postModulation = OLAssembleModulation([directions('Mel_low') directions('MelStep')],[constant(seconds(.75),samplingFq); rampOffWaveform]);
-    referenceModulation = OLAssembleModulation([directions('Mel_low') directions('MelStep')],[referenceWaveform; referenceWaveform]);
+    preModulation = OLAssembleModulation([background pedestalDirection],[constant(seconds(.75),samplingFq); rampOnWaveform]);
+    postModulation = OLAssembleModulation([background pedestalDirection],[constant(seconds(.75),samplingFq); rampOffWaveform]);
+    referenceModulation = OLAssembleModulation([background pedestalDirection],[referenceWaveform; referenceWaveform]);
     interstimulusModulation = referenceModulation;
-    targetModulation = OLAssembleModulation([directions('Mel_low') directions('MelStep') scaledDirection],[referenceWaveform; referenceWaveform; flickerWaveform]);
+    targetModulation = OLAssembleModulation([background pedestalDirection scaledDirection],[referenceWaveform; referenceWaveform; flickerWaveform]);
 else
-    preModulation = OLAssembleModulation(directions('Mel_low'),...
+    preModulation = OLAssembleModulation(background,...
         constant(seconds(.75),samplingFq));
     postModulation = preModulation;
-    referenceModulation = OLAssembleModulation(directions('Mel_low'),...
+    referenceModulation = OLAssembleModulation(background,...
         referenceWaveform);
     interstimulusModulation = referenceModulation;
-    targetModulation = OLAssembleModulation([directions('Mel_low') scaledDirection],...
+    targetModulation = OLAssembleModulation([background scaledDirection],...
         [referenceWaveform; flickerWaveform]);
 end
 

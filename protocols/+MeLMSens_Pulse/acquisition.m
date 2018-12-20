@@ -12,13 +12,16 @@ classdef acquisition < handle
     % Directions
     properties
         background;
-        direction;
+        pedestalDirection;
+        pedestalPresent;
+        flickerDirection;
         receptors;
         
         % Post-validation
         validationAtThreshold;
     end
     properties (Dependent)
+        flickerBackground;
         maxContrast;
     end
     
@@ -57,18 +60,19 @@ classdef acquisition < handle
     end
     
     methods
-        function obj = Acquisition_FlickerSensitivity_2IFC(background, direction, receptors, varargin)
+        function obj = acquisition(background, pedestalDirection, pedestalPresent, flickerDirection, receptors, varargin)
             % Constructor
             
             % Input validation
             parser = inputParser;
             parser.addRequired('background',@(x) isa(x,'OLDirection_unipolar'));
-            parser.addRequired('direction',@(x) isa(x,'OLDirection_bipolar'));
+            parser.addRequired('pedestalDirection',@(x) isa(x,'OLDirection_unipolar'));
+            parser.addRequired('pedestalPresent',@islogical);
+            parser.addRequired('flickerDirection',@(x) isa(x,'OLDirection_bipolar'));
             parser.addRequired('receptors',@(x) isa(x,'SSTReceptor') || isnumeric(x));
             parser.addParameter('name',"",@(x) ischar(x) || isstring(x));
             parser.addParameter('describe',struct(),@isstruct);
-            
-            parser.parse(background,direction,receptors,varargin{:});
+            parser.parse(background, pedestalDirection, pedestalPresent, flickerDirection,receptors,varargin{:});
             
             % Assign properties
             % Name, describe
@@ -78,22 +82,32 @@ classdef acquisition < handle
             
             % Direction-related
             obj.background = background;
-            obj.direction = direction;
+            obj.pedestalDirection = pedestalDirection;
+            obj.pedestalPresent = pedestalPresent;
+            obj.flickerDirection = flickerDirection;
             obj.receptors = receptors;
+        end
+        
+        function flickerBackground = get.flickerBackground(obj)
+            if obj.pedestalPresent
+                flickerBackground = obj.background + obj.pedestalDirection;
+            else
+                flickerBackground = obj.background;
+            end
         end
         
         function maxContrast = get.maxContrast(obj)
             % Figure out max contrast: smallest of the nominal max L, M, S
             % contrasts
-            nominalContrasts = obj.direction.ToDesiredReceptorContrast(obj.background, obj.receptors);
+            nominalContrasts = obj.flickerDirection.ToDesiredReceptorContrast(obj.flickerBackground, obj.receptors);
             nominalContrasts = abs(nominalContrasts(1:3,:));
             maxContrast = min(nominalContrasts(:));
         end
         
         function initializeStaircases(obj)
-           % Initialize staircases
+            % Initialize staircases
             
-           % Setup contrast levels
+            % Setup contrast levels
             obj.contrastLevels = (0:obj.contrastStep:obj.maxContrast);
             obj.stepSizes = [4*obj.contrastStep 2*obj.contrastStep obj.contrastStep];
             
@@ -107,12 +121,12 @@ classdef acquisition < handle
         end
         
         function showAdaptation(obj, oneLight)
-           % Show adaptation spectrum for adaptation period (preceding any trials)
+            % Show adaptation spectrum for adaptation period (preceding any trials)
             OLAdaptToDirection(obj.background, oneLight, obj.adaptationDuration);
         end
         
         function runAcquisition(obj, oneLight, responseSys)
-           % Run the acquisition
+            % Run the acquisition
             % Create flickerWaveform;
             obj.flickerWaveform = sinewave(obj.flickerDuration,obj.samplingFq,obj.flickerFrequency);
             
@@ -126,7 +140,7 @@ classdef acquisition < handle
             abort = false;
             for ntrial = 1:obj.NTrialsPerStaircase % loop over trial numbers
                 for k = Shuffle(1:obj.NInterleavedStaircases) % loop over staircases, in randomized order
-                    if ~abort
+                    if ~abort                   
                         % Get contrast value
                         flickerContrast = getCurrentValue(obj.staircases{k});
                         
@@ -152,10 +166,7 @@ classdef acquisition < handle
         function [correct, abort, trial] = runTrial(obj, flickerContrast, oneLight, trialResponseSys)
             % Assemble trial
             % Assemble modulations
-            scaledDirection = obj.direction.ScaleToReceptorContrast(obj.background, obj.receptors, flickerContrast * [1, -1; 1, -1; 1, -1; 0, 0]);
-            targetModulation = OLAssembleModulation([obj.background, scaledDirection],[ones(1,length(obj.flickerWaveform)); obj.flickerWaveform]);
-            referenceModulation = OLAssembleModulation(obj.background, ones([1,length(obj.flickerWaveform)]));
-            trial = Trial_NIFC(2,targetModulation,referenceModulation);
+            trial = MeLMSens_Pulse.assembleTrial(obj.background,obj.pedestalDirection,obj.flickerDirection,obj.pedestalPresent,flickerContrast,obj.receptors);
             
             % Show trial
             OLShowDirection(obj.background, oneLight);
@@ -179,7 +190,7 @@ classdef acquisition < handle
             end
         end
     end
-
+    
     methods % Psychometric function fitting
         function PFParams = fitPsychometricFunction(obj, psychometricFunction)
             % Fit with Palemedes Toolbox. Really want to plot the fit
@@ -258,9 +269,9 @@ classdef acquisition < handle
             
             % PF-based threshold
             criterion = 0.7071;
-            threshold = thresholdFromPsychometricFunction(psychometricFunction,PFParams,criterion);            
+            threshold = thresholdFromPsychometricFunction(psychometricFunction,PFParams,criterion);
         end
-    end    
+    end
     
     methods % Plotting
         function F = plot(obj, varargin)
@@ -313,7 +324,7 @@ classdef acquisition < handle
         end
         
         function PFGroup = plotPsychometricFunction(obj,varargin)
-             % Plot psychometric function fit to this acquisition
+            % Plot psychometric function fit to this acquisition
             
             % Parse input
             parser = inputParser();
@@ -344,7 +355,7 @@ classdef acquisition < handle
                 'ax',ax,...
                 'color',color);
             PFLine.Parent = PFGroup;
-         
+            
             % PF-based threshold
             criterion = 0.7071;
             ax.ColorOrderIndex = ax.ColorOrderIndex -1; % plot threshold in same color as fitline

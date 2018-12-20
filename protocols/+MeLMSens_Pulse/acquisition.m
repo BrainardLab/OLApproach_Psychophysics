@@ -3,13 +3,13 @@ classdef acquisition < handle
     %
     %   Detailed explanation goes here
     
-    %% Descriptors
+    % Descriptors
     properties
         name;
         describe;
     end
     
-    %% Directions
+    % Directions
     properties
         background;
         direction;
@@ -22,7 +22,7 @@ classdef acquisition < handle
         maxContrast;
     end
     
-    %% Timing related properties
+    % Timing related properties
     properties
         ISI = .5;
         adaptationDuration = minutes(5);
@@ -35,7 +35,7 @@ classdef acquisition < handle
         flickerDuration = .5;
     end
     
-    %% Staircase related properties
+    % Staircase related properties
     properties
         staircases;
         thresholds;
@@ -56,12 +56,11 @@ classdef acquisition < handle
         trials = [];
     end
     
-    %% Methods
     methods
         function obj = Acquisition_FlickerSensitivity_2IFC(background, direction, receptors, varargin)
-            %% Constructor
+            % Constructor
             
-            %% Input validation
+            % Input validation
             parser = inputParser;
             parser.addRequired('background',@(x) isa(x,'OLDirection_unipolar'));
             parser.addRequired('direction',@(x) isa(x,'OLDirection_bipolar'));
@@ -71,7 +70,7 @@ classdef acquisition < handle
             
             parser.parse(background,direction,receptors,varargin{:});
             
-            %% Assign properties
+            % Assign properties
             % Name, describe
             obj.name = parser.Results.name;
             obj.describe = parser.Results.describe;
@@ -92,9 +91,9 @@ classdef acquisition < handle
         end
         
         function initializeStaircases(obj)
-            %% Initialize staircases
+           % Initialize staircases
             
-            %% Setup contrast levels
+           % Setup contrast levels
             obj.contrastLevels = (0:obj.contrastStep:obj.maxContrast);
             obj.stepSizes = [4*obj.contrastStep 2*obj.contrastStep obj.contrastStep];
             
@@ -108,12 +107,12 @@ classdef acquisition < handle
         end
         
         function showAdaptation(obj, oneLight)
-            %% Show adaptation spectrum for adaptation period (preceding any trials)
+           % Show adaptation spectrum for adaptation period (preceding any trials)
             OLAdaptToDirection(obj.background, oneLight, obj.adaptationDuration);
         end
         
         function runAcquisition(obj, oneLight, responseSys)
-            %% Run the acquisition
+           % Run the acquisition
             % Create flickerWaveform;
             obj.flickerWaveform = sinewave(obj.flickerDuration,obj.samplingFq,obj.flickerFrequency);
             
@@ -146,15 +145,19 @@ classdef acquisition < handle
             end
         end
         
+        function bool = hasNextTrial(obj)
+            
+        end
+        
         function [correct, abort, trial] = runTrial(obj, flickerContrast, oneLight, trialResponseSys)
-            %% Assemble trial
+            % Assemble trial
             % Assemble modulations
             scaledDirection = obj.direction.ScaleToReceptorContrast(obj.background, obj.receptors, flickerContrast * [1, -1; 1, -1; 1, -1; 0, 0]);
             targetModulation = OLAssembleModulation([obj.background, scaledDirection],[ones(1,length(obj.flickerWaveform)); obj.flickerWaveform]);
             referenceModulation = OLAssembleModulation(obj.background, ones([1,length(obj.flickerWaveform)]));
             trial = Trial_NIFC(2,targetModulation,referenceModulation);
             
-            %% Show trial
+            % Show trial
             OLShowDirection(obj.background, oneLight);
             [abort, trial] = trial.run(oneLight,obj.samplingFq,trialResponseSys);
             OLShowDirection(obj.background, oneLight);
@@ -175,7 +178,91 @@ classdef acquisition < handle
                 obj.validationAtThreshold = OLValidateDirection(scaledDirection,obj.background, oneLight, radiometer, 'receptors', obj.receptors);
             end
         end
+    end
+
+    methods % Psychometric function fitting
+        function PFParams = fitPsychometricFunction(obj, psychometricFunction)
+            % Fit with Palemedes Toolbox. Really want to plot the fit
+            % against the data to make sure it is reasonable in practice.
+            
+            % Define what psychometric functional form to fit.
+            % Alternatives: PAL_Gumbel, PAL_Weibull, PAL_CumulativeNormal,
+            % PAL_HyperbolicSecant
+            
+            % Extract values, correct/incorrect
+            for k = 1:numel(obj.staircases)
+                [contrastValue(:,k), correct(:,k)] = getTrials(obj.staircases{k});
+            end
+            correct = logical(correct);
+            contrastValue = round(contrastValue,6);
+            
+            % Put data in format for PAL:
+            % `stimLevels` vector of contrastValues/levels used
+            % `nCorrect` number of correct responses for each stim level
+            % `n` number of total trials for each stim level
+            % `PF` handle to psychometric function
+            % `paramsFree` vector of which PF parameters to vary
+            % `initialParamsGuess` initial guess of parameter values
+            stimLevels = unique(contrastValue(:));
+            for i = 1:length(stimLevels)
+                n(i) = sum(contrastValue(:) == stimLevels(i));
+                nCorrect(i) = sum(correct(contrastValue == stimLevels(i)));
+            end
+            
+            % Define initial parameter guesses.
+            initialParamsGuess = [];
+            
+            % The first two parameters of the Weibull define its shape.
+            % Setting the first parameter to the middle of the stimulus
+            % range and the second to 1 puts things into a reasonable
+            % ballpark here.
+            initialParamsGuess(1) = mean([obj.maxContrast,obj.minContrast]);
+            initialParamsGuess(2) = 1;
+            
+            % The third is the guess rate, which determines the value the
+            % function takes on at x = 0.  For 2IFC, this should be locked
+            % at 0.5.
+            guessRate = .5;
+            initialParamsGuess(3) = guessRate;
+            
+            % The fourth parameter is the lapse rate - the asymptotic
+            % performance at high values of x.  For a perfect subject, this
+            % would be 0, but sometimes subjects have a "lapse" and get the
+            % answer wrong even when the stimulus is easy to see.  We can
+            % search over this, but shouldn't allow it to take on
+            % unreasonable values.  0.05 as an upper limit isn't crazy.
+            lapseLimits = [0 0.05];
+            initialParamsGuess(4) = mean(lapseLimits);
+            
+            % paramsFree is a boolean vector that determines what
+            % parameters get searched over. 1: free parameter, 0: fixed
+            % parameter
+            paramsFree = [1 1 0 1];
+            
+            % Set up standard options for Palamedes search
+            options = PAL_minimize('options');
+            
+            % Do the search to get the parameters
+            PFParams = PAL_PFML_Fit(...
+                stimLevels,nCorrect',n', ...
+                initialParamsGuess,paramsFree,...
+                psychometricFunction,...
+                'searchOptions',options,...
+                'lapseLimits',lapseLimits);
+        end
         
+        function threshold = fitPsychometricFunctionThreshold(obj)
+            % Fit psychometric function
+            psychometricFunction = @PAL_Weibull;
+            PFParams = obj.fitPsychometricFunction(psychometricFunction);
+            
+            % PF-based threshold
+            criterion = 0.7071;
+            threshold = thresholdFromPsychometricFunction(psychometricFunction,PFParams,criterion);            
+        end
+    end    
+    
+    methods % Plotting
         function F = plot(obj, varargin)
             % Plot all trials of this acquisition
             
@@ -271,86 +358,6 @@ classdef acquisition < handle
             xlabel('LMS contrast (ratio)');
             ylabel('Percent correct');
             hold off;
-        end
-        
-        function PFParams = fitPsychometricFunction(obj, psychometricFunction)
-            % Fit with Palemedes Toolbox. Really want to plot the fit
-            % against the data to make sure it is reasonable in practice.
-            
-            % Define what psychometric functional form to fit.
-            % Alternatives: PAL_Gumbel, PAL_Weibull, PAL_CumulativeNormal,
-            % PAL_HyperbolicSecant
-            
-            % Extract values, correct/incorrect
-            for k = 1:numel(obj.staircases)
-                [contrastValue(:,k), correct(:,k)] = getTrials(obj.staircases{k});
-            end
-            correct = logical(correct);
-            contrastValue = round(contrastValue,6);
-            
-            % Put data in format for PAL:
-            % `stimLevels` vector of contrastValues/levels used
-            % `nCorrect` number of correct responses for each stim level
-            % `n` number of total trials for each stim level
-            % `PF` handle to psychometric function
-            % `paramsFree` vector of which PF parameters to vary
-            % `initialParamsGuess` initial guess of parameter values
-            stimLevels = unique(contrastValue(:));
-            for i = 1:length(stimLevels)
-                n(i) = sum(contrastValue(:) == stimLevels(i));
-                nCorrect(i) = sum(correct(contrastValue == stimLevels(i)));
-            end
-            
-            % Define initial parameter guesses.
-            initialParamsGuess = [];
-            
-            % The first two parameters of the Weibull define its shape.
-            % Setting the first parameter to the middle of the stimulus
-            % range and the second to 1 puts things into a reasonable
-            % ballpark here.
-            initialParamsGuess(1) = mean([obj.maxContrast,obj.minContrast]);
-            initialParamsGuess(2) = 1;
-            
-            % The third is the guess rate, which determines the value the
-            % function takes on at x = 0.  For 2IFC, this should be locked
-            % at 0.5.
-            guessRate = .5;
-            initialParamsGuess(3) = guessRate;
-            
-            % The fourth parameter is the lapse rate - the asymptotic
-            % performance at high values of x.  For a perfect subject, this
-            % would be 0, but sometimes subjects have a "lapse" and get the
-            % answer wrong even when the stimulus is easy to see.  We can
-            % search over this, but shouldn't allow it to take on
-            % unreasonable values.  0.05 as an upper limit isn't crazy.
-            lapseLimits = [0 0.05];
-            initialParamsGuess(4) = mean(lapseLimits);
-            
-            % paramsFree is a boolean vector that determines what
-            % parameters get searched over. 1: free parameter, 0: fixed
-            % parameter
-            paramsFree = [1 1 0 1];
-            
-            % Set up standard options for Palamedes search
-            options = PAL_minimize('options');
-            
-            % Do the search to get the parameters
-            PFParams = PAL_PFML_Fit(...
-                stimLevels,nCorrect',n', ...
-                initialParamsGuess,paramsFree,...
-                psychometricFunction,...
-                'searchOptions',options,...
-                'lapseLimits',lapseLimits);
-        end
-        
-        function threshold = fitPsychometricFunctionThreshold(obj)
-            % Fit psychometric function
-            psychometricFunction = @PAL_Weibull;
-            PFParams = obj.fitPsychometricFunction(psychometricFunction);
-            
-            % PF-based threshold
-            criterion = 0.7071;
-            threshold = thresholdFromPsychometricFunction(psychometricFunction,PFParams,criterion);            
         end
     end
 end

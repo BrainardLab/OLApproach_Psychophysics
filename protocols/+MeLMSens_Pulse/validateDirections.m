@@ -1,19 +1,18 @@
-function validations = validateMeLMSens_SteadyAdapt(directions, oneLight, radiometer, varargin)
-% Correct nominal directions for MeLMSens_SteadyAdapt protocol
+function validations = validateDirections(directions, oneLight, radiometer, varargin)
+% Correct nominal directions for this protocol
 %
 % Syntax:
-%   validateMeLMSens_SteadyAdapt(directions, oneLight, radiometer)
-%   validateMeLMSens_SteadyAdapt(directions, oneLight, radiometer,...)
-%   directions = validateMeLMSens_SteadyAdapt(directions, ...)
+%   validateDirections(directions, oneLight, radiometer)
+%   validateDirections(directions, oneLight, radiometer,...)
+%   directions = validateDirections(directions, ...)
 %
 % Description:
 %    Helper function that, for a given calibration, returns the directions
-%    and backgrounds for use in a session of the MeLMSens_SteadyAdapt
-%    protocol.
+%    and backgrounds for use in a session of this protocol.
 %
 % Inputs:
 %    directions  - containers.Map containing the directions, as returned by
-%                  MakeNominalMeLMSens_SteadyAdapt
+%                  makeNominalDirections
 %    oneLight    - OneLight-object device driver
 %    calibration - scalar struct, containing calibration information for
 %                  oneLight
@@ -27,12 +26,12 @@ function validations = validateMeLMSens_SteadyAdapt(directions, oneLight, radiom
 %    any kwarg that OLValidateDirection takes
 %
 % See also:
-%    RunMeLMSens_SteadyAdapt, MakeNominalMeLMSens_SteadyAdapt,
-%    OLValidateDirection, CorrectNominalMeLMSens_SteadyAdapt
+%    makeNominalDirections, OLValidateDirection, correctDirections
 
 % History:
 %    09/03/18  jv   extracted validateMeLMSens_SteadyAdapt from
 %                   RunMeLMSens_SteadyAdapt
+%    12/23/18  jv   adapted for MeLMSens_Pulse
 
 %% Parse input
 parser = inputParser;
@@ -53,7 +52,7 @@ fprintf("<strong>Validating backgrounds and directions...</strong>\n");
 tic;
 
 %% Validate backgrounds
-backgroundNames = ["LMS_low","LMS_high","Mel_low","Mel_high"];
+backgroundNames = ["Mel_low","Mel_high"];
 for bb = backgroundNames
     fprintf("Validating background %s...",bb);
     for i = 1:parser.Results.nValidations

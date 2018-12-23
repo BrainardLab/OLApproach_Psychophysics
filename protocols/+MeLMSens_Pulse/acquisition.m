@@ -41,7 +41,7 @@ classdef acquisition < handle
     % Staircase related properties
     properties
         staircases;
-        thresholds;
+        threshold;
         
         % Staircase parameters
         staircaseType = 'standard';
@@ -213,9 +213,7 @@ classdef acquisition < handle
         
         function postAcquisition(obj, oneLight, radiometer)
             % Get threshold estimate
-            for k = 1:obj.NInterleavedStaircases
-                obj.thresholds(k) = getThresholdEstimate(obj.staircases{k});
-            end
+            obj.threshold = obj.fitPsychometricFunctionThreshold();
             
             % Validate contrast at threshold
             desiredContrast = [1 1 1 0; -1 -1 -1 0]' * mean(obj.thresholds);

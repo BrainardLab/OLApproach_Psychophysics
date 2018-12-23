@@ -32,5 +32,10 @@ acquisitions = Shuffle(acquisitions);
 for i = 1:numel(acquisitions)
     acquisitions(i).NTrialsPerStaircase = parser.Results.NTrialsPerStaircase;
 end
+
+%% Intialize
+for acquisition = acquisitions(:)'
+    acquisition.initializeStaircases();
+end
     
 end

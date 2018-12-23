@@ -60,6 +60,9 @@ classdef Trial_NIFC < handle
             obj.nIntervals = parser.Results.nIntervals;
             obj.targetModulation = parser.Results.targetModulation;
             obj.referenceModulation = parser.Results.referenceModulation;
+            
+            obj.targetModulation.beep = true;
+            obj.referenceModulation.beep = true;
         end
         
         function obj = initializeIntervals(obj)
@@ -87,6 +90,10 @@ classdef Trial_NIFC < handle
         function obj = assembleModulations(obj)
             %% Collapes modulations, add pre, post, interstimulusModulation
             % pre, I(1), IS, I(2), IS,...,I(N), post
+            obj.preModulation.beep = false;
+            obj.postModulation.beep = false;
+            obj.interstimulusModulation.beep = false;
+            
             obj.modulations = obj.preModulation;
             obj.modulations = [obj.modulations obj.intervals(1).modulation];
             for i = 2:length(obj.intervals)
@@ -113,7 +120,9 @@ classdef Trial_NIFC < handle
             
             %% Show modulations      
             for m = 1:length(obj.modulations)
-                Beeper;
+                if isfield(obj.modulations(m),'beep') && obj.modulations(m).beep
+                    Beeper;
+                end
                 OLFlicker(oneLight, obj.modulations(m).starts, obj.modulations(m).stops, 1/samplingFq, 1);
             end
             

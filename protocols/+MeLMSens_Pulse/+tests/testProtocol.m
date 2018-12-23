@@ -85,12 +85,7 @@ trialResponseSys = responseSystem(trialKeyBindings,gamePad);
 
 %% Run
 % pSpot.show();
-for acquisition = acquisitions
-    fprintf('Running acquisition %s...\n',acquisition.name)
-    acquisition.initializeStaircases();
-    acquisition.runAcquisition(oneLight, trialResponseSys);
-    fprintf('Acquisition complete.\n'); Speak('Acquisition complete.',[],230);
-end
+runAcquisitions(acquisitions,oneLight,trialResponseSys);
 
 %% Close connections
 fprintf('Closing devices...');

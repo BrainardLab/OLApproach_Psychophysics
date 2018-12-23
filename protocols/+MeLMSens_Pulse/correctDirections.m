@@ -1,10 +1,10 @@
-function corrections = correctMeLMSens_SteadyAdapt(directions, oneLight, calibration, radiometer, receptors, varargin)
-% Correct nominal directions for MeLMSens_SteadyAdapt protocol
+function corrections = correctDirections(directions, oneLight, calibration, radiometer, receptors, varargin)
+% Correct nominal directions for this protocol
 %
 % Syntax:
-%   CorrectMeLMSens_SteadyAdapt(directions, oneLight, radiometer)
-%   CorrectMeLMSens_SteadyAdapt(directions, oneLight, radiometer,...)
-%   corrections = CorrectMeLMSens_SteadyAdapt(directions, ...)
+%   correctDirections(directions, oneLight, radiometer)
+%   correctDirections(directions, oneLight, radiometer,...)
+%   corrections = correctDirections(directions, ...)
 %
 % Description:
 %    Helper function that corrects the given directions and backgrounds for
@@ -12,7 +12,7 @@ function corrections = correctMeLMSens_SteadyAdapt(directions, oneLight, calibra
 %
 % Inputs:
 %    directions  - containers.Map containing the directions, as returned by
-%                  MakeNominalMeLMSens_SteadyAdapt
+%                  makeNominalDirections
 %    oneLight    - OneLight-object device driver
 %    calibration - scalar struct, containing calibration information for
 %                  oneLight
@@ -26,12 +26,13 @@ function corrections = correctMeLMSens_SteadyAdapt(directions, oneLight, calibra
 %    any kwarg that OLCorrectDirection takes
 %
 % See also:
-%    RunMeLMSens_SteadyAdapt, MakeNominalMeLMSens_SteadyAdapt,
-%    OLCorrectDirection
+%    makeNominalDirections, OLCorrectDirection
 
 % History:
 %    09/03/18  jv   wrote CorrectMeLMSens_SteadyAdapt, based on
 %                   MakeNominalMeLMSens_SteadyAdapt
+%    12/23/18  jv   adapted for MeLMSens_Pulse
+
 
 %% Define correction params
 parser = inputParser;
@@ -46,7 +47,7 @@ parser.parse(directions, oneLight, radiometer, receptors, varargin{:});
 correctionArgs = parser.Unmatched;
 correctionArgs.smoothness = parser.Results.smoothness;
 
-backgroundPairNames = ["LMS","Mel"];
+backgroundPairNames = ["Mel"];
 lowBackgroundNames = backgroundPairNames + "_low";
 highBackgroundNames = backgroundPairNames + "_high";
 backgroundNames = [lowBackgroundNames, highBackgroundNames];

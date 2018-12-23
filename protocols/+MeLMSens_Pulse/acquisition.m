@@ -166,7 +166,7 @@ classdef acquisition < handle
             assert(~isempty(availableStaircases),'No trails remaining');
             
             % Pick one
-            obj.currentStaircase = randi(numel(availableStaircases)+1)-1;
+            obj.currentStaircase = randi(numel(availableStaircases));
                         
             % Get staircase value
             staircaseValue = getCurrentStaircaseValue(obj); 

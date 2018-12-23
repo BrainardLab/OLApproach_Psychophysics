@@ -24,8 +24,16 @@ acquisition_pedestal = acquisition(...
     receptors,...
     'name',"Pedestal");
 
+acquisition_nopedestal = acquisition(...
+    directions('Mel_low'),...
+    directions('MelStep'), false,...
+    directions('FlickerDirection_Mel_low'),...
+    receptors,...
+    'name',"NoPedestal");
+
 %% Initialize
 acquisition_pedestal.initializeStaircases();
+acquisition_nopedestal.initializeStaircases();
 
 %% Set trial response system
 trialKeyBindings = containers.Map();
@@ -41,6 +49,10 @@ trialResponseSys = responseSystem(trialKeyBindings,[]);
 oneLight = OneLight('simulate',true);
 
 %% Try
-acquisition_pedestal.hasNextTrial()
+assert(acquisition_pedestal.hasNextTrial());
+assert(acquisition_nopedestal.hasNextTrial());
 [correct, abort] = acquisition_pedestal.runNextTrial(oneLight, trialResponseSys)
-acquisition_pedestal.nTrialsRemaining
+[correct, abort] = acquisition_nopedestal.runNextTrial(oneLight, trialResponseSys)
+
+assert(sum(acquisition_pedestal.nTrialsRemaining) == 119);
+assert(sum(acquisition_nopedestal.nTrialsRemaining) == 119);

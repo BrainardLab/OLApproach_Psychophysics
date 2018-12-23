@@ -1,16 +1,12 @@
 function [validationsPre, corrections, validationsPost, directions] = testProtocol
-%% Test MeLMSens_SteadyAdapt protocol
-import('MeLMSens_SteadyAdapt.*');
+%% Test MeLMSens_Pulse protocol
+import('MeLMSens_Pulse.*');
 approach = 'OLApproach_Psychophysics';
-protocol = 'MeLMSens';
+protocol = 'MeLMSens_Pulse';
 simulate = getpref(approach,'simulate'); % localhook defines what devices to simulate
 
 %% Get calibration
-% Specify which box and calibration to use, check that everything is set up
-% correctly, and retrieve the calibration structure.
-boxName = 'BoxB';
-calibrationType = 'BoxBRandomizedShortCableAEyePiece3Beamsplitter';
-calibration = OLGetCalibrationStructure('CalibrationType',calibrationType,'CalibrationDate','latest');
+calibration = getCalibration();
 
 %% Open the OneLight
 % Open up a OneLight device
@@ -25,21 +21,21 @@ else
 end
 
 %% Get projectorSpot
-pSpot = projectorSpot(simulate.projector);
+% pSpot = projectorSpot(simulate.projector);
 
 %% Update OLCalibration with pSpot
-pSpotMeasurements = projectorSpot.measure(pSpot,oneLight,radiometer);
-[calibration, pSpotSPD, pSpotLum] = projectorSpot.UpdateOLCalibrationWithProjectorSpot(calibration, pSpotMeasurements);
+%pSpotMeasurements = projectorSpot.measure(pSpot,oneLight,radiometer);
+%[calibration, pSpotSPD, pSpotLum] = projectorSpot.UpdateOLCalibrationWithProjectorSpot(calibration, pSpotMeasurements);
 
 %% Make directions
 directions = makeNominalDirections(calibration,'observerAge',32);
 receptors = directions('MelStep').describe.directionParams.T_receptors;
 
 %% Test directions
-t = tests.testDirections();
-t.directions = directions;
-t.receptors = receptors;
-results = t.run();
+% t = tests.testDirections();
+% t.directions = directions;
+% t.receptors = receptors;
+% results = t.run();
 
 %% Validate directions pre-correction
 validationsPre = validateDirections(directions,oneLight,radiometer,...
@@ -60,10 +56,10 @@ validationsPost = validateDirections(directions,oneLight,radiometer,...
                                                 'nValidations',5);                                           
                                             
 %% Compare validations
+% TODO
 
 %% Setup acquisitions
 acquisitions = makeAcquisitions(directions, receptors,...
-                'adaptationDuration',seconds(10),...
                 'NTrialsPerStaircase',1);
 
 %% Set trial response system
@@ -88,7 +84,7 @@ trialResponseSys = responseSystem(trialKeyBindings,gamePad);
 % projectorSpot.adjust(pSpot,gamePad);
 
 %% Run
-pSpot.show();
+% pSpot.show();
 for acquisition = acquisitions
     fprintf('Running acquisition %s...\n',acquisition.name)
     acquisition.initializeStaircases();

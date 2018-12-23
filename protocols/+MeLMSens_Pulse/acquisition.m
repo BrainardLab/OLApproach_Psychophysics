@@ -35,7 +35,7 @@ classdef acquisition < handle
         % flicker parameters
         samplingFq = 200;
         flickerFrequency = 5;
-        flickerDuration = .5;
+        flickerDuration = seconds(.5);
     end
     
     % Staircase related properties

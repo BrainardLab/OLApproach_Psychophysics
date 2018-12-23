@@ -5,7 +5,7 @@
 % before doing anything else.
 clear all; close all; clc;
 approach = 'OLApproach_Psychophysics';
-protocol = 'MeLMSens_SteadyAdapt';
+protocol = 'MeLMSens_Pulse';
 import(sprintf('%s.*',protocol));
 simulate = getpref(approach,'simulate'); % localhook defines what devices to simulate
 
@@ -21,11 +21,7 @@ mkdir(sessionDataPath);
 materialsFilename = sprintf('materials-%s-%s.mat',participantID,sessionName);
 
 %% Get calibration
-% Specify which box and calibration to use, check that everything is set up
-% correctly, and retrieve the calibration structure.
-boxName = 'BoxB';
-calibrationType = 'BoxBRandomizedShortCableAEyePiece3Beamsplitter';
-calibration = OLGetCalibrationStructure('CalibrationType',calibrationType,'CalibrationDate','latest');
+calibration = getCalibration();
 save(fullfile(sessionDataPath, materialsFilename),...
                 'calibration','-v7.3');
 
@@ -56,11 +52,11 @@ pSpot = projectorSpot(simulate.projector);
 pSpot.show();
 
 %% Update OLCalibration with pSpot
-pSpotMeasurements = projectorSpot.measure(pSpot,oneLight,radiometer);
-[calibration, pSpotSPD, pSpotLum] = projectorSpot.UpdateOLCalibrationWithProjectorSpot(calibration, pSpotMeasurements);
-save(fullfile(sessionDataPath,materialsFilename),...
-    'calibration','pSpotSPD','pSpotLum','pSpotMeasurements','-append','-v7.3');
-            
+% pSpotMeasurements = projectorSpot.measure(pSpot,oneLight,radiometer);
+% [calibration, pSpotSPD, pSpotLum] = projectorSpot.UpdateOLCalibrationWithProjectorSpot(calibration, pSpotMeasurements);
+% save(fullfile(sessionDataPath,materialsFilename),...
+%     'calibration','pSpotSPD','pSpotLum','pSpotMeasurements','-append','-v7.3');
+             
 %% Get directions
 directions = makeNominalDirections(calibration,'observerAge',32);
 receptors = directions('MelStep').describe.directionParams.T_receptors;
@@ -68,7 +64,7 @@ save(fullfile(sessionDataPath,materialsFilename),...
     'directions','receptors','-append','-v7.3');
 
 %% Validate directions pre-correction
-pSpot.show();
+pSpot.hide();
 validationsPre = validateDirections(directions,oneLight,radiometer,...
                                                 'receptors',receptors,...
                                                 'primaryTolerance',1e-5,...
@@ -78,7 +74,7 @@ save(fullfile(sessionDataPath,materialsFilename),...
     'directions','validationsPre','-append','-v7.3');
                                             
 %% Correct directions
-pSpot.show();
+pSpot.hide();
 corrections = correctDirections(directions,oneLight,calibration,radiometer,...
                             receptors,...
                             'smoothness',.001,...
@@ -87,7 +83,7 @@ save(fullfile(sessionDataPath,materialsFilename),...
     'directions','corrections','-append','-v7.3');
 
 %% Validate directions post-correction
-pSpot.show();
+pSpot.hide();
 validationsPostCorrection = validateDirections(directions,oneLight,radiometer,...
                                                 'receptors',receptors,...
                                                 'primaryTolerance',1e-5,...
@@ -98,7 +94,6 @@ save(fullfile(sessionDataPath,materialsFilename),...
 
 %% Setup acquisitions
 acquisitions = makeAcquisitions(directions, receptors,...
-                'adaptationDuration',minutes(5),...
                 'NTrialsPerStaircase',40);
 save(fullfile(sessionDataPath,materialsFilename),...
     'acquisitions','-append','-v7.3');            
@@ -129,13 +124,10 @@ projectorSpot.adjust(pSpot,gamePad);
 
 %% Run
 pSpot.show();
-for acquisition = acquisitions
-    fprintf('Running acquisition...\n')
-    acquisition.initializeStaircases();
-    acquisition.runAcquisition(oneLight, trialResponseSys);
-    fprintf('Acquisition complete.\n'); Speak('Acquisition complete.',[],230);
-    
-    % Save acquisition
+runAcquisitions(acquisitions,oneLight,trialResponseSys);
+
+%% Save acquisitions
+for acquisition = acquisitions(:)'    
     dataFilename = sprintf('data-%s-%s-%s.mat',participantID,sessionName,acquisition.name);
     if isfile(fullfile(sessionDataPath,dataFilename))
         prevAcq = load(fullfile(sessionDataPath,dataFilename));
@@ -147,7 +139,7 @@ end
 %% Validate post acquisitions
 input('<strong>Place eyepiece in radiometer, and press any key to start measuring.</strong>\n'); pause(3);
 pSpot.show();
-for acquisition = acquisitions
+for acquisition = acquisitions(:)'
     fprintf('Running post-acquisition routine for %s...',acquisition.name);
     % Run post acquisition routine
     acquisition.postAcquisition(oneLight, radiometer);    
@@ -160,7 +152,7 @@ end
 
 %% Validate directions
 pSpot.show();
-validationsPostSession = validateMeLMSens_SteadyAdapt(directions,oneLight,radiometer,...
+validationsPostSession = validateDirections(directions,oneLight,radiometer,...
                                                 'receptors',receptors,...
                                                 'primaryTolerance',1e-5,...
                                                 'nValidations',5);

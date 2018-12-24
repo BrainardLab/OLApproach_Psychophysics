@@ -138,7 +138,7 @@ end
 
 %% Validate post acquisitions
 input('<strong>Place eyepiece in radiometer, and press any key to start measuring.</strong>\n'); pause(3);
-pSpot.show();
+pSpot.hide();
 for acquisition = acquisitions(:)'
     fprintf('Running post-acquisition routine for %s...',acquisition.name);
     % Run post acquisition routine
@@ -151,7 +151,7 @@ for acquisition = acquisitions(:)'
 end
 
 %% Validate directions
-pSpot.show();
+pSpot.hide();
 validationsPostSession = validateDirections(directions,oneLight,radiometer,...
                                                 'receptors',receptors,...
                                                 'primaryTolerance',1e-5,...

@@ -58,7 +58,7 @@ pSpot.show();
 %     'calibration','pSpotSPD','pSpotLum','pSpotMeasurements','-append','-v7.3');
              
 %% Get directions
-directions = makeNominalDirections(calibration,'observerAge',32);
+directions = makeNominalDirections(calibration,'observerAge',participantAge);
 receptors = directions('MelStep').describe.directionParams.T_receptors;
 save(fullfile(sessionDataPath,materialsFilename),...
     'directions','receptors','-append','-v7.3');

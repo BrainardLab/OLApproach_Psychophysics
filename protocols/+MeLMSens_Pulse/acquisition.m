@@ -316,7 +316,7 @@ classdef acquisition < handle
             
             % Parse input
             parser = inputParser();
-            parser.addRequired('obj',@(x)isa(x,'Acquisition_FlickerSensitivity_2IFC'));
+            parser.addRequired('obj');
             parser.addParameter('F',figure(),@(x) isgraphics(x) && strcmp(x.Type,'figure'));
             parser.parse(obj,varargin{:});
             F = parser.Results.F;
@@ -336,7 +336,7 @@ classdef acquisition < handle
             
             % Parse input
             parser = inputParser();
-            parser.addRequired('obj',@(x)isa(x,'Acquisition_FlickerSensitivity_2IFC'));
+            parser.addRequired('obj');
             parser.addParameter('ax',gca,@(x) isgraphics(x) && strcmp(x.Type,'axes'));
             parser.parse(obj,varargin{:});
             ax = parser.Results.ax;
@@ -347,9 +347,9 @@ classdef acquisition < handle
             
             % Plot mean threshold
             color = ax.ColorOrder(ax.ColorOrderIndex,:); % current plot color, which we'll reuse)
-            plot(xlim,mean(obj.thresholds)*[1 1],'--','Color',color);
-            text(10,mean(obj.thresholds)+0.001,...
-                sprintf('Mean threshold = %.3f',mean(obj.thresholds)),...
+            plot(xlim,obj.threshold*[1 1],'--','Color',color);
+            text(10,obj.threshold+0.001,...
+                sprintf('Mean threshold = %.3f',mean(obj.threshold)),...
                 'Color',color,...
                 'FontWeight','bold');
             
@@ -365,7 +365,7 @@ classdef acquisition < handle
             
             % Parse input
             parser = inputParser();
-            parser.addRequired('obj',@(x)isa(x,'Acquisition_FlickerSensitivity_2IFC'));
+            parser.addRequired('obj');
             parser.addParameter('ax',gca,@(x) isgraphics(x) && strcmp(x.Type,'axes'));
             parser.parse(obj,varargin{:});
             ax = parser.Results.ax;

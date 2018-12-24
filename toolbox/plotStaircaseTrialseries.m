@@ -49,9 +49,17 @@ end
 
 %% Extract values, correct/incorrect
 for k = 1:numel(staircase)
-    [value(:,k), correct(:,k)] = getTrials(staircase(k));
+    [values{k}, corrects{k}] = getTrials(staircase(k));
+    nTrials(k) = length(values{k});
 end
+nTrials = min(nTrials);
+for k = 1:numel(staircase)
+    value(:,k) = values{k}(1:nTrials);
+    correct(:,k) = corrects{k}(1:nTrials);
+end
+
 correct = logical(correct);
+value = round(value,8);
 
 %% Plot
 hold(ax,'on');

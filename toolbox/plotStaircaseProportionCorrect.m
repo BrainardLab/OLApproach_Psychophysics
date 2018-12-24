@@ -37,10 +37,20 @@ parser.KeepUnmatched = true;
 parser.parse(staircase, varargin{:});
 ax = parser.Results.ax;
 
-% Extract values, respones, from Staircase(s)
+
+% Extract values, correct/incorrect
 for k = 1:numel(staircase)
-    [values(:,k), responses(:,k)] = getTrials(staircase(k));
+    [value{k}, corrects{k}] = getTrials(staircase(k));
+    nTrials(k) = length(value{k});
 end
+nTrials = min(nTrials);
+for k = 1:numel(staircase)
+    values(:,k) = value{k}(1:nTrials);
+    responses(:,k) = corrects{k}(1:nTrials);
+end
+
+responses = logical(responses);
+values = round(values,8);
 
 % Aggregate stair trials
 [meanValues,nCorrect,nTrials] = GetAggregatedStairTrials(values(:),responses(:),parser.Results.binSize);

@@ -124,6 +124,7 @@ projectorSpot.adjust(pSpot,gamePad);
 
 %% Run
 pSpot.show();
+trialResponseSys.waitForResponse();
 runAcquisitions(acquisitions,oneLight,trialResponseSys);
 
 %% Save acquisitions

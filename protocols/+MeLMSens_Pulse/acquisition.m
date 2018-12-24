@@ -234,8 +234,12 @@ classdef acquisition < handle
             % PAL_HyperbolicSecant
             
             % Extract values, correct/incorrect
+            contrastValue = zeros(obj.NTrialsPerStaircase,obj.NInterleavedStaircases);
+            correct = false(obj.NTrialsPerStaircase,obj.NInterleavedStaircases);
             for k = 1:numel(obj.staircases)
-                [contrastValue(:,k), correct(:,k)] = getTrials(obj.staircases{k});
+                [contrastValues, corrects] = getTrials(obj.staircases{k});
+                contrastValue(:,k) = contrastValues(1:length(contrastValue));
+                correct(:,k) = corrects(1:length(correct));
             end
             correct = logical(correct);
             contrastValue = round(contrastValue,6);

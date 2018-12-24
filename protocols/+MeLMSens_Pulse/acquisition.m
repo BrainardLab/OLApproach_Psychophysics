@@ -162,8 +162,8 @@ classdef acquisition < handle
         
         function staircaseValue = getNextStaircaseValue(obj)
             % Find available (non-completed) staircases
-            availableStaircases = obj.nTrialsRemaining > 0;
-            assert(~isempty(availableStaircases),'No trails remaining');
+            availableStaircases = find(obj.nTrialsRemaining > 0);
+            assert(~isempty(availableStaircases),'No trials remaining');
             
             % Pick one
             obj.currentStaircase = randi(numel(availableStaircases));

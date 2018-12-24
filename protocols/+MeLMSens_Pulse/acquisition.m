@@ -216,10 +216,10 @@ classdef acquisition < handle
             obj.threshold = obj.fitPsychometricFunctionThreshold();
             
             % Validate contrast at threshold
-            desiredContrast = [1 1 1 0; -1 -1 -1 0]' * mean(obj.thresholds);
-            scaledDirection = obj.direction.ScaleToReceptorContrast(obj.background, obj.receptors, desiredContrast);
+            desiredContrast = [1 1 1 0; -1 -1 -1 0]' * obj.threshold;
+            scaledDirection = obj.flickerDirection.ScaleToReceptorContrast(obj.flickerBackground, obj.receptors, desiredContrast);
             for v = 1:5
-                obj.validationAtThreshold = OLValidateDirection(scaledDirection,obj.background, oneLight, radiometer, 'receptors', obj.receptors);
+                obj.validationAtThreshold = OLValidateDirection(scaledDirection,obj.flickerBackground, oneLight, radiometer, 'receptors', obj.receptors);
             end
         end
     end

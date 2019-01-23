@@ -116,7 +116,7 @@ system(procDataLinkCommand);
 %% Set Directory structures for individual protocols
 protocols = DefineProtocolNames;
 for pp = 1:length(protocols)
-    protocolDir = fullfile(approachPath,'protocols',protocols{pp});
+    protocolDir = fullfile(approachPath,'protocols',['+', protocols{pp}]);
     mkdir(protocolDir,'data');
     
     rawDataDestination = fullfile(protocolDir,'data','raw');
@@ -124,7 +124,7 @@ for pp = 1:length(protocols)
         delete(rawDataDestination)
     end
     rawDataLinkCommand = sprintf('ln -s %s %s',...
-        fullfile(approachPath,'data','raw',protocols{pp}),...
+        fullfile(approachPath,'data','raw',['+', protocols{pp}]),...
         rawDataDestination);
     system(rawDataLinkCommand);
     
@@ -133,7 +133,7 @@ for pp = 1:length(protocols)
         delete(processedDataDestination)
     end
     processedDataLinkCommand = sprintf('ln -s %s %s',...
-        fullfile(approachPath,'data','processed',protocols{pp}),...
+        fullfile(approachPath,'data','processed',['+', protocols{pp}]),...
         processedDataDestination);
     system(processedDataLinkCommand);
 end

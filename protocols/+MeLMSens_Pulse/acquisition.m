@@ -51,7 +51,7 @@ classdef acquisition < handle
         NTrialsPerStaircase = 40;
         NInterleavedStaircases = 3;
         stepSizes;
-        nUps = [3 2 1];
+        nUps = [2 2 2];
         nDowns = [1 1 1];
         rngSettings;
     end

@@ -137,6 +137,16 @@ for acquisition = acquisitions(:)'
     save(fullfile(sessionDataPath,dataFilename),'acquisition','-v7.3');
 end
 
+%% Validate directions
+pSpot.hide();
+validationsPostSession = validateDirections(directions,oneLight,radiometer,...
+                                                'receptors',receptors,...
+                                                'primaryTolerance',1e-5,...
+                                                'nValidations',5);
+save(fullfile(sessionDataPath,materialsFilename),...
+    'directions','validationsPostSession',...
+    '-append','-v7.3');
+
 %% Validate post acquisitions
 input('<strong>Place eyepiece in radiometer, and press any key to start measuring.</strong>\n'); pause(3);
 pSpot.hide();
@@ -150,16 +160,6 @@ for acquisition = acquisitions(:)'
     save(fullfile(sessionDataPath,dataFilename),'acquisition','-v7.3');
     fprintf('done.\n');
 end
-
-%% Validate directions
-pSpot.hide();
-validationsPostSession = validateDirections(directions,oneLight,radiometer,...
-                                                'receptors',receptors,...
-                                                'primaryTolerance',1e-5,...
-                                                'nValidations',5);
-save(fullfile(sessionDataPath,materialsFilename),...
-    'directions','validationsPostSession',...
-    '-append','-v7.3');
 
 %% Close radiometer
 if exist('radiometer','var') && ~isempty(radiometer)

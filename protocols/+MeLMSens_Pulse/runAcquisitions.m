@@ -19,8 +19,11 @@ for block = acquisitions % loop over columns
             [~, abort] = block(i).runNextTrial(oneLight, trialResponseSys);   
         end
     end
-            
-    fprintf('Acquisition(s) complete.\n'); Speak('Acquisition complete.',[],230);
+    if abort
+        fprintf('Acquisition(s) interrupted.\n'); Speak('Acquisition interrupted.',[],230);
+    else
+        fprintf('Acquisition(s) complete.\n'); Speak('Acquisition complete.',[],230);
+    end
 end    
     
 end

@@ -202,13 +202,14 @@ classdef acquisition < handle
             OLShowDirection(obj.background, oneLight);
             [abort, trial] = trial.run(oneLight,obj.samplingFq,trialResponseSys);
             OLShowDirection(obj.background, oneLight);
+            if ~abort
+                % Update staircases
+                correct = trial.correct;
+                obj.updateStaircase(trial.correct);
 
-            % Update staircases
-            correct = trial.correct;
-            obj.updateStaircase(trial.correct);
-            
-            % Save to list
-            obj.trials = [obj.trials trial];
+                % Save to list
+                obj.trials = [obj.trials trial];
+            end
         end
         
         function postAcquisition(obj, oneLight, radiometer)

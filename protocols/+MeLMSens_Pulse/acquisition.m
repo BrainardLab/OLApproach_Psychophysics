@@ -116,7 +116,7 @@ classdef acquisition < handle
             
             % Setup contrast levels
             obj.contrastLevels = (0:obj.contrastStep:obj.maxContrast);
-            obj.stepSizes = [4*obj.contrastStep 2*obj.contrastStep obj.contrastStep];
+            obj.stepSizes = [8*obj.contrastStep 4*obj.contrastStep 2*obj.contrastStep obj.contrastStep];
             
             obj.rngSettings = rng('shuffle');
             for k = 1:obj.NInterleavedStaircases

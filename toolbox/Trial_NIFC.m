@@ -112,8 +112,14 @@ classdef Trial_NIFC < handle
         end
         
         function [abort, obj] = run(obj, oneLight, samplingFq, responseSys)
-            % Summary of this method goes here
-            %   Detailed explanation goes here
+            % Run given trial
+            %
+            % Syntax:
+            %   run(Trial_NIFC, oneLight, samplingFrequency, responseSystem)
+            %   Trial_NIFC.run(oneLight, samplingFrequency, responseSystem)
+            %
+            % Description:
+            %    Detailed explanation goes here
             if obj.done
                 error('Trial already completed');
             end

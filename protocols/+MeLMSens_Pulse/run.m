@@ -125,6 +125,10 @@ projectorSpot.adjust(pSpot,gamePad);
 %% Run
 pSpot.show();
 trialResponseSys.waitForResponse();
+runPracticeTrials(directions,receptors,oneLight,trialResponseSys);
+
+%%
+trialResponseSys.waitForResponse();
 runAcquisitions(acquisitions,oneLight,trialResponseSys);
 
 %% Save acquisitions

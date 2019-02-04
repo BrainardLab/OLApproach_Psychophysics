@@ -6,7 +6,7 @@ trials = makePracticeTrials(directions, receptors);
 
 %% Run trials
 for t = trials
-    t.run(oneLight, 200, trialResponseSys)
+    t.run(oneLight, 200, trialResponseSys);
 end
 
 end

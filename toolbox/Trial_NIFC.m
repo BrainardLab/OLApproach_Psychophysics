@@ -133,6 +133,7 @@ classdef Trial_NIFC < handle
             end
             
             %% Response
+            Beeper(500); Beeper(500);
             obj.response = responseSys.waitForResponse();
             
             %% Process response

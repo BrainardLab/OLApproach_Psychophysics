@@ -1,13 +1,9 @@
-function testMaxFlickerBrightness()
+function testMaxFlickerBrightness(oneLight)
 import('MeLMSens_Pulse.*');
 simulate = getpref('OLApproach_Psychophysics','simulate'); % localhook defines what devices to simulate
 
 %% Get calibration
 calibration = getCalibration();
-
-%% Open the OneLight
-% Open up a OneLight device
-oneLight = OneLight('simulate',simulate.oneLight); drawnow;
 
 %% Get projectorSpot
 pSpot = projectorSpot(simulate.projector);

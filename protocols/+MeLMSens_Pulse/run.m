@@ -52,10 +52,10 @@ pSpot = projectorSpot(simulate.projector);
 pSpot.show();
 
 %% Update OLCalibration with pSpot
-% pSpotMeasurements = projectorSpot.measure(pSpot,oneLight,radiometer);
-% [calibration, pSpotSPD, pSpotLum] = projectorSpot.UpdateOLCalibrationWithProjectorSpot(calibration, pSpotMeasurements);
-% save(fullfile(sessionDataPath,materialsFilename),...
-%     'calibration','pSpotSPD','pSpotLum','pSpotMeasurements','-append','-v7.3');
+pSpotMeasurements = projectorSpot.measureAutomatic(pSpot,oneLight,radiometer);
+[calibration, pSpotSPD, pSpotLum] = projectorSpot.UpdateOLCalibrationWithProjectorSpot(calibration, pSpotMeasurements);
+save(fullfile(sessionDataPath,materialsFilename),...
+     'calibration','pSpotSPD','pSpotLum','pSpotMeasurements','-append','-v7.3');
              
 %% Get directions
 directions = makeNominalDirections(calibration,'observerAge',participantAge);

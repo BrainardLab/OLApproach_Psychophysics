@@ -30,10 +30,19 @@ inputHandler = responseSystem(keyBindings, gamePad);
 
 % Adjust
 pSpot.show();
+targetName = 'spot';
 while true
     action = inputHandler.waitForResponse();
-    if action == "escape"
-        return
+    switch action
+        case "escape"
+            return
+        case "switch"
+            if strcmp(targetName,'spot')
+                targetName = 'annulus';
+            else
+                targetName = 'spot';
+            end          
+        otherwise
+            pSpot.adjust(action, targetName);
     end
-    pSpot.adjust(action);
 end

@@ -1,17 +1,8 @@
-function adjust(obj,action)
+function adjust(obj,action, targetName)
 %ADJUST Summary of this function goes here
 %   Detailed explanation goes here
 
-targetName = 'spot';
-
 switch action
-    case "switch"
-        if strcmp(targetName,'spot')
-            targetName = 'annulus';
-        else
-            targetName = 'spot';
-        end
-        translation = [0 0];
     case "left"
         translation = [-1 0];
     case "right"

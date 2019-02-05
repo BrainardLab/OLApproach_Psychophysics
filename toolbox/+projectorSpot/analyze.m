@@ -1,4 +1,4 @@
-function [projSPD, projLum] = analyze(measurements)
+function [projSPD, projLum, deltaMeasurements, avgProjectorSPDTable] = analyze(measurements)
     %% Define wavelength sampling
     S = [380 2 201];
 

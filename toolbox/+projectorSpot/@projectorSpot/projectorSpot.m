@@ -211,8 +211,11 @@ classdef projectorSpot < handle
         end
         function set.spotCenter(obj, center)
             spot = obj.children('spot');
+            fixation = obj.children('tfixation');
             spot.center = center;
+            fixation.center = center;
             spot.draw(obj.projectorWindow);
+            fixation.draw(obj.projectorWindow);
         end       
         
         function set.center(obj, center)

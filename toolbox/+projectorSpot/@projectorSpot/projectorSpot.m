@@ -20,6 +20,7 @@ classdef projectorSpot < handle
         annulusDiameter;
         spotCenter;
         annulusCenter;
+        center;
     end
     properties (Access = protected)
         projectorWindow;        
@@ -172,6 +173,9 @@ classdef projectorSpot < handle
         function annulusCenter = get.annulusCenter(obj)
             annulusCenter = obj.children('annulus').center;
         end
+        function center = get.center(obj)
+            center = [obj.spotCenter; obj.annulusCenter];
+        end
     end
     
     methods % Setters
@@ -206,6 +210,11 @@ classdef projectorSpot < handle
             spot.center = center;
             spot.draw(obj.projectorWindow);
         end       
+        
+        function set.center(obj, center)
+            obj.spotCenter = center(1,:);
+            obj.annulusCenter = center(2,:);
+        end
     end
     
     methods (Access = protected)       

@@ -30,5 +30,10 @@ inputHandler = responseSystem(keyBindings, gamePad);
 
 % Adjust
 pSpot.show();
-pSpot.adjust(inputHandler);
+while true
+    action = inputHandler.waitForResponse();
+    if action == "escape"
+        return
+    end
+    pSpot.adjust(action);
 end

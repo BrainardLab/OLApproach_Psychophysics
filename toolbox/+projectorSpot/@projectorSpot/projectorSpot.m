@@ -14,6 +14,7 @@ classdef projectorSpot < handle
         % Colors
         annulusRGB;
         spotRGB;
+        fixationRGB;
 
         % Geometry
         spotDiameter;
@@ -160,6 +161,9 @@ classdef projectorSpot < handle
         end
         function spotRGB = get.spotRGB(obj)
             spotRGB = obj.children('spot').RGB;
+        end
+        function fixationRGB = get.fixationRGB(obj)
+            fixationRGB = obj.children('tfixation').RGB;
         end
         function spotDiameter = get.spotDiameter(obj)
             spotDiameter = obj.children('spot').diameter;

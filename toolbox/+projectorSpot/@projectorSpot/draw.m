@@ -33,6 +33,7 @@ parser.addRequired('obj');
 % Colors
 parser.addParameter('annulusRGB',[0 0 0],@isnumeric);
 parser.addParameter('spotRGB',[1 1 1],@isnumeric);
+parser.addParameter('fixationRGB',[1 0 0],@isnumeric);
 
 % Sizes
 parser.addParameter('spotDiameter',160,@isnumeric);
@@ -50,7 +51,11 @@ obj.children('annulus') = projectorSpot.circle('RGB',parser.Results.annulusRGB,.
 obj.children('spot') = projectorSpot.circle('RGB',parser.Results.spotRGB,...
                             'center',parser.Results.spotCenter,...
                             'diameter',parser.Results.spotDiameter,...
-                            'name','spot');    
+                            'name','spot');
+obj.children('tfixation') = projectorSpot.circle('RGB',parser.Results.fixationRGB,...
+                            'center',parser.Results.spotCenter,...
+                            'diameter',16,...
+                            'name','fixation');
 
 %% Get GLWindow
 projectorWindow = obj.projectorWindow;

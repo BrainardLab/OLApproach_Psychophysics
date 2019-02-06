@@ -239,8 +239,8 @@ classdef acquisition < handle
             correct = false(obj.NTrialsPerStaircase,obj.NInterleavedStaircases);
             for k = 1:numel(obj.staircases)
                 [contrastValues, corrects] = getTrials(obj.staircases{k});
-                contrastValue(:,k) = contrastValues(1:length(contrastValue));
-                correct(:,k) = corrects(1:length(correct));
+                contrastValue(1:length(contrastValues),k) = contrastValues(1:length(contrastValues));
+                correct(1:length(corrects),k) = corrects(1:length(corrects));
             end
             correct = logical(correct);
             contrastValue = round(contrastValue,6);

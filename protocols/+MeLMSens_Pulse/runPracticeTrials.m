@@ -25,7 +25,7 @@ flickerDirection(2) = directions('FlickerDirection_Mel_high');
 % Vary flicker contrast max:-1:0% contrast
 trials = [];
 for pedestalPresent = [0 1]
-    for flickerContrast = .03:-.01:0
+    for flickerContrast = .05:-.01:0
         trial = MeLMSens_Pulse.assembleTrial(background,pedestalDirection,flickerDirection(pedestalPresent+1),pedestalPresent,flickerContrast,receptors);
         trials = [trials trial];
     end

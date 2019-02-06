@@ -120,14 +120,16 @@ end
 trialResponseSys = responseSystem(trialKeyBindings,gamePad);
 
 %% Adjust projectorSpot
+oneLight.setAll(false);
 projectorSpot.adjust(pSpot,gamePad);
 
-%% Run
+%% Run practice trials
 pSpot.show();
+OLShowDirection(directions('Mel_low'),oneLight);
 trialResponseSys.waitForResponse();
 runPracticeTrials(directions,receptors,oneLight,trialResponseSys);
 
-%%
+%% Run actual trials
 trialResponseSys.waitForResponse();
 runAcquisitions(acquisitions,oneLight,trialResponseSys);
 

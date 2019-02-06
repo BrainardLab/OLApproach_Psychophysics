@@ -12,8 +12,10 @@ for block = acquisitions % loop over columns
     
     abort = false;
     [progressTotal, progress] = getBlockProgress(block);
-    remainingAcquisitions = block(progress < 1);
     while ~abort && progressTotal < 1
+        % Determine remaining acquisitions
+        remainingAcquisitions = block(progress < 1);
+        
         % Draw random acquisition from remainingAcquisitions
         i = randi(numel(remainingAcquisitions));
         

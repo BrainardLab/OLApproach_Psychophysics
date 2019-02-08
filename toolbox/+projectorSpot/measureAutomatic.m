@@ -16,6 +16,8 @@ pSpot.translate(translation);
 measurement = measureLocation(oneLight, pSpot, radiometer);
 measurement = addvarString(measurement,'above','VariableName',"location");
 measurements = [measurements; measurement];
+pSpot.center = originalCenter;
+
 
 %% Measure left
 pSpot.center = originalCenter;
@@ -24,6 +26,8 @@ pSpot.translate(translation);
 measurement = measureLocation(oneLight, pSpot, radiometer);
 measurement = addvarString(measurement,'left','VariableName',"location");
 measurements = [measurements; measurement];
+pSpot.center = originalCenter;
+
 
 %% Measure right
 pSpot.center = originalCenter;
@@ -32,6 +36,8 @@ pSpot.translate(translation);
 measurement = measureLocation(oneLight, pSpot, radiometer);
 measurement = addvarString(measurement,'right','VariableName',"location");
 measurements = [measurements; measurement];
+pSpot.center = originalCenter;
+
 
 %% Measure below
 pSpot.center = originalCenter;
@@ -40,6 +46,8 @@ pSpot.translate(translation);
 measurement = measureLocation(oneLight, pSpot, radiometer);
 measurement = addvarString(measurement,'below','VariableName',"location");
 measurements = [measurements; measurement];
+pSpot.center = originalCenter;
+
 
 %% Bookkeeping
 measurements.projectorOn = logical(measurements.projectorOn);

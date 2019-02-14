@@ -1,4 +1,4 @@
-function [Mel_low, Mel_Step, Mel_high] = MelUnipolarAtContrast(unipolarContrast, calibration, observerAge)
+function [Mel_low, Mel_Step, Mel_high] = MelUnipolarAtTargetContrast(unipolarContrast, calibration, observerAge)
 %MELDIRECTIONATCONTRAST Summary of this function goes here
 %   Detailed explanation goes here
 

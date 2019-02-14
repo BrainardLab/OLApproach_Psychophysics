@@ -7,10 +7,11 @@ observerAge = 32;
 contrast_target_range_mel = (50:50:750)/100;     % [50% : 750%]
 
 % Bipolar LMS contrast
-%contrast_target_range_LMS = (1:1:20)/100;         % [  1% :  20%]
+contrast_target_range_LMS = (.5:.5:20)/100;         % [ .5% :  20%]
 
 %% Create directions
 table_contrasts_meldirections = table();
+table_contrasts_LMSdirections = table();
 
 for contrast_target_mel = contrast_target_range_mel
     fprintf('Mel target contrast: %.0f%%...', contrast_target_mel*100);
@@ -38,16 +39,41 @@ for contrast_target_mel = contrast_target_range_mel
                   'VariableNames',{'target','nominal','splatter'});
     table_contrasts_meldirections = [table_contrasts_meldirections; entry];
     
-%     for LMScontrast = contrasts_LMS
-%         idxLMS = find(contrasts_LMS == idxLMS);
-%         fprintf('\tLMS contrast: %.0f%%...', LMScontrast*100);
-% 
-%         % Get directions
-%         LMS_low = LMSBipolarOnBackground(LMScontrast, Mel_low, observerAge);
-%         LMS_high = LMSBipolarOnBackground(LMScontrast, Mel_high, observerAge);
-%         
-%         fprintf('done.\n');
-%     end 
+    for contrast_target_LMS = contrast_target_range_LMS
+        fprintf('\tLMS contrast: %.1f%%...', contrast_target_LMS*100);
+
+        % Get directions
+        LMS_low = LMSBipolarOnBackground(contrast_target_LMS, Mel_low, observerAge);
+        LMS_high = LMSBipolarOnBackground(contrast_target_LMS, Mel_high, observerAge);
+        
+        % Get nominal receptor contrasts
+        contrasts_nominal_LMS_low = LMS_low.ToDesiredReceptorContrast(Mel_low,receptors);
+        contrasts_nominal_LMS_high = LMS_high.ToDesiredReceptorContrast(Mel_high,receptors);
+        
+        % Nominal LMS (mean) contrast, separate for pos/neg components
+        contrast_nominal_LMS_low_pos = mean(contrasts_nominal_LMS_low(1:3,1));
+        contrast_nominal_LMS_low_neg = mean(contrasts_nominal_LMS_low(1:3,2));        
+        contrast_nominal_LMS_high_pos = mean(contrasts_nominal_LMS_high(1:3,1));
+        contrast_nominal_LMS_high_neg = mean(contrasts_nominal_LMS_high(1:3,2));
+        
+        % Nominal LMS contrast, combined
+        contrast_nominal_LMS_low = mean([contrast_nominal_LMS_low_pos,...
+                                        abs(contrast_nominal_LMS_low_neg)]);
+        contrast_nominal_LMS_high = mean([contrast_nominal_LMS_high_pos,...
+                                        abs(contrast_nominal_LMS_high_neg)]);        
+
+        % Store in table
+        entry = table(contrast_target_mel,...
+                      contrast_nominal_mel,...
+                      contrast_target_LMS,...
+                      contrast_nominal_LMS_low,...
+                      contrast_nominal_LMS_high,...
+                      'VariableNames',{'Mel_target','Mel_nominal','LMS_target',...
+                                       'LMS_low','LMS_high'});
+        table_contrasts_LMSdirections = [table_contrasts_LMSdirections; entry];                           
+        
+        fprintf('done.\n');
+    end 
 end
 
 %% Plot params
@@ -88,4 +114,5 @@ xlim([0, max(xlim)]);
 ylabel(ax,'Nominal splatter contrast (%)');
 ylim([0, max(ylim)]);
 
+title(ax,'Cone splatter as a function of nominal melanopsin unipolar contrast');
 legend({'L','M','S'});

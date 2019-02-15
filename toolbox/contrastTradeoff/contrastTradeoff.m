@@ -116,3 +116,21 @@ ylim([0, max(ylim)]);
 
 title(ax,'Cone splatter as a function of nominal melanopsin unipolar contrast');
 legend({'L','M','S'});
+
+%% LMS contrast vs. mel contrast
+figure();
+ax = axes();
+l = plot(table_contrasts_LMSdirections.Mel_nominal*100,...
+     [table_contrasts_LMSdirections.LMS_low, table_contrasts_LMSdirections.LMS_high]*100,...
+     ' .','MarkerSize',10);
+l(1).Marker = '.';
+l(2).Marker = 'o';
+
+xlabel(ax,'Nominal Melanopsin contrast (%)');
+xlim([0, max(xlim)]);
+
+ylabel(ax,'Nominal LMS bipolar contrast (%)');
+ylim([0, max(ylim)+2]);
+
+title(ax,'LMS bipolar contrast as a function of melanopsin contrast');
+legend({'Low background','High background'});

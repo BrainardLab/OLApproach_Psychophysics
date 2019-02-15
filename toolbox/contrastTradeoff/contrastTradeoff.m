@@ -48,7 +48,7 @@ for contrast_target_mel = contrast_target_range_mel
         % Get directions
         LMS_low = LMSBipolarOnBackground(contrast_target_LMS, Mel_low, observerAge);
         LMS_high = LMSBipolarOnBackground(contrast_target_LMS, Mel_high, observerAge);
-        
+               
         % Get nominal receptor contrasts
         contrasts_nominal_LMS_low = LMS_low.ToDesiredReceptorContrast(Mel_low,receptors);
         contrasts_nominal_LMS_high = LMS_high.ToDesiredReceptorContrast(Mel_high,receptors);
@@ -94,6 +94,10 @@ for contrast_target_mel = contrast_target_range_mel
             continue;
         end
         
+        % Nominal splatter, averaged over pos/neg components
+        contrasts_splatter_LMS_low = mean(abs(contrasts_nominal_LMS_low),2);
+        contrasts_splatter_LMS_high = mean(abs(contrasts_nominal_LMS_low),2);        
+        
         % Nominal LMS contrast, combined
         contrast_nominal_LMS_low = mean([contrast_nominal_LMS_low_pos,...
                                         abs(contrast_nominal_LMS_low_neg)]);
@@ -106,8 +110,11 @@ for contrast_target_mel = contrast_target_range_mel
                       contrast_target_LMS,...
                       contrast_nominal_LMS_low,...
                       contrast_nominal_LMS_high,...
+                      contrasts_splatter_LMS_low',...
+                      contrasts_splatter_LMS_high',...
                       'VariableNames',{'Mel_target','Mel_nominal','LMS_target',...
-                                       'LMS_low','LMS_high'});
+                                       'LMS_low','LMS_high',...
+                                       'splatter_low','splatter_high'});
         table_contrasts_LMSdirections = [table_contrasts_LMSdirections; entry];                           
         
         fprintf('done.\n');
@@ -172,3 +179,39 @@ ylim([0, max(ylim)+2]);
 
 title(ax,'LMS bipolar contrast as a function of melanopsin contrast');
 legend({'Low background','High background'});
+
+%% LMS bipolar splatter
+% Transform splatter into matrix, where each row is a LMS_target, and each
+% column is a Mel_target, and L, M and S are panes
+splatter_matrix_low = zeros(numel(contrast_target_range_LMS),...
+                        numel(contrast_target_range_mel),...
+                        3);
+splatter_matrix_high = zeros(numel(contrast_target_range_LMS),...
+                        numel(contrast_target_range_mel),...
+                        3);                    
+for i = 1:height(table_contrasts_LMSdirections)
+   e = table_contrasts_LMSdirections(i,:);
+   rowIdx = find(e.LMS_target == contrast_target_range_LMS);
+   colIdx = find(e.Mel_target == contrast_target_range_mel);
+   
+   splatter_matrix_low(rowIdx,colIdx,1) = e.splatter_low(1)*e.LMS_low;
+   splatter_matrix_low(rowIdx,colIdx,2) = e.splatter_low(2)*e.LMS_low;
+   splatter_matrix_low(rowIdx,colIdx,3) = e.splatter_low(3)*e.LMS_low;
+
+   splatter_matrix_high(rowIdx,colIdx,1) = e.splatter_high(1)*e.LMS_high;
+   splatter_matrix_high(rowIdx,colIdx,2) = e.splatter_high(2)*e.LMS_high;
+   splatter_matrix_high(rowIdx,colIdx,3) = e.splatter_high(3)*e.LMS_high;
+end
+splatter_matrix_low = splatter_matrix_low/(max(max(max(splatter_matrix_low))));
+splatter_matrix_high = splatter_matrix_high/(max(max(max(splatter_matrix_high))));
+
+figure();
+ax = axes();
+imagesc(ax,splatter_matrix_low);
+xlabel(ax,'Target Melanopsin contrast (%)');
+xticks(1:numel(contrast_target_range_mel));
+xticklabels(contrast_target_range_mel*100);
+ax.YDir = 'normal';
+yticks(1:numel(contrast_target_range_LMS));
+yticklabels(contrast_target_range_LMS*100);
+ylabel(ax,'Target LMS contrast (%)');

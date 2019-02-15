@@ -9,6 +9,9 @@ contrast_target_range_mel = (50:50:750)/100;     % [50% : 750%]
 % Bipolar LMS contrast
 contrast_target_range_LMS = (.5:.5:20)/100;         % [ .5% :  20%]
 
+% Tolerance to enforce L = M = S
+tolerance = 1e-3; % 1e-2 = 1% contrast; so 1e-3 = .1% contrast
+
 %% Create directions
 table_contrasts_meldirections = table();
 table_contrasts_LMSdirections = table();
@@ -55,6 +58,41 @@ for contrast_target_mel = contrast_target_range_mel
         contrast_nominal_LMS_low_neg = mean(contrasts_nominal_LMS_low(1:3,2));        
         contrast_nominal_LMS_high_pos = mean(contrasts_nominal_LMS_high(1:3,1));
         contrast_nominal_LMS_high_neg = mean(contrasts_nominal_LMS_high(1:3,2));
+
+        % Determine total error from L = M = S, separate for pos/neg
+        % components
+        inequality_low_pos = max(abs(contrasts_nominal_LMS_low(1:3,1)-contrast_nominal_LMS_low_pos));
+        inequality_low_neg = max(abs(contrasts_nominal_LMS_low(1:3,2)-contrast_nominal_LMS_low_neg));
+        inequality_high_pos = max(abs(contrasts_nominal_LMS_high(1:3,1)-contrast_nominal_LMS_high_pos));
+        inequality_high_neg = max(abs(contrasts_nominal_LMS_high(1:3,2)-contrast_nominal_LMS_high_neg));
+        
+        % Sum error from L = M = S over pos/neg
+        inequality_low = inequality_low_pos + inequality_low_neg;
+        inequality_high = inequality_high_pos + inequality_high_neg;
+        
+        % Determine pos/neg assymmetry
+        assymmetry_low = contrast_nominal_LMS_low_pos + contrast_nominal_LMS_low_neg;
+        assymmetry_high = contrast_nominal_LMS_high_pos + contrast_nominal_LMS_high_neg;
+        
+        % Skip if inequality > tolerance
+        if inequality_low > tolerance
+            fprintf('skipped; inequality_low: %f\n',inequality_low);            
+            continue;
+        end
+        if inequality_high > tolerance
+            fprintf('skipped; inequality_high: %f\n',inequality_high);            
+            continue;
+        end
+
+        % Skip if assymmetry > tolerance
+        if assymmetry_low > tolerance
+            fprintf('skipped; assymmetry_low: %f\n',assymmetry_low);
+            continue;
+        end
+        if assymmetry_high > tolerance
+            fprintf('skipped; assymmetry_high: %f\n',assymmetry_high);            
+            continue;
+        end
         
         % Nominal LMS contrast, combined
         contrast_nominal_LMS_low = mean([contrast_nominal_LMS_low_pos,...

@@ -14,6 +14,7 @@ function results = getAcquisitionResults(acquisition)
 % Outputs:
 %    resultsTable - table(), with variables 'name', 'pedestalPresent',
 %                   'thresholdContrastNominal',
+%                   'thresholdContrastValidated'
 %
 % See also:
 %    MeLMSens_Pulse.acquisition
@@ -35,5 +36,8 @@ results.pedestal = acquisition.pedestalPresent;
 
 % Nominal threshold contrast
 results.thresholdContrastNominal = acquisition.threshold;
+
+% Validated threshold contrast
+results.thresholdContrastValidated = MeLMSens_Pulse.analyze.getThresholdContrastValidated(acquisition);
 
 end

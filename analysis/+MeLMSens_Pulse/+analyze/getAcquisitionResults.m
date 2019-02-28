@@ -14,7 +14,8 @@ function results = getAcquisitionResults(acquisition)
 % Outputs:
 %    resultsTable - table(), with variables 'name', 'pedestalPresent',
 %                   'thresholdContrastNominal',
-%                   'thresholdContrastValidated'
+%                   'thresholdContrastValidated',
+%                   'JNDNominal', 'JNDValidated'
 %
 % See also:
 %    MeLMSens_Pulse.acquisition
@@ -40,4 +41,9 @@ results.thresholdContrastNominal = acquisition.threshold;
 % Validated threshold contrast
 results.thresholdContrastValidated = MeLMSens_Pulse.analyze.getThresholdContrastValidated(acquisition);
 
+% Nominal JND
+results.JNDNominal = MeLMSens_Pulse.analyze.getJNDNominal(acquisition);
+
+% Validated JND
+results.JNDValidated = MeLMSens_Pulse.analyze.getJNDValidated(acquisition);
 end

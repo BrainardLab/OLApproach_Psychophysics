@@ -37,8 +37,9 @@ resultsTable = table();
 for sessionName = sessionNames
     sessionName = sessionName{:}; % de-cellify
     T = MeLMSens_Pulse.analyze.getSessionResultsFromName(participant, sessionName);
-    T = addvarString(T,sessionName,'VariableNames',{'session'}); % add session identifier
-    T = T(:,[end, 1:end-1]); % pre-pend session identifier
+    T = addvarString(T,[string(participant) string(sessionName)],...
+                        'VariableNames',{'participant','session'}); % add participant,session identifier
+    T = T(:,[end-1:end, 1:end-2]); % pre-pend identifiers
     
     resultsTable = vertcat(resultsTable, T); % append to results table
 end

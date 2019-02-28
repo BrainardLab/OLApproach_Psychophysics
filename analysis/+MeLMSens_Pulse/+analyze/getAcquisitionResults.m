@@ -41,6 +41,9 @@ results.thresholdContrastNominal = acquisition.threshold;
 % Validated threshold contrast
 results.thresholdContrastValidated = MeLMSens_Pulse.analyze.getThresholdContrastValidated(acquisition);
 
+% L-M splatter from validation
+results.LminusM = MeLMSens_Pulse.analyze.getThresholdSplatterLM(acquisition);
+
 % Nominal JND
 results.JNDNominal = MeLMSens_Pulse.analyze.getJNDNominal(acquisition);
 

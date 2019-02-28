@@ -29,7 +29,7 @@ function results = getAcquisitionResults(acquisition)
 results = table();
 
 % Acquisition name
-results.name = acquisition.name;
+results.acquisitionName = acquisition.name;
 
 % Pedestal?
 results.pedestal = acquisition.pedestalPresent;

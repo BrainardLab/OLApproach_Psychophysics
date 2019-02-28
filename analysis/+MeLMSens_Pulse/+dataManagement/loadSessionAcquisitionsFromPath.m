@@ -5,6 +5,9 @@ function [acquisitions, metadata] = loadSessionAcquisitionsFromPath(sessionPath)
 acquisitions = containers.Map();
 metadata = containers.Map();
 
+% Initialize staircase constructor
+S = Staircase('standard',.05,[1],[1],[1]);
+
 % Load acquisitions
 acquisitionNames = ["Pedestal","NoPedestal"];
 for a = acquisitionNames

@@ -116,24 +116,24 @@ system(procDataLinkCommand);
 %% Set Directory structures for individual protocols
 protocols = DefineProtocolNames;
 for pp = 1:length(protocols)
-    protocolDir = fullfile(approachPath,'protocols',['+', protocols{pp}]);
-    mkdir(protocolDir,'data');
+    dataDestination = fullfile(approachPath,'protocols',['+', protocols{pp}],'data');
+    mkdir(dataDestination);
     
-    rawDataDestination = fullfile(protocolDir,'data','raw');
+    rawDataDestination = fullfile(dataDestination,'raw');
     if ~unix(['test -L ',rawDataDestination])
         delete(rawDataDestination)
     end
     rawDataLinkCommand = sprintf('ln -s %s %s',...
-        fullfile(approachPath,'data','raw',['+', protocols{pp}]),...
+        fullfile(approachPath,'data','raw',protocols{pp}),...
         rawDataDestination);
     system(rawDataLinkCommand);
     
-    processedDataDestination = fullfile(protocolDir,'data','processed');
+    processedDataDestination = fullfile(dataDestination,'processed');
     if ~unix(['test -L ',processedDataDestination])
         delete(processedDataDestination)
     end
     processedDataLinkCommand = sprintf('ln -s %s %s',...
-        fullfile(approachPath,'data','processed',['+', protocols{pp}]),...
+        fullfile(approachPath,'data','processed',protocols{pp}),...
         processedDataDestination);
     system(processedDataLinkCommand);
 end
@@ -159,11 +159,12 @@ for pp = 1:length(protocols)
     if (ispref(protocols{pp}))
         rmpref(protocols{pp});
     end
+
+    protocolDir = fullfile(approachPath,'protocols',['+', protocols{pp}]);   
     
     setpref(protocols{pp},'ProtocolBasePath',protocolDir);
     setpref(protocols{pp},'ProtocolDataRawPath',fullfile(protocolDir,'data','raw'));
     setpref(protocols{pp},'ProtocolDataProcessedPath',fullfile(protocolDir,'data','processed'));
-    setpref(protocols{pp},'ProtocolExperimentPath',fullfile(protocolDir,'experiment'));
     setpref(protocols{pp},'ProtocolAnalysisPath',fullfile(protocolDir,'analysis'));
 end
 

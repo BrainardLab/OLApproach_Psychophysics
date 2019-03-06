@@ -1,4 +1,4 @@
-function F = plotSessionTrials(session)
+function F = sessionTrials(session)
 % Plots staircases and psychometric fits for all acquisition of session
 %
 % Syntax:
@@ -68,5 +68,5 @@ LMS_high.plotStaircases('ax',LMS_high_staircases); title('LMS high staircases');
 
 % Plot combined psychometric functions
 ax_psychometricFunctions = subplot(1,2,2);
-plotSessionPsychometricFunctions(session,'ax',ax_psychometricFunctions);
+MeLMSens_SteadyAdapt.plot.sessionPsychometricFunctions(session,'ax',ax_psychometricFunctions);
 end

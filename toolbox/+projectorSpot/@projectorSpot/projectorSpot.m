@@ -203,6 +203,11 @@ classdef projectorSpot < handle
             spot = obj.children('spot');
             spot.RGB = RGB;
             spot.draw(obj.projectorWindow);
+         end
+        function set.fixationRGB(obj, RGB)
+            fixation = obj.children('tfixation');
+            fixation.RGB = RGB;
+            fixation.draw(obj.projectorWindow);
         end
         function set.spotDiameter(obj, diameter)
             spot = obj.children('spot');

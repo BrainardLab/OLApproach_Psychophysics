@@ -3,6 +3,6 @@ function calibration = getCalibration()
 % Specify which box and calibration to use, check that everything is set up
 % correctly, and retrieve the calibration structure.
 boxName = 'BoxD';
-calibrationType = 'BoxDLiquidLightGuidEyePiece3Beamsplitter';
+calibrationType = 'BoxDShortLiquidLightGuideCEyePiece3Beamsplitter';
 calibration = OLGetCalibrationStructure('CalibrationType',calibrationType,'CalibrationDate','latest');
 end

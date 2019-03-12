@@ -120,7 +120,7 @@ end
 trialResponseSys = responseSystem(trialKeyBindings,gamePad);
 
 %% Adjust projectorSpot
-oneLight.setAll(false);
+OLShowDirection(directions('Mel_low'),oneLight);
 projectorSpot.adjust(pSpot,gamePad);
 
 %% Run practice trials

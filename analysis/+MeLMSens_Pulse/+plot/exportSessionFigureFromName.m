@@ -10,8 +10,7 @@ function outputFile = exportSessionFigureFromName(participant, sessionName)
 fig = MeLMSens_Pulse.plot.sessionFigureFromName(participant, sessionName);
 
 % Export
-sessionPath = MeLMSens_Pulse.dataManagement.sessionPathFromName(participant, sessionName);
-outputPath = strrep(sessionPath,'raw','processed');
+outputPath = MeLMSens_Pulse.dataManagement.sessionProcessedPathFromName(participant, sessionName);
 if ~isfolder(outputPath)
     mkdir(outputPath);
 end

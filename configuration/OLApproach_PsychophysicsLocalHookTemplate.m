@@ -259,11 +259,11 @@ for pp = 1:length(protocols)
     end
 
     protocolDir = fullfile(approachPath,'protocols',['+', protocols{pp}]);   
+    analysisDir = fullfile(approachPath,'analysis',['+', protocols{pp}]);
     
     setpref(protocols{pp},'ProtocolBasePath',protocolDir);
-    setpref(protocols{pp},'ProtocolDataRawPath',fullfile(protocolDir,'data','raw'));
-    setpref(protocols{pp},'ProtocolDataProcessedPath',fullfile(protocolDir,'data','processed'));
-    setpref(protocols{pp},'ProtocolAnalysisPath',fullfile(protocolDir,'analysis'));
+    setpref(protocols{pp},'ProtocolDataRawPath',fullfile(protocolDir,'data'));
+    setpref(protocols{pp},'ProtocolDataProcessedPath',fullfile(analysisDir,'data','processed'));
 end
 
 %% Set simulate.

@@ -405,7 +405,7 @@ classdef acquisition < handle
             % Annotate
             title('Weibull function, fitted');
             xlabel('LMS contrast (ratio)');
-            ylabel('Percent correct');
+            ylabel('Proportion correct');
             hold off;
         end
     end

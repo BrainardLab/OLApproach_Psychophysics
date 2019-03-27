@@ -24,7 +24,8 @@ function S = plotStaircaseProportionCorrect(staircase,varargin)
 %   plotPsychometricFunction, getThresholdEstimate
 
 % History:
-%   2018-11-02  J.Vincent wrote plotStaircaseProportionCorrect.
+%   2018.11.02  J.Vincent wrote plotStaircaseProportionCorrect.
+%   2019.03.27  J.Vincent farmed out calculations to other functions
 
 %% Parse input
 parser = inputParser;
@@ -37,29 +38,13 @@ parser.KeepUnmatched = true;
 parser.parse(staircase, varargin{:});
 ax = parser.Results.ax;
 
+%% Get binned data
+[binProportionCorrect,binCenter,binN] = staircaseProportionCorrect(staircase);
 
-% Extract values, correct/incorrect
-for k = 1:numel(staircase)
-    [value{k}, corrects{k}] = getTrials(staircase(k));
-    nTrials(k) = length(value{k});
-end
-nTrials = min(nTrials);
-for k = 1:numel(staircase)
-    values(:,k) = value{k}(1:nTrials);
-    responses(:,k) = corrects{k}(1:nTrials);
-end
-
-responses = logical(responses);
-values = round(values,8);
-
-% Aggregate stair trials
-[meanValues,nCorrect,nTrials] = GetAggregatedStairTrials(values(:),responses(:),parser.Results.binSize);
-proportionCorrect = nCorrect./nTrials;
-
-% Plot
+%% Plot
 hold(ax,'on');
-S = scatter(ax,meanValues,proportionCorrect,...
-    nTrials*10,... % size is 10 * number of trials in bin
+S = scatter(ax,binCenter,binProportionCorrect,...
+    (binN+1)*10,... % size is 10 * number of trials in bin
     'filled',...
     'DisplayName','Aggregated proportion correct');
 end

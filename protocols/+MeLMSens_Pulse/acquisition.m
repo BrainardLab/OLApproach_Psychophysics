@@ -344,13 +344,13 @@ classdef acquisition < handle
             axes(ax); hold on;
             
             % Plot staircases trialseries
-            plotStaircaseTrialseries([obj.staircases{1:3}],'ax',ax);
+            plotStaircaseTrialseries([obj.staircases{1:3}],'ax',ax,'threshold',[]);
             
             % Plot mean threshold
             color = ax.ColorOrder(ax.ColorOrderIndex,:); % current plot color, which we'll reuse)
             plot(xlim,obj.threshold*[1 1],'--','Color',color);
             text(10,obj.threshold+0.001,...
-                sprintf('Mean threshold = %.3f',mean(obj.threshold)),...
+                sprintf('Fit threshold = %.3f',mean(obj.threshold)),...
                 'Color',color,...
                 'FontWeight','bold');
             
@@ -405,7 +405,7 @@ classdef acquisition < handle
             % Annotate
             title('Weibull function, fitted');
             xlabel('LMS contrast (ratio)');
-            ylabel('Percent correct');
+            ylabel('Proportion correct');
             hold off;
         end
     end

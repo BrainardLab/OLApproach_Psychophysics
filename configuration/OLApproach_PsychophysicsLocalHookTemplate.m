@@ -113,28 +113,126 @@ procDataLinkCommand = sprintf('ln -s %s %s',...
     fullfile(approachPath,'data','processed'));
 system(procDataLinkCommand);
 
-%% Set Directory structures for individual protocols
-protocols = DefineProtocolNames;
-for pp = 1:length(protocols)
-    protocolDir = fullfile(approachPath,'protocols',['+', protocols{pp}]);
-    mkdir(protocolDir,'data');
+%% Set raw data destination for experiment code
+% Experiment (i.e., data generation code) is located in
+% protocols/+[protocolName] subdirectories. We'll add a directory 'data'
+% under this, where the experiment will write the raw data to. Because
+% we're smart, we'll symlink this to the Approach/data/raw/[protocol]/
+% directory, which itself symlinks to the correct Dropbox destination (see
+% above)
+protocols = string(DefineProtocolNames());
+for protocol = protocols
+    % First find out where the experiment code lives:
+    experimentDir = getExperimentDir(protocol);
+    experimentPath = fullfile(approachPath, experimentDir);
     
-    rawDataDestination = fullfile(protocolDir,'data','raw');
-    if ~unix(['test -L ',rawDataDestination])
-        delete(rawDataDestination)
+    % Deterimine path subdir 'data'  
+    rawDataDir = fullfile(experimentPath,'data');
+    
+    % Is symlink? Delete.
+    if ~unix(['test -L ',rawDataDir])
+        delete(rawDataDir)
+    end    
+    
+    % Is directory? Delete.
+    if isdir(rawDataDir)
+        rmdir(rawDataDir,'s');
     end
-    rawDataLinkCommand = sprintf('ln -s %s %s',...
-        fullfile(approachPath,'data','raw',['+', protocols{pp}]),...
-        rawDataDestination);
+    
+    % Figure out the destination for the symlink, which is
+    % Approach/data/raw/[protocol]
+    rawDataDestination = fullfile(approachPath, 'data', 'raw', protocol);
+    
+    % Write the symlink command: 'ln -s [destination]/ [link]'
+    rawDataLinkCommand = sprintf('ln -s %s/. %s',...
+        rawDataDestination,...
+        rawDataDir);
+    
+    % Execute
     system(rawDataLinkCommand);
+end
+
+%% Set raw data source for analysis code
+% Analysis code is located in analysis/+[protocolName] subdirectories.
+% We'll add a directory 'data' under this, where the experiment will read
+% and write from. Under 'data/raw' it will look for raw data,.
+% Because we're smart, we'll symlink this to the
+% Approach/data/raw/[protocol]/ directory, which itself symlinks to the
+% correct Dropbox destination (see above)
+protocols = string(DefineProtocolNames());
+for protocol = protocols
+    % First find out where the experiment code lives:
+    analysisDir = getAnalysisDir(protocol);
+    analysisPath = fullfile(approachPath, analysisDir);
     
-    processedDataDestination = fullfile(protocolDir,'data','processed');
-    if ~unix(['test -L ',processedDataDestination])
-        delete(processedDataDestination)
+    % Deterimine path subdir 'data' 
+    if ~isdir(fullfile(analysisPath,'data'))
+        mkdir(fullfile(analysisPath,'data'));
     end
-    processedDataLinkCommand = sprintf('ln -s %s %s',...
-        fullfile(approachPath,'data','processed',['+', protocols{pp}]),...
-        processedDataDestination);
+    rawDataDir = fullfile(analysisPath,'data','raw');
+    
+    % Is symlink? Delete.
+    if ~unix(['test -L ',rawDataDir])
+        delete(rawDataDir)
+    end    
+    
+    % Is directory? Delete.
+    if isdir(rawDataDir)
+        rmdir(rawDataDir,'s');
+    end
+    
+    % Figure out the destination for the symlink, which is
+    % Approach/data/raw/[protocol]
+    rawDataDestination = fullfile(approachPath, 'data', 'raw', protocol);
+    
+    % Write the symlink command: 'ln -s [destination]/ [link]'
+    rawDataLinkCommand = sprintf('ln -s %s/. %s',...
+        rawDataDestination,...
+        rawDataDir);
+    
+    % Execute
+    system(rawDataLinkCommand);
+end
+
+%% Set processed data destination for analysis code
+% Analysis code is located in analysis/+[protocolName] subdirectories.
+% We'll add a directory 'data' under this, where the experiment will read
+% and write from. Under 'data/processed' it will write the output of
+% (intermediate) analysis. it will look for raw data,. Because we're smart,
+% we'll symlink this to the Approach/data/processed/[protocol]/ directory,
+% which itself symlinks to the correct Dropbox destination (see above)
+protocols = string(DefineProtocolNames());
+for protocol = protocols
+    % First find out where the experiment code lives:
+    analysisDir = getAnalysisDir(protocol);
+    analysisPath = fullfile(approachPath, analysisDir);
+    
+    % Deterimine path subdir 'data'  
+    if ~isdir(fullfile(analysisPath,'data'))
+        mkdir(fullfile(analysisPath,'data'));
+    end
+    processedDataDir = fullfile(analysisPath,'data','processed');
+    
+    % Is symlink? Delete.
+    if ~unix(['test -L ',processedDataDir])
+        delete(processedDataDir)
+    end    
+    
+    % Is directory? Delete.
+    if isdir(processedDataDir)
+        rmdir(processedDataDir,'s');
+    end
+    
+    % Figure out the destination for the symlink, which is
+    % Approach/data/raw/[protocol]
+    processedDataDestination = fullfile(approachPath, 'data', 'processed', protocol);
+    
+    % Write the symlink command: 'ln -s [destination]/ [link]'
+    processedDataLinkCommand = sprintf('ln -s %s/. %s',...
+        processedDataDestination,...
+        processedDataDir);
+    
+    % Execute
     system(processedDataLinkCommand);
 end
 
@@ -159,12 +257,13 @@ for pp = 1:length(protocols)
     if (ispref(protocols{pp}))
         rmpref(protocols{pp});
     end
+
+    protocolDir = fullfile(approachPath,'protocols',['+', protocols{pp}]);   
+    analysisDir = fullfile(approachPath,'analysis',['+', protocols{pp}]);
     
     setpref(protocols{pp},'ProtocolBasePath',protocolDir);
-    setpref(protocols{pp},'ProtocolDataRawPath',fullfile(protocolDir,'data','raw'));
-    setpref(protocols{pp},'ProtocolDataProcessedPath',fullfile(protocolDir,'data','processed'));
-    setpref(protocols{pp},'ProtocolExperimentPath',fullfile(protocolDir,'experiment'));
-    setpref(protocols{pp},'ProtocolAnalysisPath',fullfile(protocolDir,'analysis'));
+    setpref(protocols{pp},'ProtocolDataRawPath',fullfile(protocolDir,'data'));
+    setpref(protocols{pp},'ProtocolDataProcessedPath',fullfile(analysisDir,'data','processed'));
 end
 
 %% Set simulate.

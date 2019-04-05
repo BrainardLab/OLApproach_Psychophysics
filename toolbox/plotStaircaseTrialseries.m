@@ -32,20 +32,20 @@ function ax = plotStaircaseTrialseries(staircase, varargin)
 %% Parse input
 parser = inputParser;
 parser.addRequired('staircase',@(x)isa(x,'Staircase'));
-parser.parse(staircase);
-parser.addParameter('threshold',[],@(x) numel(x) == numel(staircase));
+parser.parse(staircase); % First check if staircase is valid (correct class)
+
+% As default, getThresholEstimates for staircase
+for k = 1:numel(staircase)
+    threshold(k) = getThresholdEstimate(staircase(k));
+end
+% Allow caller to override threshold with value (or empty)
+parser.addParameter('threshold',threshold,@(x) isempty(x) || numel(x) == numel(staircase));
+
 parser.addParameter('ax',gca,@(x) isgraphics(x) && strcmp(x.Type,'axes'));
 parser.KeepUnmatched = true;
 parser.parse(staircase, varargin{:});
 ax = parser.Results.ax;
-
-if isempty(parser.Results.threshold)
-    for k = 1:numel(staircase)
-        threshold(k) = getThresholdEstimate(staircase(k));
-    end
-else
-    threshold = parser.Results.threshold;
-end
+threshold = parser.Results.threshold;
 
 %% Extract values, correct/incorrect
 for k = 1:numel(staircase)
@@ -69,15 +69,19 @@ for k = 1:size(value,2)
     % Plot all values in a contiguous solid line.
     % Place markers only at trials where response was incorrect
     plot(ax,value(:,k),'-*','MarkerIndices',find(~correct(:,k)),'MarkerSize',10,parser.Unmatched);
-    
-    % Plot threshold estimate for staircase
-    % Draw a dashed horizontal line at the value of the threshold estimate
-    % Decrement axis.ColorOrderIndex by 1 to get the same color dashed line
-    % as the solid line of all values
-    if ax.ColorOrderIndex > 1
-        ax.ColorOrderIndex = ax.ColorOrderIndex-1;
+
+    if ~isempty(threshold) && ~isnan(threshold(k))
+        % Plot threshold estimate for staircase
+        
+        % Decrement axis.ColorOrderIndex by 1 to get the same color dashed
+        % line as the solid line of all values
+        if ax.ColorOrderIndex > 1
+            ax.ColorOrderIndex = ax.ColorOrderIndex-1;
+        end
+
+        % Draw a dashed horizontal line at the value of the threshold estimate
+        plot(ax,xlim,threshold(k)*[1 1],'--');
     end
-    plot(ax,xlim,threshold(k)*[1 1],'--');
 end
 xlabel(ax,'Trial number');
 ylabel(ax,'Value');

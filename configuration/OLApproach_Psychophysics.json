@@ -1,120 +1,26 @@
 [
     {
-		"flavor": "",
-		"hook": "",
-		"importance": "",
-		"localHookTemplate": "",
 		"name": "BrainardLabToolbox",
 		"pathPlacement": "append",
-		"subfolder": "",
-		"toolboxRoot": "",
-		"type": "include",
-		"update": "",
-		"url": ""
+		"type": "include"
 	},
 	{
-		"flavor": "",
-		"hook": "",
-		"importance": "",
-		"localHookTemplate": "",
 		"name": "Psychtoolbox-3",
 		"pathPlacement": "append",
 		"subfolder": "Psychtoolbox",
-		"toolboxRoot": "",
-		"type": "include",
-		"update": "",
-		"url": ""
+		"type": "include"
 	},
-	{
-		"flavor": "",
-		"hook": "",
-		"importance": "",
-		"localHookTemplate": "",
-		"name": "allcomb",
-		"pathPlacement": "append",
-		"subfolder": "",
-		"toolboxRoot": "",
-		"type": "webget",
-		"update": "",
-		"url": "https:\/\/www.mathworks.com\/matlabcentral\/mlc-downloads\/downloads\/submissions\/10064\/versions\/8\/download\/zip"
-	},
-	{
-		"flavor": "",
-		"hook": "",
-		"importance": "",
-		"localHookTemplate": "",
+    {
 		"name": "OneLightToolbox",
 		"pathPlacement": "append",
-		"subfolder": "",
-		"toolboxRoot": "",
-		"type": "include",
-		"update": "",
-		"url": ""
+		"type": "include"
 	},
     {
-        "flavor": "",
-        "hook": "",
-        "importance": "",
-        "localHookTemplate": "",
-        "name": "OneLightDriver",
-        "pathPlacement": "append",
-        "subfolder": "OneLightEngineSourceMex",
-        "toolboxRoot": "",
-        "type": "git",
-        "update": "",
-        "url": "https:\/\/github.com\/DavidBrainard\/OneLightDriver.git"
-    },
-    {
-		"flavor": "",
-		"hook": "",
-		"importance": "",
-		"localHookTemplate": "",
-		"name": "SilentSubstitutionToolbox",
-		"pathPlacement": "append",
-		"subfolder": "",
-		"toolboxRoot": "",
-		"type": "include",
-		"update": "",
-		"url": ""
-	},
-    {
-		"flavor": "",
-		"hook": "",
-		"importance": "",
-		"localHookTemplate": "",
-		"name": "ExampleTestToolbox",
-		"pathPlacement": "append",
-		"subfolder": "",
-		"toolboxRoot": "",
-		"type": "include",
-		"update": "",
-		"url": ""
-	},
-    {
-		"flavor": "",
-		"hook": "",
-		"importance": "",
-		"localHookTemplate": "",
 		"name": "mgl",
 		"pathPlacement": "append",
-		"subfolder": "",
-		"toolboxRoot": "",
 		"type": "git",
 		"update": "never",
 		"url": "https://github.com/justingardner/mgl"
-	},
-	{
-		"flavor": "",
-		"hook": "",
-		"importance": "",
-		"localHookTemplate": "",
-		"name": "PupilAnalysisToolbox",
-		"pathPlacement": "append",
-		"subfolder": "",
-		"toolboxRoot": "",
-		"type": "git",
-		"update": "",
-		"url": "https:\/\/github.com\/gkaguirrelab\/PupilAnalysisToolbox.git"
 	},
     {
 		"name": "Palamedes_1.8.2",
@@ -122,16 +28,10 @@
 		"type": "include"
     },
     {
-		"flavor": "",
-		"hook": "",
-		"importance": "",
 		"localHookTemplate": "configuration/OLApproach_PsychophysicsLocalHookTemplate.m",
 		"name": "OLApproach_Psychophysics",
 		"pathPlacement": "append",
 		"subfolder": ["toolbox","protocols","analysis"],
-		"toolboxRoot": "",
-		"type": "git",
-		"update": "",
-		"url": ""
+		"type": "git"
 	}
 ]

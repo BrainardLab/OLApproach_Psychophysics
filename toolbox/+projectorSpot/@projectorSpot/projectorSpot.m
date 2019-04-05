@@ -32,7 +32,7 @@ classdef projectorSpot < handle
     methods
         function obj = projectorSpot(varargin)           
             %% make projectorWindow
-            obj.makeProjectorWindow(varargin{:});
+            obj.projectorWindow = projectorSpot.projectorWindow();
             
             %% Show
             obj.show;
@@ -229,58 +229,7 @@ classdef projectorSpot < handle
         end
     end
     
-    methods (Access = protected)       
-        function projectorWindow = makeProjectorWindow(obj, varargin)
-            % Create GLWindow to control display
-            %
-            % Syntax:
-            %   projectorWindow = makeProjectorWindow;
-            %
-            % Description:
-            %
-            %
-            % Inputs:
-            %    None.
-            % 
-            % Outputs:
-            %    projectorWindow - GLWindow, open on last display
-            %
-            % Optional key/value arguments:
-            %    None.
-            %
-            % See also:
-            %    projectorSpot, projectorSpot.makeSpot, projectorSpot.open
-            %    projectorSpot.close
-
-            % History:
-            %    07/16/18  jv  wrote makeProjectorSpot.
-            %    09/01/18  jv  turn into projectorSpot.makeProjectorWindow
-            %                  method.                
-            displayInfo = mglDescribeDisplays;
-            lastDisplay = length(displayInfo);
-            
-            %% Parse input
-            parser = inputParser;
-            parser.addParameter('WindowID',lastDisplay,@isnumeric);
-            parser.addParameter('fullscreen',false,@islogical);
-            parser.addParameter('BackgroundColor',[0 0 0],@isnumeric);
-            parser.addParameter('SceneDimensions',displayInfo(lastDisplay).screenSizePixel);
-            parser.addParameter('WindowPosition',[0 0],@isnumeric);
-            parser.addParameter('WindowSize',[300 300],@isnumeric);
-            parser.parse(varargin{:});
-            
-            %% Create a GLWindow object
-            screenSizeInPixels = displayInfo(lastDisplay).screenSizePixel;
-            projectorWindow = GLWindow('SceneDimensions', screenSizeInPixels, ...
-                'BackgroundColor', parser.Results.BackgroundColor,...
-                'WindowID',        parser.Results.WindowID,...
-                'Fullscreen',      parser.Results.fullscreen,...
-                'WindowPosition',  parser.Results.WindowPosition,...
-                'WindowSize',      parser.Results.WindowSize);   
-            obj.projectorWindow = projectorWindow;
-            obj.fullScreen = parser.Results.fullscreen;
-        end  
-        
+    methods (Access = protected)         
         function open(obj)
             %    09/03/18  jv   spoofFullScreen before opening. Workaround
             %                   for R2018a mgl issues.            

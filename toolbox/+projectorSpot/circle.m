@@ -1,54 +1,14 @@
-classdef circle < handle
+classdef circle < projectorSpot.windowObject
     %CIRCLE Summary of this class goes here
     %   Detailed explanation goes here
     
     properties
-        name;
         RGB = [1 1 1];
         center = [0 0];
-        diameter = 100; 
-    end
-    properties
-        window;
-    end
-    properties (Dependent)
-        isDrawn;
-        Visible;
+        diameter = 100;
     end
     
-    methods
-        % isDrawn == does the window have this object in queue?
-        function isDrawn = get.isDrawn(obj)
-            if isempty(obj.window)
-                isDrawn = false;
-            else
-                isDrawn = obj.window.findObjectIndex(obj.name) ~= -1;
-            end
-        end
-        function set.isDrawn(obj,draw)
-            if draw
-                obj.window.addOval(obj.center, [obj.diameter obj.diameter], obj.RGB,'Name',obj.name);
-            else
-                obj.window.deleteObject(obj.name);
-            end
-            obj.window.draw();
-        end
-        
-        % Visible
-        function Visible = get.Visible(obj)
-            if ~obj.isDrawn
-                Visible = false;
-            else
-                Visible = obj.window.getObjectProperty(obj.name,'Enabled');
-            end
-        end
-        function set.Visible(obj,visible)
-            if obj.isDrawn
-                obj.window.getObjectProperty(obj.name,'Enabled',false);
-            end
-            obj.Visible = visible;
-        end
-        
+    methods        
         % RGB
         function RGB = get.RGB(obj)
             if obj.isDrawn
@@ -61,7 +21,7 @@ classdef circle < handle
                 obj.window.setObjectProperty(obj.name,'Color',RGB)
                 obj.window.draw();
             end
-            obj.RGB = RGB;            
+            obj.RGB = RGB;
         end
         
         % Center
@@ -76,8 +36,8 @@ classdef circle < handle
                 obj.window.setObjectProperty(obj.name,'Center',center)
                 obj.window.draw();
             end
-            obj.center = center;            
-        end  
+            obj.center = center;
+        end
         
         % Diameter
         function diameter = get.diameter(obj)
@@ -91,38 +51,44 @@ classdef circle < handle
                 obj.window.setObjectProperty(obj.name,'Dimensions',[diameter diameter])
                 obj.window.draw();
             end
-            obj.diameter = diameter;            
+            obj.diameter = diameter;
         end
     end
     
     methods
-        function obj = circle(varargin)
+        function obj = circle(name,varargin)
             %CIRCLE Construct an instance of this class
             %   Detailed explanation goes here
             
             %% Parse input
             parser = inputParser();
-            parser.addParameter('name','');
+            parser.addRequired('name');
+            parser.addParameter('window',[]);
+            parser.addParameter('Visible',false);            
             parser.addParameter('RGB',[1 1 1],@(x)validateattributes(x,{'numeric'},{'row','size',[1 3],'nonnegative','<=',1}));
             parser.addParameter('center',[0 0],@(x)validateattributes(x,{'numeric'},{'row','size',[1 2],'finite','real'}));
             parser.addParameter('diameter',100,@(x)validateattributes(x,{'numeric'},{'scalar','nonnegative','finite','real'}));
-            parser.parse(varargin{:});
+            parser.parse(name,varargin{:});
             
             %% Set params
+            % Set name
+            obj.name = parser.Results.name;
+            
             % Find parameters for which we're not using the defaults:
             overwrites = setdiff(parser.Parameters,['obj',parser.UsingDefaults]);
-
+            
             % Assign to obj.properties
             for p = overwrites
                 obj.(p{:}) = parser.Results.(p{:});
             end
         end
         
-        function draw(obj,window)
-            obj.window = window;
+        function draw(obj)
+            % Assert that we have a window to draw on
+            assert(~isempty(obj.window),'No window specified');
             
             % Does the circle already exist? If not, add it.
-            if obj.window.findObjectIndex(obj.name) == -1
+            if ~obj.isDrawn
                 obj.window.addOval(obj.center, [obj.diameter obj.diameter], obj.RGB,'Name',obj.name);
             end
             
@@ -131,11 +97,8 @@ classdef circle < handle
             obj.window.setObjectProperty(obj.name,'Center',obj.center);
             obj.window.setObjectProperty(obj.name,'Color',obj.RGB);
             obj.window.setObjectProperty(obj.name,'Name',obj.name);
+            obj.window.setObjectProperty(obj.name,'Enabled',obj.Visible);
             obj.window.draw();
-        end
-        
-        function delete(obj)
-            obj.isDrawn = false;
         end
     end
 end

@@ -1,14 +1,14 @@
-classdef circle < projectorSpot.windowObject
-    %CIRCLE Summary of this class goes here
+classdef rectangle < projectorSpot.windowObject
+    %rectangle Summary of this class goes here
     %   Detailed explanation goes here
     
     properties
         RGB = [1 1 1];
         center = [0 0 0];
-        diameter = 100;
+        size = [100 100];
     end
     
-    methods        
+    methods
         % RGB
         function RGB = get.RGB(obj)
             if obj.isDrawn
@@ -39,35 +39,35 @@ classdef circle < projectorSpot.windowObject
             obj.center = center;
         end
         
-        % Diameter
-        function diameter = get.diameter(obj)
+        % size
+        function size = get.size(obj)
             if obj.isDrawn
-                obj.diameter = mean(obj.window.getObjectProperty(obj.name,'Dimensions'));
+                obj.size = obj.window.getObjectProperty(obj.name,'Dimensions');
             end
-            diameter = obj.diameter;
+            size = obj.size;
         end
-        function set.diameter(obj, diameter)
+        function set.size(obj, size)
             if obj.isDrawn
-                obj.window.setObjectProperty(obj.name,'Dimensions',[diameter diameter])
+                obj.window.setObjectProperty(obj.name,'Dimensions',size)
                 obj.window.draw();
             end
-            obj.diameter = diameter;
+            obj.size = size;
         end
     end
     
     methods
-        function obj = circle(name,varargin)
-            %CIRCLE Construct an instance of this class
+        function obj = rectangle(name,varargin)
+            %rectangle Construct an instance of this class
             %   Detailed explanation goes here
             
             %% Parse input
             parser = inputParser();
             parser.addRequired('name');
             parser.addParameter('window',[]);
-            parser.addParameter('Visible',false);            
+            parser.addParameter('Visible',false);
             parser.addParameter('RGB',[1 1 1],@(x)validateattributes(x,{'numeric'},{'row','size',[1 3],'nonnegative','<=',1}));
             parser.addParameter('center',[0 0],@(x)validateattributes(x,{'numeric'},{'row','size',[1 2],'finite','real'}));
-            parser.addParameter('diameter',100,@(x)validateattributes(x,{'numeric'},{'scalar','nonnegative','finite','real'}));
+            parser.addParameter('size',[100 100],@(x)validateattributes(x,{'numeric'},{'row','nonnegative','finite','real'}));
             parser.parse(name,varargin{:});
             
             %% Set params
@@ -83,17 +83,17 @@ classdef circle < projectorSpot.windowObject
             end
         end
         
-        function draw(obj)
+        function draw(obj,varargin)
             % Assert that we have a window to draw on
             assert(~isempty(obj.window),'No window specified');
             
-            % Does the circle already exist? If not, add it.
+            % Does the rectangle already exist? If not, add it.
             if ~obj.isDrawn
-                obj.window.addOval(obj.center, [obj.diameter obj.diameter], obj.RGB,'Name',obj.name);
+                obj.window.addRectangle(obj.center, obj.size, obj.RGB,'Name',obj.name);
             end
             
             % Set properties
-            obj.window.setObjectProperty(obj.name,'Dimensions',[obj.diameter, obj.diameter]);
+            obj.window.setObjectProperty(obj.name,'Dimensions',obj.size);
             obj.window.setObjectProperty(obj.name,'Center',obj.center);
             obj.window.setObjectProperty(obj.name,'Color',obj.RGB);
             obj.window.setObjectProperty(obj.name,'Name',obj.name);

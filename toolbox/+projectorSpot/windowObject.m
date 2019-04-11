@@ -46,7 +46,10 @@ classdef windowObject < handle
         end
         function set.Visible(obj,visible)
             obj.Visible = visible;
-            obj.draw();
+            if obj.isDrawn
+                obj.window.setObjectProperty(obj.name,'Enabled',visible);
+                obj.draw();
+            end
         end
     end
     

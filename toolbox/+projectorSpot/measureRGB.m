@@ -4,6 +4,9 @@ function measurement = measureRGB(windowObject, RGB, radiometer)
 
 windowObject.Visible = true;
 windowObject.RGB = RGB;
+
+measurement.measurable = struct(windowObject);
+
 SPD = radiometer.measure();
 
 measurement.SPD = SPD;

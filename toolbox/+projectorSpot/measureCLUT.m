@@ -36,7 +36,7 @@ measurements = [];
 % Loop
 for RGB = RGBs'
     fprintf('RGB: [%d %d %d]\n',RGB);
-    measurement = projectorSpot.measureRGB(pSpot.annulus,RGB,radiometer);
+    measurement = projectorSpot.measureRGB(pSpot.annulus,RGB',radiometer);
     
     % Append
     measurements = [measurements measurement];

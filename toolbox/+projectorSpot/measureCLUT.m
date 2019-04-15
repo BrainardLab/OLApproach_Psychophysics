@@ -26,9 +26,6 @@ RGBRange = (-10:1:10)';
 % RGBs
 RGBs = stepSize * RGBRange * [1 1 1] + RGBBackground;
 
-%% Measure background
-measurementBackground = projectorSpot.measureRGB(pSpot.annulus,RGBBackground,radiometer);
-
 %% Measurement loop
 % Initialize output
 measurements = [];

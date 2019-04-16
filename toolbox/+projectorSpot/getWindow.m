@@ -1,8 +1,8 @@
-function projectorWindow = projectorWindow(varargin)
+function projectorWindow = getWindow(varargin)
 % Create GLWindow to control display
 %
 % Syntax:
-%   projectorWindow = projectorWindow;
+%   projectorWindow = getWindow();
 %
 % Description:
 %

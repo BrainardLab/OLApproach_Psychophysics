@@ -11,6 +11,7 @@ CLUT = projectorSpot.CLUT.make([.5 .5 .5],1/255,10);
 
 %% Measure Mel_low
 OLShowDirection(Mel_low,oneLight);
+fprintf('Mel_Low');
 CLUT_Mel_low = projectorSpot.CLUT.measure(pSpot.annulus,CLUT,radiometer, NRepeats);
 for i = 1:numel(CLUT_Mel_low)
     CLUT_Mel_low(i).measurable.OLDirection = Mel_low;
@@ -18,6 +19,7 @@ end
 
 %% Measure Mel_high
 OLShowDirection(Mel_high,oneLight);
+fprintf('Mel_high');
 CLUT_Mel_high = projectorSpot.CLUT.measure(pSpot.annulus,CLUT,radiometer, NRepeats);
 for i = 1:numel(CLUT_Mel_high)
     CLUT_Mel_high(i).measurable.OLDirection = Mel_high;

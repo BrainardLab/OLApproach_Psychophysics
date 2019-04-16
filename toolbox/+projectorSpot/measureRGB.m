@@ -11,6 +11,7 @@ radiometerInfo.serial = radiometer.deviceSerialNum;
 
 measurements = struct([]);
 for i = 1:NMeasurements
+    fprintf('Measuring %d/%d...',i,NMeasurements);
     % Initialize measurement output
     measurement = struct();
     
@@ -29,5 +30,7 @@ for i = 1:NMeasurements
     
     % Append
     measurements = [measurements; measurement];
+    
+    fprintf('done.\n');
 end
 end

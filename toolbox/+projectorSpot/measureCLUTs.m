@@ -1,4 +1,4 @@
-function [CLUT_Mel_low, CLUT_Mel_high] = measureCLUTs(pSpot, radiometer, oneLight, Mel_low, Mel_high)
+function [CLUT_Mel_low, CLUT_Mel_high] = measureCLUTs(pSpot, radiometer, oneLight, Mel_low, Mel_high, NRepeats)
 %%
 
 %% Prep for measurement
@@ -11,9 +11,9 @@ CLUT = projectorSpot.CLUT.make([.5 .5 .5],1/255,10);
 
 %% Measure Mel_low
 OLShowDirection(Mel_low,oneLight);
-CLUT_Mel_low = projectorSpot.CLUT.measure(pSpot.annulus,CLUT,radiometer);
+CLUT_Mel_low = projectorSpot.CLUT.measure(pSpot.annulus,CLUT,radiometer, NRepeats);
 
 %% Measure Mel_high
 OLShowDirection(Mel_high,oneLight);
-CLUT_Mel_high = projectorSpot.CLUT.measure(pSpot.annulus,CLUT,radiometer);
+CLUT_Mel_high = projectorSpot.CLUT.measure(pSpot.annulus,CLUT,radiometer, NRepeats);
 end

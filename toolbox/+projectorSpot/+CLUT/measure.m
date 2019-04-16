@@ -5,7 +5,8 @@ measurements = [];
 
 % Loop
 for RGB = CLUT'
-    fprintf('RGB: [%d %d %d]\n',RGB);
+    idx = find(unique(RGB == CLUT','rows'));
+    fprintf('RGB %d/%d: [%d %d %d]\n',idx,size(CLUT,1),RGB);
     measurement = projectorSpot.measureRGB(windowObject,RGB',radiometer, NRepeats);
     
     % Append

@@ -16,7 +16,8 @@ for i = 1:NMeasurements
     measurement = struct();
     
     % Store measurement
-    measurement.SPD = radiometer.measure();
+    SPD = radiometer.measure();
+    measurement.SPD = reshape(SPD,[length(SPD),1]);
     measurement.wavelengths = MakeItWls(radiometer.userS);
 
     % Timestamp

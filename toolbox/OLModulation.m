@@ -1,4 +1,4 @@
-classdef OLModulation < handle
+classdef OLModulation < Modulation
 % Class for temporal modulation of color direction on OneLight device
 %
 % Description:
@@ -39,8 +39,6 @@ classdef OLModulation < handle
 
     properties
         directions;                                                        % OLDirections to apply in waveform
-        waveforms;                                                         % NxM matrix of waveforms, of M frames for N directions
-        framerate(1,1) {mustBePositive,mustBeReal,mustBeFinite} = 60;      % Framerate / refresh rate (Hz) of display
     end
     properties (Dependent)
         primaryWaveform; % PxT matrix of device primary P power value at each timepoint T
@@ -61,6 +59,8 @@ classdef OLModulation < handle
                 obj.waveforms = modulationStruct.waveforms;
                 assert(all(obj.primaryWaveform(:) == modulationStruct.primaryWaveform(:)));
             end
+            
+            obj.framerate = 200;
         end
         
         function primaryWaveform = get.primaryWaveform(obj)

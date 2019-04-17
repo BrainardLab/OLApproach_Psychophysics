@@ -1,4 +1,4 @@
-classdef DisplayObjectModulation < handle
+classdef DisplayObjectModulation < Modulation
 % Class for temporal modulation of color direction on OneLight device
 %
 % Description:
@@ -38,14 +38,15 @@ classdef DisplayObjectModulation < handle
 
     properties
         directions;                                                        % 3xN RGB primary values for N directions, to add in primary waveform
-        waveforms;                                                         % NxM matrix of waveforms, of M frames for N directions
-        framerate(1,1) {mustBePositive,mustBeReal,mustBeFinite} = 60;      % Framerate / refresh rate (Hz) of display
     end
     properties (Dependent)
         primaryWaveform; % Primary (RGB) values at each frame, matrix mult of directions * waveforms                                                  
     end
     
     methods
+        function obj = DisplayObjectModulation()
+            obj.framerate = 60;
+        end
         function primaryWaveform = get.primaryWaveform(obj)
             primaryWaveform = OLPrimaryWaveform(obj.directions, obj.waveforms);
         end

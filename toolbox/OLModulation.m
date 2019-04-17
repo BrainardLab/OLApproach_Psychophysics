@@ -77,6 +77,7 @@ classdef OLModulation < Modulation
         end
         
         function show(obj, oneLight)
+            obj.beep();
             OLFlicker(oneLight, obj.starts, obj.stops, 1/obj.framerate, 1);         
         end
     end

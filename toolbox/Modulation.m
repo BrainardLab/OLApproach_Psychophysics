@@ -40,11 +40,19 @@ classdef Modulation < handle & matlab.mixin.Heterogeneous
     properties
         waveforms;
         framerate(1,1) {mustBePositive,mustBeReal,mustBeFinite} = 1;        % Framerate / refresh rate (Hz) of device        
+        hasBeep(1,1) = false;
     end
     properties (Abstract, Dependent)
         primaryWaveform;
     end
     methods (Abstract)
         show(obj, hardware);
+    end
+    methods
+        function beep(obj)
+            if obj.hasBeep
+                Beeper;
+            end
+        end
     end
 end

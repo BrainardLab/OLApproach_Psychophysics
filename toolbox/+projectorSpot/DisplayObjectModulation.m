@@ -52,6 +52,7 @@ classdef DisplayObjectModulation < Modulation
         end
         
         function show(obj, displayObject)
+            obj.beep();
             displayObject.flickerRGB(obj.primaryWaveform,obj.framerate);
         end
     end

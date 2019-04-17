@@ -58,6 +58,10 @@ classdef windowObject < handle
             % Setting obj.isDrawn to 'false' triggers removal from queue
             obj.isDrawn = false;
         end
+        function s = struct(obj)
+            s = builtin('struct',obj);
+            s.window = struct(s.window);
+        end
     end
     
     methods (Abstract)

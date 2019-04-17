@@ -62,6 +62,21 @@ classdef windowObject < handle
             s = builtin('struct',obj);
             s.window = struct(s.window);
         end
+        function flickerRGB(obj, RGBWaveform, framerate)
+            % Set to first frame
+            obj.RGB = RGBWaveform(:,1)';
+            RGBWaveform = RGBWaveform(:,2:end);
+
+            % Loop
+            timeNextFlip = mglGetSecs + 1/framerate;
+            while ~isempty(RGBWaveform)
+                if mglGetSecs > timeNextFlip
+                    obj.RGB = RGBWaveform(:,1)';
+                    RGBWaveform = RGBWaveform(:,2:end);
+                    timeNextFlip = mglGetSecs + 1/framerate;
+                end
+            end
+        end
     end
     
     methods (Abstract)

@@ -2,6 +2,10 @@ classdef Acquisition < handle
     %ACQUISITION Summary of this class goes here
     %   Detailed explanation goes here
     
+    properties
+        name;
+        describe;
+    end
     properties % Directions
         background(1,1);
         pedestalDirection(1,1);

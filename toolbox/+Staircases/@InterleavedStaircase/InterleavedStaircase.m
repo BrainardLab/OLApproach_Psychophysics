@@ -25,6 +25,7 @@ classdef InterleavedStaircase < handle
         stimulusLevels;
         corrects;
         stimulusStepSizes;
+        NTrialsRemaining;
     end
     properties (Access = protected)
         staircases;

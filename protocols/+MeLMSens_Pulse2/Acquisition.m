@@ -113,6 +113,8 @@ classdef Acquisition < handle
             trial = obj.makeNextTrial();
             
             % Show trial
+            pSpot.annulus.RGB = obj.flickerBackgroundRGB;
+            pSpot.show();
             OLShowDirection(obj.background, oneLight);
             abort = trial.run(oneLight,pSpot,responseSys);
             OLShowDirection(obj.background, oneLight);

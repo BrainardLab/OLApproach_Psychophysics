@@ -32,6 +32,8 @@ function targetModulation = makeTargetModulation(flickerBackgroundRGB, flickerDe
 %% Set up waveforms
 % sinusoid
 flickerWaveform = sinewave(flickerDuration,framerate,flickerFrequency);
+flickerWaveform(1) = 0;
+flickerWaveform(end) = 0;
 
 % constant at 1
 referenceWaveform = ones(1,length(flickerWaveform));

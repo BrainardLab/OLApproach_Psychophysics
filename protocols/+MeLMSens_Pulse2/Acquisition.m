@@ -29,6 +29,10 @@ classdef Acquisition < handle
         staircase(1,1) Staircases.InterleavedStaircase;
         trials = [];
     end
+    properties (Dependent)
+        NTrialsRemaining;
+        NTrialsTotal;
+    end
     
     properties % Modulations
         ISModulation(1,1) OLModulation;
@@ -123,6 +127,11 @@ classdef Acquisition < handle
                 obj.trials = [obj.trials trial];
             end
         end
-        
+        function NTrialsRemaining = get.NTrialsRemaining(obj)
+            NTrialsRemaining = sum(obj.staircase.nTrialsRemaining);
+        end
+        function NTrialsTotal = get.NTrialsTotal(obj)
+            NTrialsTotal = obj.staircase.NTrialsPerStaircase * obj.staircase.NInterleavedStaircases;
+        end
     end
 end

@@ -25,7 +25,6 @@ classdef InterleavedStaircase < handle
         stimulusLevels;
         corrects;
         stimulusStepSizes;
-        nextStimulusLevel;
     end
     properties (Access = protected)
         staircases;
@@ -65,10 +64,10 @@ classdef InterleavedStaircase < handle
         end
         
         function stimulusLevel = get.currentStimulusLevel(obj)
-            stimulusLevel = getCurrentlevel(obj.staircases{obj.currentStaircase});
+            stimulusLevel = getCurrentValue(obj.staircases{obj.currentStaircase});
         end
         
-        function stimulusLevel = get.nextStimulusLevel(obj)
+        function stimulusLevel = pop(obj)
             % Find available (non-completed) staircases
             assert(~isempty(obj.availableStaircases),'No trials remaining');
             
@@ -76,7 +75,7 @@ classdef InterleavedStaircase < handle
             obj.currentStaircase = obj.availableStaircases(randi(numel(obj.availableStaircases)));
             
             % Get staircase level
-            stimulusLevel = getCurrentstimulusLevel(obj);
+            stimulusLevel = obj.currentStimulusLevel;
         end
         
         function updateStaircase(obj, correct)

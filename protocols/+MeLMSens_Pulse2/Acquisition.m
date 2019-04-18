@@ -82,5 +82,14 @@ classdef Acquisition < handle
                 obj.flickerFrequency,...
                 obj.flickerDuration,...
                 obj.flickerFrameRate);
+        end
+        function trial = dummyTrial(obj)
+            trial = MeLMSens_Pulse2.Trial();
+            trial.stimulus = obj.dummyStimulus();
+        end
+        function trial = makeTrial(obj,flickerDelta)
+            trial = obj.dummyTrial();
+            trial.stimulus = obj.makeStimulus(flickerDelta);
+        end
     end
 end

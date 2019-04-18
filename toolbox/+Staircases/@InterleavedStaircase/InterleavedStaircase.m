@@ -94,22 +94,21 @@ classdef InterleavedStaircase < handle
                 values{k} = getTrials(obj.staircases{k});
                 nTrials(k) = length(values{k});
             end
-            nTrials = min(nTrials);
+            stimulusLevels = NaN(max(nTrials),length(nTrials));
             for k = 1:numel(obj.staircases)
-                stimulusLevels(:,k) = values{k}(1:nTrials);
+                stimulusLevels(1:nTrials(k),k) = values{k};
             end
         end
-        function corrects = get.corrects(obj)
+        function correct = get.corrects(obj)
             % Extract correct/incorrect per trial separate for staircases
             for k = 1:numel(obj.staircases)
-                [correct{k}] = getTrials(obj.staircases{k});
-                nTrials(k) = length(correct{k});
+                [~, corrects{k}] = getTrials(obj.staircases{k});
+                nTrials(k) = length(corrects{k});
             end
-            nTrials = min(nTrials);
+            correct = NaN(max(nTrials),length(nTrials));
             for k = 1:numel(obj.staircases)
-                corrects(:,k) = correct{k}(1:nTrials);
+                correct(1:nTrials(k),k) = corrects{k};
             end
-            corrects = logical(corrects);
         end
     end
 end

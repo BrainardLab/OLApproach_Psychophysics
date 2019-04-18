@@ -1,4 +1,4 @@
-function ax = plotStimulusLevelsCorrects(stimulusLevels,corrects, varargin)
+function ax = stimulusLevelsCorrects(stimulusLevels,corrects, varargin)
 %PLOTSTIMULUSVALUESCORRECTS Plot stimulus levels, responses of staircases
 %   plotStimulusLevelsCorrects(stimulusLevels, corrects) plot the levels of
 %   the staircase in order of appearance as a solid line. Incorrect trials
@@ -44,7 +44,7 @@ for k = 1:size(stimulusLevels,2)
         'MarkerSize',10,parser.Unmatched);
 end
 xlabel(ax,'Trial number');
-xlim([0 size(stimulusLevels,1)]);
+xlim([1 size(stimulusLevels,1)]);
 ylabel(ax,'Stimulus level');
-ylim([min(stimulusLevels), max(stimulusLevels)]);
+ylim([min(stimulusLevels(:)), max(stimulusLevels(:))]);
 end

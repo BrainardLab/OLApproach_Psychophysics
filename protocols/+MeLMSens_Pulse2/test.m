@@ -15,7 +15,10 @@ acquisition.pedestalPresent = 1;
 acquisition.makeModulations();
 acquisition.staircase = MeLMSens_Pulse2.makeStaircase();
 
-%% Dummy stimulus
-dummyStim = acquisition.dummyStimulus();
+%% Get trialResponseSys
+trialResponseSys = getTrialResponseSystem(gamePad);
 
-dummyStim.show(oneLight,pSpot);
+%% Test trial
+trial = acquisition.makeTrial(10);
+
+trial.run(oneLight,pSpot,trialResponseSys);

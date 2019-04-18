@@ -21,6 +21,11 @@ classdef Acquisition < handle
         flickerFrequency(1,1) = 5; % Hz
         flickerFrameRate(1,1) = 60; %Hz
     end
+    properties
+        staircase(1,1) Staircases.InterleavedStaircase;
+        trials = [];
+    end
+    
     properties % Modulations
         ISModulation(1,1) OLModulation;
         preModulation(1,1) OLModulation;
@@ -91,5 +96,29 @@ classdef Acquisition < handle
             trial = obj.dummyTrial();
             trial.stimulus = obj.makeStimulus(flickerDelta);
         end
+        function trial = makeNextTrial(obj)
+            flickerDelta = obj.staircase.pop();
+            trial = makeTrial(obj,flickerDelta);
+        end
+        function [correct, abort, trial] = runNextTrial(obj,oneLight,pSpot,responseSys)
+            % Make trial
+            trial = obj.makeNextTrial();
+            
+            % Show trial
+            OLShowDirection(obj.background, oneLight);
+            abort = trial.run(oneLight,pSpot,responseSys);
+            OLShowDirection(obj.background, oneLight);
+            
+            % Process response
+            if ~abort
+                % Update staircases
+                correct = trial.correct;
+                obj.staircase.updateStaircase(trial.correct);
+
+                % Save to list
+                obj.trials = [obj.trials trial];
+            end
+        end
+        
     end
 end

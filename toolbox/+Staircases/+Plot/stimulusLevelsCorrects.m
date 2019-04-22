@@ -44,7 +44,8 @@ for k = 1:size(stimulusLevels,2)
         'MarkerSize',10,parser.Unmatched);
 end
 xlabel(ax,'Trial number');
-xlim([1 size(stimulusLevels,1)]);
+xlim(ax,[1 size(stimulusLevels,1)]);
+xticks(ax,1:1:max(xlim));
 ylabel(ax,'Stimulus level');
-ylim([min(stimulusLevels(:)), max(stimulusLevels(:))]);
+ylim(ax,[min(stimulusLevels(:)), max(stimulusLevels(:))]);
 end

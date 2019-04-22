@@ -142,10 +142,11 @@ classdef Acquisition < handle
             pSpot.fixation.Visible = false;
 
             % Get CLUT
-            ProjectorCLUT = projectorSpot.CLUT.make([.5 .5 .5],1/255,10);
+            maxStep = max(obj.staircase.stimulusLevels(:));
+            ProjectorCLUT = projectorSpot.CLUT.make([.5 .5 .5],1/255,maxStep);
 
             % Set OL Background
-            OLSetting = obj.background + obj.pedestalPresent * obj.pedestalDirection;
+            OLSetting = obj.background + (double(obj.pedestalPresent) .* obj.pedestalDirection);
             OLShowDirection(OLSetting,oneLight);
             
             % Measure
@@ -155,7 +156,7 @@ classdef Acquisition < handle
             end
             
             % Store
-            obj.CLUT = ProjectorCLUT;
+            obj.projectorCLUT = ProjectorCLUT;
         end
     end
 end

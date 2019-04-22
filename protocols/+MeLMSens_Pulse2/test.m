@@ -50,3 +50,10 @@ validationsPost = MeLMSens_Pulse2.validateDirections(directions,oneLight,radiome
                                                 'receptors',receptors,...
                                                 'primaryTolerance',1e-5,...
                                                 'nValidations',5);
+                                            
+%% Measure projector CLUT post
+NRepeats = 5;
+pSpot.show();
+for a = acquisitions
+    a.measureProjectorCLUT(pSpot, oneLight, radiometer, NRepeats)
+end

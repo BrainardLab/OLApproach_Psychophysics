@@ -35,12 +35,16 @@ validationsPre = MeLMSens_Pulse2.validateDirections(directions,oneLight,radiomet
 acquisitions = MeLMSens_Pulse2.makeAcquisitions(...
                 directions,...
                 receptors,...
-                'NTrialsPerStaircase',3);
+                'NTrialsPerStaircase',40);
 
 %% Get trialResponseSys
 trialResponseSys = getTrialResponseSystem(gamePad);
 
+%% Adjust pSpot
+projectorSpot.adjust(pSpot,gamePad);
+
 %% Run acquisitions
+OLShowDirection(directions('Mel_low'),oneLight);
 trialResponseSys.waitForResponse();
 MeLMSens_Pulse2.runAcquisitions(acquisitions,oneLight,pSpot,trialResponseSys);
 
@@ -54,6 +58,6 @@ validationsPost = MeLMSens_Pulse2.validateDirections(directions,oneLight,radiome
 %% Measure projector CLUT post
 NRepeats = 5;
 pSpot.show();
-for a = acquisitions
+for a = acquisitions'
     a.measureProjectorCLUT(pSpot, oneLight, radiometer, NRepeats)
 end

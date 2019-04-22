@@ -10,7 +10,9 @@ ax = parser.Results.ax;
 axes(ax); hold on;
 
 % Plot staircases trialseries
-plotStaircaseTrialseries([obj.staircases{1:3}],'ax',ax,'threshold',[]);
+Staircases.Plot.stimulusLevelsCorrects(obj.stimulusLevels,obj.corrects,...
+                                        'ax',ax,...
+                                        'UserData',obj);
 
 % % Plot mean threshold
 % color = ax.ColorOrder(ax.ColorOrderIndex,:); % current plot color, which we'll reuse)

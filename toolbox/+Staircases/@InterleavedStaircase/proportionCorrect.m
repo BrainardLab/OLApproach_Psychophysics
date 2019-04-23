@@ -1,5 +1,7 @@
 function [binProportionCorrect,binCenter,binN] = proportionCorrect(obj)
 %PROPORTIONCORRECT returns proportion of correct responses per bin staircase stimulus levels
+%   [binProportionCorrect,binCenter,binN] = proportionCorrect(InterleavedStaircase)
+
 
 % History:
 %   2019.03.27  J.Vincent wrote staircaseBinnedTrials

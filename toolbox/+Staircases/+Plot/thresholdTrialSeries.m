@@ -21,7 +21,5 @@ ax = parser.Results.ax;
 
 %% Plot
 % Draw a dashed horizontal line at the threshold value
-hold on;
 plot(ax,repmat(xlim',[1,numel(threshold)]),repmat(threshold,[2 1]),'--');
-hold off;
 end

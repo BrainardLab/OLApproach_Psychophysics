@@ -62,7 +62,6 @@ correct = logical(correct);
 value = round(value,8);
 
 %% Plot
-hold(ax,'on');
 for k = 1:size(value,2)
     % Plot values for all trials of staircase
     % Plot all values in a contiguous solid line.

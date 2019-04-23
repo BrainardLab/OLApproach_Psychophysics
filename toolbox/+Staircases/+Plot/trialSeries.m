@@ -1,4 +1,4 @@
-function ax = plotStaircaseTrialseries(staircase, varargin)
+function ax = trialSeries(staircase, varargin)
 %PLOTSTAIRCASETRIALSERIES Plot values of (array of) staircase object(s)
 %   plotStaircaseTrialseries(staircase) plot the values of the staircase in
 %   order of appearance as a solid line. Incorrect trials are marked with
@@ -64,25 +64,23 @@ value = round(value,8);
 %% Plot
 hold(ax,'on');
 for k = 1:size(value,2)
-    
     % Plot values for all trials of staircase
     % Plot all values in a contiguous solid line.
     % Place markers only at trials where response was incorrect
-    plot(ax,value(:,k),'-*','MarkerIndices',find(~correct(:,k)),'MarkerSize',10,parser.Unmatched);
-
-    if ~isempty(threshold) && ~isnan(threshold(k))
-        % Plot threshold estimate for staircase
-        
-        % Decrement axis.ColorOrderIndex by 1 to get the same color dashed
-        % line as the solid line of all values
-        if ax.ColorOrderIndex > 1
-            ax.ColorOrderIndex = ax.ColorOrderIndex-1;
-        end
-
-        % Draw a dashed horizontal line at the value of the threshold estimate
-        plot(ax,xlim,threshold(k)*[1 1],'--');
-    end
+    Staircases.Plot.stimulusLevelsCorrects(value(:,k),correct(:,k),'ax',ax);
 end
 xlabel(ax,'Trial number');
 ylabel(ax,'Value');
+
+%% Plot threshold-lines
+if ~isempty(threshold)
+    % Decrement axis.ColorOrderIndex by k (number of staircase plotted) to
+    % get the same color dashed line as the solid line of all values
+    if ax.ColorOrderIndex > 1
+        ax.ColorOrderIndex = ax.ColorOrderIndex-k;
+    end
+    
+    % Call threshold plotting routine
+    Staircases.Plot.thresholdTrialSeries(threshold);
+end
 end

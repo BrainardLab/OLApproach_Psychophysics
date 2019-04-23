@@ -1,4 +1,4 @@
-function S = plotStaircaseProportionCorrect(staircase,varargin)
+function S = proportionCorrect(binProportionCorrect, varargin)
 %PLOTSTAIRCASEPROPORTIONCORRECT Plot proportion correct resonses of (array of) staircase object(s)
 %   plotStaircaseProportionCorrect(staircase) plot proportion correct as a
 %   scatterplot. Data are binned, and markers are placed indicating the
@@ -6,11 +6,7 @@ function S = plotStaircaseProportionCorrect(staircase,varargin)
 %
 %   plotStaircaseProportionCorrect(staircase,'binSize',N) calculates
 %   proportion correct over N trials per bin.
-%
-%   plotStaircaseProportionCorrect(staircases) plots the aggregation of
-%   multiple staircases in the same scatterplot, i.e., collapses over
-%   staircases.
-%
+
 %   plotStaircaseProportionCorrect(...,'ax',ax) plot in the specified axes;
 %   ax is must be a valid axes-object (i.e., open).
 %
@@ -19,27 +15,26 @@ function S = plotStaircaseProportionCorrect(staircase,varargin)
 %
 %   This function tries to forward unmatched input arguments to scatter(),
 %   although no guarantee is made that those will work well.
-%
-%   See also plotStaircaseTrialSeries, plotThreshold,
-%   plotPsychometricFunction, getThresholdEstimate
 
 % History:
 %   2018.11.02  J.Vincent wrote plotStaircaseProportionCorrect.
 %   2019.03.27  J.Vincent farmed out calculations to other functions
+%   2019.04.23  J.Vincent extracted Plot.proportionCorrect
 
 %% Parse input
 parser = inputParser;
-parser.addRequired('staircase',@(x)isa(x,'Staircase'));
-parser.parse(staircase);
-parser.addParameter('threshold',[],@(x) numel(x) == numel(staircase));
+parser.addRequired('binProportionCorrect');
+parser.parse(binProportionCorrect);
+
+parser.addParameter('binN',ones(size(binProportionCorrect)));
+parser.addParameter('binCenter',1:1:numel(binProportionCorrect));
 parser.addParameter('ax',gca,@(x) isgraphics(x) && strcmp(x.Type,'axes'));
 parser.addParameter('binSize',15);
 parser.KeepUnmatched = true;
-parser.parse(staircase, varargin{:});
+parser.parse(binProportionCorrect, varargin{:});
 ax = parser.Results.ax;
-
-%% Get binned data
-[binProportionCorrect,binCenter,binN] = staircaseProportionCorrect(staircase);
+binN = parser.Results.binN;
+binCenter = parser.Results.binCenter;
 
 %% Plot
 hold(ax,'on');

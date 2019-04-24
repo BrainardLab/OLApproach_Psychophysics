@@ -29,7 +29,6 @@ parser.parse(binProportionCorrect);
 parser.addParameter('binN',ones(size(binProportionCorrect)));
 parser.addParameter('binCenter',1:1:numel(binProportionCorrect));
 parser.addParameter('ax',gca,@(x) isgraphics(x) && strcmp(x.Type,'axes'));
-parser.addParameter('binSize',15);
 parser.KeepUnmatched = true;
 parser.parse(binProportionCorrect, varargin{:});
 ax = parser.Results.ax;

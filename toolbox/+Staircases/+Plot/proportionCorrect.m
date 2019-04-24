@@ -36,7 +36,6 @@ binN = parser.Results.binN;
 binCenter = parser.Results.binCenter;
 
 %% Plot
-hold(ax,'on');
 S = scatter(ax,binCenter,binProportionCorrect,...
     (binN+1)*10,... % size is 10 * number of trials in bin
     'filled',...

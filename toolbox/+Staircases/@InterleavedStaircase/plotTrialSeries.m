@@ -5,7 +5,9 @@ function ax = plotTrialSeries(obj,varargin)
 parser = inputParser();
 parser.addRequired('obj');
 parser.addParameter('ax',gca,@(x) isgraphics(x) && strcmp(x.Type,'axes'));
+parser.addParameter('threshold',[]);
 parser.parse(obj,varargin{:});
+threshold = parser.Results.threshold;
 ax = parser.Results.ax;
 axes(ax); hold on;
 
@@ -14,11 +16,6 @@ Staircases.Plot.stimulusLevelsCorrects(obj.stimulusLevels,obj.corrects,...
                                         'ax',ax,...
                                         'UserData',obj);
 
-% % Plot mean threshold
-% color = ax.ColorOrder(ax.ColorOrderIndex,:); % current plot color, which we'll reuse)
-% plot(xlim,obj.threshold*[1 1],'--','Color',color);
-% text(10,obj.threshold+0.001,...
-%     sprintf('Fit threshold = %.3f',mean(obj.threshold)),...
-%     'Color',color,...
-%     'FontWeight','bold');
+% Plot threshold
+Staircases.Plot.thresholdTrialSeries(threshold,'ax',ax);
 end

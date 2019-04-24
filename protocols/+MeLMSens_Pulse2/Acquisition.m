@@ -158,5 +158,24 @@ classdef Acquisition < handle
             % Store
             obj.projectorCLUT = ProjectorCLUT;
         end
+        function [threshold, PFParams] = fitPsychometricFunctionThreshold(obj)
+            % Fit psychometric function
+            psychometricFunction = @PAL_Weibull;
+            paramsInitialGuess = Weibull_initialParamsGuess(obj.staircase.stimulusLevels,.5);
+            freeParams = [1 1 0 1];
+            guessRateLimits = [0 .5];
+            PFParams = obj.staircase.fitPsychometricFunction(psychometricFunction,freeParams,paramsInitialGuess,guessRateLimits);
+                           
+            % PF-based threshold
+            criterion = 0.7071;
+            threshold = Staircases.PsychometricFunctions.thresholdFromPsychometricFunction(psychometricFunction,PFParams,criterion);
+        end
+        function plot(obj)
+            [threshold, PFParams] = obj.fitPsychometricFunctionThreshold();
+            F = obj.staircase.plot('threshold',threshold,'criterion',0.7071);
+            ax = F.Children(1);
+            color = ax.ColorOrder(ax.ColorOrderIndex-3,:);
+            Staircases.PsychometricFunctions.plotPsychometricFunction(@PAL_Weibull,PFParams,unique(obj.staircase.stimulusLevels),'ax',ax,'Color',color);
+        end
     end
 end

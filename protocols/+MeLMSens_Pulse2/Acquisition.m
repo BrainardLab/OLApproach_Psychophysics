@@ -135,5 +135,17 @@ classdef Acquisition < handle
         function NTrialsTotal = get.NTrialsTotal(obj)
             NTrialsTotal = obj.staircase.NTrialsPerStaircase * obj.staircase.NInterleavedStaircases;
         end
+        function [threshold, PFParams] = fitPsychometricFunctionThreshold(obj)
+            % Fit psychometric function
+            psychometricFunction = @PAL_Weibull;
+            paramsInitialGuess = Weibull_initialParamsGuess(obj.staircase.stimulusLevels,.5);
+            freeParams = [1 1 0 1];
+            guessRateLimits = [0 .5];
+            PFParams = obj.staircase.fitPsychometricFunction(psychometricFunction,freeParams,paramsInitialGuess,guessRateLimits);
+                           
+            % PF-based threshold
+            criterion = 0.7071;
+            threshold = Staircases.PsychometricFunctions.thresholdFromPsychometricFunction(psychometricFunction,PFParams,criterion);
+    end
     end
 end

@@ -146,6 +146,13 @@ classdef Acquisition < handle
             % PF-based threshold
             criterion = 0.7071;
             threshold = Staircases.PsychometricFunctions.thresholdFromPsychometricFunction(psychometricFunction,PFParams,criterion);
-    end
+        end
+        function plot(obj)
+            [threshold, PFParams] = obj.fitPsychometricFunctionThreshold();
+            F = obj.staircase.plot('threshold',threshold,'criterion',0.7071);
+            ax = F.Children(1);
+            color = ax.ColorOrder(ax.ColorOrderIndex-3,:);
+            Staircases.PsychometricFunctions.plotPsychometricFunction(@PAL_Weibull,PFParams,unique(obj.staircase.stimulusLevels),'ax',ax,'Color',color);
+        end
     end
 end

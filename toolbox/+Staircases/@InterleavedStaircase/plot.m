@@ -1,30 +1,9 @@
-function ax = plot(obj,varargin)
-% Plot all trials of this acquisition
+function F = plot(obj)
+%PLOT Summary of this function goes here
+%   Detailed explanation goes here
 
-% Parse input
-parser = inputParser();
-parser.addRequired('obj');
-parser.addParameter('ax',gca,@(x) isgraphics(x) && strcmp(x.Type,'axes'));
-parser.parse(obj,varargin{:});
-ax = parser.Results.ax;
-axes(ax); hold on;
+F = figure();
 
-% Plot staircases trialseries
-Staircases.Plot.stimulusLevelsCorrects(obj.stimulusLevels,obj.corrects,...
-                                        'ax',ax,...
-                                        'UserData',obj);
-
-% % Plot mean threshold
-% color = ax.ColorOrder(ax.ColorOrderIndex,:); % current plot color, which we'll reuse)
-% plot(xlim,obj.threshold*[1 1],'--','Color',color);
-% text(10,obj.threshold+0.001,...
-%     sprintf('Fit threshold = %.3f',mean(obj.threshold)),...
-%     'Color',color,...
-%     'FontWeight','bold');
-
-% Finish up labeling
-ylabel('Stimulus Level');
-ylim([obj.stimulusMin,obj.stimulusMax]);
-title('Staircase trials');
-hold off;
+obj.plotTrialSeries('ax',subplot(1,2,1));
+obj.plotProportionCorrect('ax',subplot(1,2,2));
 end

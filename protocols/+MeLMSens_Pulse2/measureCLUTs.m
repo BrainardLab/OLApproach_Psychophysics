@@ -1,13 +1,11 @@
-function [CLUT_Mel_low, CLUT_Mel_high] = measureCLUTs(pSpot, radiometer, oneLight, Mel_low, Mel_high, NRepeats)
-%%
-
+function CLUTMeasurements = measureCLUTs(pSpot, radiometer, oneLight, Mel_low, Mel_high, NRepeats)
 %% Prep for measurement
 % Hide macular, hide fixation
 pSpot.macular.Visible = false;
 pSpot.fixation.Visible = false;
 
 %% Get CLUT
-CLUT = projectorSpot.CLUT.make([.5 .5 .5],1/255,10);
+CLUT = projectorSpot.CLUT.make([.5 .5 .5],1/255,20);
 
 %% Measure Mel_low
 OLShowDirection(Mel_low,oneLight);
@@ -24,5 +22,10 @@ CLUT_Mel_high = projectorSpot.CLUT.measure(pSpot.annulus,CLUT,radiometer, NRepea
 for i = 1:numel(CLUT_Mel_high)
     CLUT_Mel_high(i).measurable.OLDirection = Mel_high;
 end
+
+%% Output
+CLUTMeasurements = containers.map();
+CLUTMeasurements('Mel_low') = CLUT_Mel_low;
+CLUTMeasurements('Mel_high') = CLUT_Mel_high;
 
 end

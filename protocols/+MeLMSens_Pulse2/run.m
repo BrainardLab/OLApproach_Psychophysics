@@ -95,4 +95,12 @@ validationsPost = MeLMSens_Pulse2.validateDirections(directions,oneLight,radiome
                                                 'nValidations',5);
 save(fullfile(sessionDataPath,materialsFilename),...
     'directions','validationsPost',...
-    '-append','-v7.3');                                            
+    '-append','-v7.3');              
+
+%% Measure projector CLUT post-experiment
+pSpot.show();
+NRepeats = 5;
+projectorMeasurementsPost = MeLMSens_Pulse2.measureCLUTs(pSpot,radiometer,oneLight,directions('Mel_low'),directions('Mel_high'),NRepeats);
+save(fullfile(sessionDataPath,materialsFilename),...
+    'projectorMeasurementsPost',...
+    '-append','-v7.3');

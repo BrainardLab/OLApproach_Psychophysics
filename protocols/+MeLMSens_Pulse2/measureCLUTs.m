@@ -24,7 +24,7 @@ for i = 1:numel(CLUT_Mel_high)
 end
 
 %% Output
-CLUTMeasurements = containers.map();
+CLUTMeasurements = containers.Map();
 CLUTMeasurements('Mel_low') = CLUT_Mel_low;
 CLUTMeasurements('Mel_high') = CLUT_Mel_high;
 

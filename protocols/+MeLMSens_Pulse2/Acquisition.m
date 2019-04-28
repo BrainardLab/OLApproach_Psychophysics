@@ -11,7 +11,6 @@ classdef Acquisition < handle
         pedestalDirection(1,1);
         pedestalPresent(1,1) logical;
         receptors;
-        projectorCLUT;
     end
     properties % Durations
         adaptationDuration(1,1) duration = minutes(0);
@@ -134,29 +133,6 @@ classdef Acquisition < handle
         end
         function NTrialsTotal = get.NTrialsTotal(obj)
             NTrialsTotal = obj.staircase.NTrialsPerStaircase * obj.staircase.NInterleavedStaircases;
-        end
-        function ProjectorCLUT = measureProjectorCLUT(obj,pSpot, oneLight, radiometer, NRepeats)
-            % Prep for measurement
-            % Hide macular, hide fixation
-            pSpot.macular.Visible = false;
-            pSpot.fixation.Visible = false;
-
-            % Get CLUT
-            maxStep = max(obj.staircase.stimulusLevels(:));
-            ProjectorCLUT = projectorSpot.CLUT.make([.5 .5 .5],1/255,maxStep);
-
-            % Set OL Background
-            OLSetting = obj.background + (double(obj.pedestalPresent) .* obj.pedestalDirection);
-            OLShowDirection(OLSetting,oneLight);
-            
-            % Measure
-            ProjectorCLUT = projectorSpot.CLUT.measure(pSpot.annulus,ProjectorCLUT,radiometer, NRepeats);
-            for i = 1:numel(ProjectorCLUT)
-                ProjectorCLUT(i).measurable.OLDirection = OLSetting;
-            end
-            
-            % Store
-            obj.projectorCLUT = ProjectorCLUT;
         end
         function [threshold, PFParams] = fitPsychometricFunctionThreshold(obj)
             % Fit psychometric function

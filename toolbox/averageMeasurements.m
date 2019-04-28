@@ -3,7 +3,6 @@ function averageMeasurement = averageMeasurements(measurements)
 %   Detailed explanation goes here
 
 %% Check input
-assert(isequal(measurements.measurable),'Measurements are of different objects');
 assert(isequal(measurements.wavelengths),'Inconsistent wavelength sampling across measurements');
 assert(isequal(measurements.radiometerInfo),'Inconsistent radiometer information/configuration');
 

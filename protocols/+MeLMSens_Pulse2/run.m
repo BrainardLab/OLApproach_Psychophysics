@@ -2,6 +2,7 @@
 % We want to start with a clean slate, and set a number of parameters
 % before doing anything else.
 approach = 'OLApproach_Psychophysics';
+protocol = 'MeLMSens_Pulse2';
 simulate = getpref(approach,'simulate'); % localhook defines what devices to simulate
 
 %% Set output path
@@ -80,10 +81,6 @@ MeLMSens_Pulse2.runAcquisitions(acquisitions,oneLight,pSpot,trialResponseSys);
 %% Save acquisitions
 for acquisition = acquisitions(:)'    
     dataFilename = sprintf('data-%s-%s-%s.mat',participantID,sessionName,acquisition.name);
-    if isfile(fullfile(sessionDataPath,dataFilename))
-        prevAcq = load(fullfile(sessionDataPath,dataFilename));
-        acquisition = [prevAcq.acquisition acquisition];
-    end
     save(fullfile(sessionDataPath,dataFilename),'acquisition','-v7.3');
 end
 
@@ -95,7 +92,7 @@ validationsPost = MeLMSens_Pulse2.validateDirections(directions,oneLight,radiome
                                                 'nValidations',5);
 save(fullfile(sessionDataPath,materialsFilename),...
     'directions','validationsPost',...
-    '-append','-v7.3');              
+    '-append','-v7.3');     
 
 %% Measure projector CLUT post-experiment
 pSpot.show();

@@ -95,6 +95,17 @@ save(fullfile(sessionDataPath,materialsFilename),...
     'directions','validationsPost',...
     '-append','-v7.3');     
 
+%% Measure threshold stimuli
+pSpot.show();
+NRepeats = 5;
+for acquisition = acquisitions(:)'
+    dataFilename = sprintf('data-%s-%s-%s.mat',participantID,sessionName,acquisition.name);
+    
+    measurementsThreshold = MeLMSens_Pulse2.measureThresholdStimuli(acquisition,oneLight,pSpot,radiometer,NRepeats);
+    
+    save(fullfile(sessionDataPath,dataFilename),'measurementsThreshold','-append');
+end
+
 %% Measure projector CLUT post-experiment
 pSpot.show();
 NRepeats = 5;

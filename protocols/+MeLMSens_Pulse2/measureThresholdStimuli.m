@@ -1,40 +1,52 @@
-function thresholdStimulusMeasurements = measureThresholdStimuli(acquisitions, oneLight, pSpot, radiometer,NRepeats)
+function measurementsThreshold = measureThresholdStimuli(acquisition, oneLight, pSpot, radiometer,NRepeats)
 %MEASURETHRESHOLDSTIMULI Summary of this function goes here
 %   Detailed explanation goes here
 
 % Hide macular, hide fixation
+pSpot.show();
 pSpot.macular.Visible = false;
 pSpot.fixation.Visible = false;
 
-% Initialize
-thresholdStimulusMeasurements = [];
+% Set OL
+olDirection = acquisition.background + double(acquisition.pedestalPresent) .* acquisition.pedestalDirection;
+OLShowDirection(olDirection, oneLight);
 
-% Loop over acquisitions
-for a = acquisitions(:)
-    % Set OL
-    olDirection = a.background + double(a.pedestalPresent) .* a.pedestalDirection;
-    OLShowDirection(olDirection, oneLight);
-    
-    % Figure out threshold stimuli
-    thresholdDeltaRGB = a.fitPsychometricFunctionThreshold();
-    thresholdRGBNeg = thresholdDeltaRGB * [-1 -1 -1] + a.flickerBackgroundRGB;
-    thresholdRGBPos = thresholdDeltaRGB * [1 1 1] + a.flickerBackgroundRGB;
+% Figure out threshold stimuli
+thresholdStep = acquisition.fitPsychometricFunctionThreshold();
+thresholdDeltaRGB = 1/255 * [1 1 1] * thresholdStep;
+thresholdRGBNeg = -thresholdDeltaRGB + acquisition.flickerBackgroundRGB;
+thresholdRGBPos = +thresholdDeltaRGB + acquisition.flickerBackgroundRGB;
 
-    % Measure
-    measurementsPos = projectorSpot.measureRGB(pSpot.annulus,thresholdRGBPos,radiometer,NRepeats);
-    for m = measurementsPos
-       m.measurable.OLDirection = olDirection;
-       m.acquisitionName = a.name;
-       m.thresholdValue = thresholdDeltaRGB;
-       m.direction = 'positive';
-    end
-    measurementsNeg = projectorSpot.measureRGB(pSpot.annulus,thresholdRGBNeg,radiometer,NRepeats);
-    for m = measurementsPos
-       m.measurable.OLDirection = olDirection;
-       m.acquisitionName = a.name;
-       m.thresholdValue = thresholdDeltaRGB;
-       m.direction = 'negative';
-    end    
+% Measure background
+measurementsBackground = projectorSpot.measureRGB(pSpot.annulus,acquisition.flickerBackgroundRGB,radiometer,NRepeats);
+for i = 1:numel(measurementsBackground)
+   measurementsBackground(i).measurable.OLDirection = olDirection;
+   measurementsBackground(i).acquisitionName = acquisition.name;
+   measurementsBackground(i).thresholdValue = 0;
+   measurementsBackground(i).direction = 'background';
 end
+
+% Measure positive arm
+measurementsThresholdPos = projectorSpot.measureRGB(pSpot.annulus,thresholdRGBPos,radiometer,NRepeats);
+for i = 1:numel(measurementsThresholdPos)
+   measurementsThresholdPos(i).measurable.OLDirection = olDirection;
+   measurementsThresholdPos(i).acquisitionName = acquisition.name;
+   measurementsThresholdPos(i).thresholdValue = thresholdStep;
+   measurementsThresholdPos(i).direction = 'positive';
+end
+
+% Measure negative arm
+measurementsThresholdNeg = projectorSpot.measureRGB(pSpot.annulus,thresholdRGBNeg,radiometer,NRepeats);
+for i = 1:numel(measurementsThresholdNeg)
+   measurementsThresholdNeg(i).measurable.OLDirection = olDirection;
+   measurementsThresholdNeg(i).acquisitionName = acquisition.name;
+   measurementsThresholdNeg(i).thresholdValue = thresholdStep;
+   measurementsThresholdNeg(i).direction = 'negative';
+end  
+
+measurementsThreshold = containers.Map();
+measurementsThreshold('Background') = measurementsBackground;
+measurementsThreshold('Positive') = measurementsThresholdPos;
+measurementsThreshold('Negative') = measurementsThresholdNeg;
 
 end

@@ -71,6 +71,7 @@ save(fullfile(sessionDataPath,materialsFilename),...
 trialResponseSys = getTrialResponseSystem(gamePad);
 
 %% Adjust pSpot
+OLShowDirection(directions('Mel_low'),oneLight);
 projectorSpot.adjust(pSpot,gamePad);
 
 %% Run acquisitions

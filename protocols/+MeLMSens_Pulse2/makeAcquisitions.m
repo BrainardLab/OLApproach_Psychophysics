@@ -14,6 +14,7 @@ acquisitions(1,1).background = directions('Mel_low');
 acquisitions(1,1).pedestalDirection = directions('MelStep');
 acquisitions(1,1).pedestalPresent = 0;
 acquisitions(1,1).name = "NoPedestal";
+acquisitions(1,1).receptors = receptors;
 
 %% Mel pedestal (flicker on Mel_high)
 acquisitions(2,1) = MeLMSens_Pulse2.Acquisition();
@@ -21,6 +22,7 @@ acquisitions(2,1).background = directions('Mel_low');
 acquisitions(2,1).pedestalDirection = directions('MelStep');
 acquisitions(2,1).pedestalPresent = 1;
 acquisitions(2,1).name = "Pedestal";
+acquisitions(2,1).receptors = receptors;
 
 %% Combine
 rngSettings = rng('shuffle');

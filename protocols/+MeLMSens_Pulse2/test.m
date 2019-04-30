@@ -9,7 +9,9 @@ directions = MeLMSens_Pulse2.makeNominalOLDirections(calibration);
 receptors = directions('MelStep').describe.directionParams.T_receptors;
 
 %% Validate nominal
-pSpot.hide();
+pSpot.show();
+pSpot.macular.Visible = false;
+pSpot.fixation.Visible = false;
 validationsNominal = MeLMSens_Pulse2.validateDirections(directions,oneLight,radiometer,...
                                                 'receptors',receptors,...
                                                 'primaryTolerance',1e-5,...
@@ -17,30 +19,35 @@ validationsNominal = MeLMSens_Pulse2.validateDirections(directions,oneLight,radi
                                                 'temperatureProbe',temperatureProbe);
 
 %% Correct
-pSpot.hide();
+pSpot.show();
+pSpot.macular.Visible = false;
+pSpot.fixation.Visible = false;
 corrections = MeLMSens_Pulse2.correctDirections(directions,oneLight,calibration,radiometer,...
                             receptors,...
                             'smoothness',.001,...
                             'temperatureProbe',temperatureProbe);
 
 %% Validate pre
-pSpot.hide();
+pSpot.show();
+pSpot.macular.Visible = false;
+pSpot.fixation.Visible = false;
 validationsPre = MeLMSens_Pulse2.validateDirections(directions,oneLight,radiometer,...
                                                 'receptors',receptors,...
                                                 'primaryTolerance',1e-5,...
                                                 'nValidations',5,...
                                                 'temperatureProbe',temperatureProbe);
-
+                                            
 %% Make acquisitions
 acquisitions = MeLMSens_Pulse2.makeAcquisitions(...
                 directions,...
                 receptors,...
                 'NTrialsPerStaircase',40);
-
+            
 %% Get trialResponseSys
 trialResponseSys = getTrialResponseSystem(gamePad);
 
 %% Adjust pSpot
+OLShowDirection(directions('Mel_low'),oneLight);
 projectorSpot.adjust(pSpot,gamePad);
 
 %% Run acquisitions
@@ -49,15 +56,10 @@ trialResponseSys.waitForResponse();
 MeLMSens_Pulse2.runAcquisitions(acquisitions,oneLight,pSpot,trialResponseSys);
 
 %% Validations post
-pSpot.hide();
+pSpot.show();
+pSpot.macular.Visible = false;
+pSpot.fixation.Visible = false;
 validationsPost = MeLMSens_Pulse2.validateDirections(directions,oneLight,radiometer,...
                                                 'receptors',receptors,...
                                                 'primaryTolerance',1e-5,...
                                                 'nValidations',5);
-                                            
-%% Measure projector CLUT post
-NRepeats = 5;
-pSpot.show();
-for a = acquisitions'
-    a.measureProjectorCLUT(pSpot, oneLight, radiometer, NRepeats)
-end

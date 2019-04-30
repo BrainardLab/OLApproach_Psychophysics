@@ -31,7 +31,9 @@ save(fullfile(sessionDataPath,materialsFilename),...
     'directions','receptors','-append','-v7.3');
 
 %% Validate nominal
-pSpot.hide();
+pSpot.show();
+pSpot.macular.Visible = false;
+pSpot.fixation.Visible = false;
 validationsNominal = MeLMSens_Pulse2.validateDirections(directions,oneLight,radiometer,...
                                                 'receptors',receptors,...
                                                 'primaryTolerance',1e-5,...
@@ -41,7 +43,9 @@ save(fullfile(sessionDataPath,materialsFilename),...
     'directions','validationsNominal','-append','-v7.3');
 
 %% Correct
-pSpot.hide();
+pSpot.show();
+pSpot.macular.Visible = false;
+pSpot.fixation.Visible = false;
 corrections = MeLMSens_Pulse2.correctDirections(directions,oneLight,calibration,radiometer,...
                             receptors,...
                             'smoothness',.001,...
@@ -50,7 +54,9 @@ save(fullfile(sessionDataPath,materialsFilename),...
     'directions','corrections','-append','-v7.3');
 
 %% Validate pre
-pSpot.hide();
+pSpot.show();
+pSpot.macular.Visible = false;
+pSpot.fixation.Visible = false;
 validationsPre = MeLMSens_Pulse2.validateDirections(directions,oneLight,radiometer,...
                                                 'receptors',receptors,...
                                                 'primaryTolerance',1e-5,...
@@ -86,30 +92,13 @@ for acquisition = acquisitions(:)'
 end
 
 %% Validations post
-pSpot.hide();
+pSpot.show();
+pSpot.macular.Visible = false;
+pSpot.fixation.Visible = false;
 validationsPost = MeLMSens_Pulse2.validateDirections(directions,oneLight,radiometer,...
                                                 'receptors',receptors,...
                                                 'primaryTolerance',1e-5,...
                                                 'nValidations',5);
 save(fullfile(sessionDataPath,materialsFilename),...
     'directions','validationsPost',...
-    '-append','-v7.3');     
-
-%% Measure threshold stimuli
-pSpot.show();
-NRepeats = 5;
-for acquisition = acquisitions(:)'
-    dataFilename = sprintf('data-%s-%s-%s.mat',participantID,sessionName,acquisition.name);
-    
-    measurementsThreshold = MeLMSens_Pulse2.measureThresholdStimuli(acquisition,oneLight,pSpot,radiometer,NRepeats);
-    
-    save(fullfile(sessionDataPath,dataFilename),'measurementsThreshold','-append');
-end
-
-%% Measure projector CLUT post-experiment
-pSpot.show();
-NRepeats = 5;
-projectorMeasurementsPost = MeLMSens_Pulse2.measureCLUTs(pSpot,radiometer,oneLight,directions('Mel_low'),directions('Mel_high'),NRepeats);
-save(fullfile(sessionDataPath,materialsFilename),...
-    'projectorMeasurementsPost',...
     '-append','-v7.3');

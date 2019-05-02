@@ -34,4 +34,5 @@ ax = parser.Results.ax;
 
 %% Plot each staircase
 Staircases.Plot.stimulusLevelsCorrects(stimulusLevels,corrects,'ax',ax);
+ylim([staircase.stimulusMin, stimulusMax]);
 end

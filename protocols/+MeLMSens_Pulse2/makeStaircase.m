@@ -6,5 +6,5 @@ staircase.stimulusStep = 1;
 staircase.stimulusMin = 0;
 staircase.stimulusMax = 127;
 staircase.NTrialsPerStaircase = NTrialsPerStaircase;
-staircase.stepSizes = [16 8 4 2 1];
+staircase.stepSizes = [32 24 16 8 4];
 end

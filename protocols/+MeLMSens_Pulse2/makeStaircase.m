@@ -4,7 +4,7 @@ function staircase = makeStaircase(NTrialsPerStaircase)
 staircase = Staircases.InterleavedStaircase;
 staircase.stimulusStep = 1;
 staircase.stimulusMin = 0;
-staircase.stimulusMax = 30;
+staircase.stimulusMax = 127;
 staircase.NTrialsPerStaircase = NTrialsPerStaircase;
 staircase.stepSizes = [16 8 4 2 1];
 end

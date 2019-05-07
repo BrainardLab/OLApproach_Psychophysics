@@ -49,7 +49,7 @@ acquisitions = MeLMSens_Pulse2.makeAcquisitions(...
 trialResponseSys = getTrialResponseSystem(gamePad);
 
 %% Adjust pSpot
-OLShowDirection(directions('Mel_low'),oneLight);
+oneLight.setAll(false)
 projectorSpot.adjust(pSpot,gamePad);
 
 %% Run acquisitions

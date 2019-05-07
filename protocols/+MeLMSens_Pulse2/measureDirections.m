@@ -1,4 +1,4 @@
-function validations = validateDirections(directions, oneLight, radiometer, varargin)
+function measurements = measureDirections(directions, oneLight, radiometer, varargin)
 % Correct nominal directions for this protocol
 %
 % Syntax:
@@ -39,32 +39,36 @@ parser = inputParser;
 parser.addRequired('directions');
 parser.addRequired('oneLight');
 parser.addRequired('radiometer');
-parser.addParameter('nValidations',1);
+parser.addParameter('nMeasurements',1);
 parser.KeepUnmatched = true;
 
 parser.parse(directions, oneLight, radiometer, varargin{:});
 validationParams = parser.Unmatched;
+nMeasurements = parser.Results.nMeasurements;
 
 %% Initialize
 oneLight.setAll(true);
-input('<strong>Place eyepiece in radiometer, and press any key to start validating directions.</strong>\n'); pause(5);
-validations = containers.Map();
-fprintf("<strong>Validating backgrounds and directions...</strong>\n");
+measurements = containers.Map();
+fprintf("<strong>Measuring spectra...</strong>\n");
 tic;
 
-%% Validate backgrounds
-backgroundNames = ["Mel_low","Mel_high"];
-for bb = backgroundNames
-    fprintf("Validating background %s...",bb);
-    for i = 1:parser.Results.nValidations
-        validation(i) = OLValidateDirection(directions(char(bb)), directions('null'), oneLight, radiometer, validationParams);
+%% Measure spectra
+spectraNames = ["Mel_low","Mel_high"];
+for bb = spectraNames
+    measurements(char(bb)) = [];
+end
+for i = 1:nMeasurements
+    for bb = spectraNames
+        fprintf("Measuring spectrum %s...",bb);
+        validation = OLValidateDirection(directions(char(bb)), directions('null'), oneLight, radiometer, validationParams);
+        measurement = validationToMeasurement(validation);
+        measurements(char(bb)) = [measurements(char(bb)) measurement];    
     end
-    validations(char(bb)) = validation;
-    clear validation;
+    clear measurement;
     fprintf("done.\n");
 end
 
 %%
-fprintf("<strong>Validations succesfully completed.</strong>\n\n");
+fprintf("<strong>Measurements succesfully completed.</strong>\n\n");
 toc;
 end

@@ -18,6 +18,8 @@ materialsFilename = sprintf('materials-%s-%s.mat',participantID,sessionName);
 
 %% Get projector spot
 pSpot = projectorSpot.getProjectorSpot();
+pSpot.annulus.RGB = [.5 .5 .5];
+pSpot.show();
 
 %% Get calibration
 calibration = getCalibration();

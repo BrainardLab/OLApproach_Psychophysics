@@ -7,12 +7,13 @@ parser = inputParser;
 parser.addRequired('LMS');
 parser.addRequired('LminusM');
 parser.addParameter('ax',gca);
+parser.KeepUnmatched = true;
 parser.parse(LMS,LminusM,varargin{:});
 
 ax = parser.Results.ax;
 
 %% Plot
-plot(ax,LMS,LminusM);
+plot(ax,LMS,LminusM,parser.Unmatched);
 
 %% Adjust axes
 ax.XAxisLocation = 'origin';

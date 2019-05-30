@@ -88,6 +88,7 @@ projectorSpot.adjust(pSpot,gamePad);
 
 %% Run acquisitions
 OLShowDirection(directions('Mel_low'),oneLight);
+OLAdaptToDirection(directions('Mel_low'),oneLight,minutes(5));
 trialResponseSys.waitForResponse();
 MeLMSens_Pulse2.runAcquisitions(acquisitions,oneLight,pSpot,trialResponseSys);
 

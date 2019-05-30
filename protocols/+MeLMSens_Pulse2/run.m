@@ -29,8 +29,9 @@ save(fullfile(sessionDataPath, materialsFilename),...
 %% Make directions
 directions = MeLMSens_Pulse2.makeNominalOLDirections(calibration);
 receptors = directions('MelStep').describe.directionParams.T_receptors;
+nominalContrasts = nominalReceptorContrastDirections(directions('Mel_low'),directions('Mel_high'),receptors)
 save(fullfile(sessionDataPath,materialsFilename),...
-    'directions','receptors','-append','-v7.3');
+    'directions','receptors','nominalContrasts','-append','-v7.3');
 
 %% Validate nominal
 pSpot.show();

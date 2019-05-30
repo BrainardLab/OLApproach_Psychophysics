@@ -1,4 +1,4 @@
-function thresholdGroup = plotThreshold(threshold, varargin)
+function thresholdGroup = thresholdProportionCorrect(threshold, varargin)
 %PLOTTHRESHOLD Plot indicator of a threshold on e.g. psychometric function
 %   plotThreshold(threshold) plots a dashed vertical line indicating the
 %   threshold at x = threshold. Thus, it assumes the threshold is some X

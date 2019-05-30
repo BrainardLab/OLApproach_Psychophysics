@@ -4,25 +4,26 @@ function adjust(obj,action, targetName)
 
 switch action
     case "left"
-        translation = [-1 0];
+        translation = [-1 0 0];
     case "right"
-        translation = [+1 0];
+        translation = [+1 0 0];
     case "up"
-        translation = [0 +1];
+        translation = [0 +1 0];
     case "down"
-        translation = [0 -1];
+        translation = [0 -1 0];
     case "toggle"
-        translation = [0 0];
+        translation = [0 0 0];
         obj.toggle();
+    otherwise
+        translation = [0 0 0];
 end
 
 switch targetName
-    case 'spot'
-        translation = [translation; 0 0];
     case 'annulus'
-        translation = [0 0; translation];
+        obj.annulus.center = obj.annulus.center + translation;
+    case 'macular'
+        obj.macular.center = obj.macular.center + translation;
+        obj.fixation.center = obj.fixation.center + translation;
 end
-
-obj.translate(translation);
 
 end

@@ -5,12 +5,13 @@ keyBindings = containers.Map();
 
 % Keyboard keybindings
 keyBindings('ESACPE') = "escape";
+keyBindings('Q') = "escape";
 keyBindings('TAB') = "switch";
 keyBindings('LEFTARROW') = "left";
 keyBindings('RIGHTARROW') = "right";
 keyBindings('UPARROW') = "up";
 keyBindings('DOWNARROW') = "down";
-keyBindings('SPACE') = "toggle";
+keyBindings('Z') = "toggle";
 
 % GamePad keybindings
 keyBindings('GP:LOWERLEFTTRIGGER') = "switch";
@@ -30,17 +31,17 @@ inputHandler = responseSystem(keyBindings, gamePad);
 
 % Adjust
 pSpot.show();
-targetName = 'spot';
+targetName = 'macular';
 while true
     action = inputHandler.waitForResponse();
     switch action
         case "escape"
             return
         case "switch"
-            if strcmp(targetName,'spot')
+            if strcmp(targetName,'macular')
                 targetName = 'annulus';
             else
-                targetName = 'spot';
+                targetName = 'macular';
             end          
         otherwise
             pSpot.adjust(action, targetName);

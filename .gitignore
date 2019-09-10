@@ -6,3 +6,5 @@
 
 # Don't track the datadirs (symlinks to dropbox)
 data/
+
+materials

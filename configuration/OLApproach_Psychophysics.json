@@ -16,6 +16,11 @@
 		"type": "include"
 	},
     {
+        "name": "SilentSubstitutionToolbox",
+        "pathPlacement":"append",
+        "type": "include"
+    },
+    {
 		"name": "mgl",
 		"pathPlacement": "append",
 		"type": "git",

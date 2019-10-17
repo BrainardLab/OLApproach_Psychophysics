@@ -307,7 +307,7 @@ classdef acquisition < handle
             
             % PF-based threshold
             criterion = 0.7071;
-            threshold = thresholdFromPsychometricFunction(psychometricFunction,PFParams,criterion);
+            threshold = Staircases.PsychometricFunctions.thresholdFromPsychometricFunction(psychometricFunction,PFParams,criterion);
         end
     end
     

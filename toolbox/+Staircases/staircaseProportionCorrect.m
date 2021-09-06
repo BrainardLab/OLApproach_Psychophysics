@@ -17,7 +17,7 @@ parser.addRequired('staircase',@(x)isa(x,'Staircase'));
 parser.parse(staircase, varargin{:});
 
 %% Get binned data
-[binStimVals, binResponses, edges] = staircaseBinnedTrials(staircase);
+[binStimVals, binResponses, edges] = Staircases.staircaseBinnedTrials(staircase);
 
 %% Calculate binCenters
 binCenter = ((edges(2:end)-edges(1:end-1))/2+edges(1:end-1))'; % calculate centers of bins

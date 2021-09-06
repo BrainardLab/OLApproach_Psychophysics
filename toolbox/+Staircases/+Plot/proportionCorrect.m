@@ -32,6 +32,8 @@ parser.addParameter('ax',gca,@(x) isgraphics(x) && strcmp(x.Type,'axes'));
 parser.KeepUnmatched = true;
 parser.parse(binProportionCorrect, varargin{:});
 ax = parser.Results.ax;
+parser.addParameter('color',ax.ColorOrder(ax.ColorOrderIndex,:));
+parser.parse(binProportionCorrect, varargin{:});
 binN = parser.Results.binN;
 binCenter = parser.Results.binCenter;
 
@@ -39,5 +41,7 @@ binCenter = parser.Results.binCenter;
 S = scatter(ax,binCenter,binProportionCorrect,...
     (binN+1)*10,... % size is 10 * number of trials in bin
     'filled',...
+    'MarkerFaceColor',parser.Results.color,...
+    'MarkerEdgeColor',parser.Results.color,...
     'DisplayName','Aggregated proportion correct');
 end

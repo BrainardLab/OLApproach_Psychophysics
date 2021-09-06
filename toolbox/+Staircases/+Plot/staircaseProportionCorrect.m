@@ -37,6 +37,8 @@ parser.addParameter('binSize',15);
 parser.KeepUnmatched = true;
 parser.parse(staircase, varargin{:});
 ax = parser.Results.ax;
+parser.addParameter('color',ax.ColorOrder(ax.ColorOrderIndex,:));
+parser.parse(staircase, varargin{:});
 
 %% Get binned data
 [binProportionCorrect,binCenter,binN] = Staircases.staircaseProportionCorrect(staircase);
@@ -44,5 +46,6 @@ ax = parser.Results.ax;
 %% Plot
 S = Staircases.Plot.proportionCorrect(binProportionCorrect,...
                                       'binCenter',binCenter,...
-                                      'binN',binN);
+                                      'binN',binN,....
+                                      'color',parser.Results.color);
 end

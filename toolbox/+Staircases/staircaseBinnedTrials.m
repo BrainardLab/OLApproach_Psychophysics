@@ -35,7 +35,8 @@ values = round(values,8); % round stim values to 8 decimals
 
 %% Bin data
 % Get bin edges, indices
-[binN, binEdges, binIdx] = histcounts(values,'BinWidth',.001); % bin the stim values
+edges = 0:0.001:0.05;
+[binN, binEdges, binIdx] = histcounts(values,edges); % bin the stim values
 
 % Deal with 0th bin
 if min(binEdges > 0)
@@ -45,8 +46,8 @@ if min(binEdges > 0)
 end
 
 % bin stimulus values
-binStimVals = binMatToCell(values,binIdx);
+binStimVals = Staircases.binMatToCell(values,binIdx);
 
 % bin responses
-binResponses = binMatToCell(responses,binIdx);
+binResponses = Staircases.binMatToCell(responses,binIdx);
 end

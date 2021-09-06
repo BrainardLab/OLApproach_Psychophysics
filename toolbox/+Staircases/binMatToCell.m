@@ -10,7 +10,7 @@ function binnedCell = binMatToCell(X,binIdc)
 % History:
 %   2019.03.27  J.Vincent wrote binMatToCell
 
-binnedCell = cell(max(binIdc(:)),size(X,2));
+binnedCell = cell(50,size(X,2));
 for i = 1:numel(X) % loop over every entry of array
     binIdx = binIdc(i); % what bin should this array entry go in?
     val = X(i);       % what is the value that should go into that bin?

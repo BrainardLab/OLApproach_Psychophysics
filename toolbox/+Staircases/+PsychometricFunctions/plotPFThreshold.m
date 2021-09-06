@@ -19,5 +19,5 @@ color = parser.Results.color;
 threshold = Staircases.PsychometricFunctions.thresholdFromPsychometricFunction(psychometricFunction,PFParams,criterion);
 
 % Plot
-thresholdGroup = Staircases.Plot.thresholdProportionCorrect(threshold,'criterion',criterion,'ax',ax,'color',color);
+thresholdGroup = Staircases.Plot.thresholdProportionCorrect(threshold,'criterion',criterion,'plotCriterionLine',false,'ax',ax,'color',color);
 end

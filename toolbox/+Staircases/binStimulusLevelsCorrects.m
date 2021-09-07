@@ -38,13 +38,13 @@ if min(binEdges > 0)
 end
 
 % bin stimulus values
-binStimLevels = Staircases.binMatToCell(stimulusLevels,binIdx);
+binStimLevels = Staircases.binMatToCell(stimulusLevels,binIdx,length(binEdges)-1);
 
 %% Bin corrects
 if nargout == 3
     assert(~isempty(corrects),'No vector of response specified');
     
     % bin responses
-    binCorrects = Staircases.binMatToCell(corrects,binIdx);
+    binCorrects = Staircases.binMatToCell(corrects,binIdx,length(binEdges)-1);
 end
 end

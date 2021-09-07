@@ -136,22 +136,161 @@ classdef Acquisition < handle
         end
         function [threshold, PFParams] = fitPsychometricFunctionThreshold(obj)
             % Fit psychometric function
-            psychometricFunction = @PAL_Weibull;
-            paramsInitialGuess = Weibull_initialParamsGuess(obj.staircase.stimulusLevels,.5);
-            freeParams = [1 1 0 1];
-            guessRateLimits = [0 .5];
-            PFParams = obj.staircase.fitPsychometricFunction(psychometricFunction,freeParams,paramsInitialGuess,guessRateLimits);
+            PFParams = obj.fitPsychometricFunction(psychometricFunction,freeParams,paramsInitialGuess,guessRateLimits);
                            
             % PF-based threshold
             criterion = 0.7071;
             threshold = Staircases.PsychometricFunctions.thresholdFromPsychometricFunction(psychometricFunction,PFParams,criterion);
         end
-        function plot(obj)
-            [threshold, PFParams] = obj.fitPsychometricFunctionThreshold();
-            F = obj.staircase.plot('threshold',threshold,'criterion',0.7071);
-            ax = F.Children(1);
-            color = ax.ColorOrder(ax.ColorOrderIndex-3,:);
-            Staircases.PsychometricFunctions.plotPsychometricFunction(@PAL_Weibull,PFParams,unique(obj.staircase.stimulusLevels),'ax',ax,'Color',color);
+        function PFParams = fitPsychometricFunction(obj)
+            % Fit psychometric function
+            psychometricFunction = @PAL_Weibull;
+            paramsInitialGuess = Weibull_initialParamsGuess(obj.staircase.stimulusLevels,.5);
+            freeParams = [1 1 0 1];
+            guessRateLimits = [0 .5];
+            PFParams = obj.staircase.fitPsychometricFunction(psychometricFunction,freeParams,paramsInitialGuess,guessRateLimits);
+        end
+    end
+    methods % Plotting
+        function F = plot(obj, varargin)
+            % Plot all trials of this acquisition
+            
+            % Parse input
+            parser = inputParser();
+            parser.addRequired('obj');
+            parser.addParameter('F',figure(),@(x) isgraphics(x) && strcmp(x.Type,'figure'));
+            parser.parse(obj,varargin{:});
+            F = parser.Results.F;
+            figure(F);
+            
+            % Plot staircases
+            ax_staircases = subplot(1,2,1);
+            obj.plotStaircases('ax',ax_staircases);
+            
+            % Plot psychometric function
+            ax_psychometricFunction = subplot(1,2,2);
+            obj.plotPsychometricFunction('ax',ax_psychometricFunction);
+        end
+        
+        function ax = plotStaircases(obj,varargin)
+            % Plot all trials of this acquisition
+            
+            % Parse input
+            parser = inputParser();
+            parser.addRequired('obj');
+            parser.addParameter('ax',gca,@(x) isgraphics(x) && strcmp(x.Type,'axes'));
+            parser.parse(obj,varargin{:});
+            ax = parser.Results.ax;
+            axes(ax); hold on;
+            
+            % Plot staircases trialseries
+            plotStaircaseTrialseries([obj.staircases{1:3}],'ax',ax);
+            
+            % Plot mean threshold
+            color = ax.ColorOrder(ax.ColorOrderIndex,:); % current plot color, which we'll reuse)
+            plot(xlim,mean(obj.thresholds)*[1 1],'--','Color',color);
+            text(10,mean(obj.thresholds)+0.001,...
+                sprintf('Mean threshold = %.3f',mean(obj.thresholds)),...
+                'Color',color,...
+                'FontWeight','bold');
+            
+            % Finish up
+            ylabel('LMS contrast (ratio)');
+            ylim([0,0.05]);
+            title('Staircase trials');
+            hold off;
+        end
+        
+        function PCGroup = plotProportionsCorrect(obj, varargin)
+            % Plot trial proportions correct of this acquisition
+ 
+            % Parse input
+            parser = inputParser();
+            parser.addRequired('obj');
+            parser.addParameter('ax',gca,@(x) isgraphics(x) && strcmp(x.Type,'axes'));
+            parser.KeepUnmatched = true;
+            parser.parse(obj,varargin{:});
+            ax = parser.Results.ax;
+            parser.addParameter('color',ax.ColorOrder(ax.ColorOrderIndex,:));
+            parser.parse(obj,varargin{:});
+            axes(ax); hold on;
+            
+            % Plot proportionCorrect
+            dataPoints = obj.staircase.plotProportionCorrect(...
+                'ax',ax,...
+                'color',parser.Results.color);
+            dataPoints.DisplayName = sprintf('%s %s',obj.name,dataPoints.DisplayName);
+
+            % Annotate
+            title('Detection performance');
+            xlabel('LMS contrast (ratio)');
+            ylabel('Percent correct');
+            hold off;
+        end
+        
+        function PFGroup = plotPsychometricFunction(obj,varargin)
+             % Plot psychometric function fit to this acquisition
+            
+            % Parse input
+            parser = inputParser();
+            parser.addRequired('obj');
+            parser.addParameter('ax',gca,@(x) isgraphics(x) && strcmp(x.Type,'axes'));
+            parser.KeepUnmatched = true;
+            parser.parse(obj,varargin{:});
+            ax = parser.Results.ax;
+            parser.addParameter('color',ax.ColorOrder(ax.ColorOrderIndex,:));
+            parser.parse(obj,varargin{:});
+            axes(ax); hold on;
+            
+            % Fit psychometric function
+            PFParams = obj.fitPsychometricFunction();
+            
+            % Plot a smooth curve with the parameters for all contrast
+            % levels
+            psychometricFunction = @PAL_Weibull;
+            contrastLevels = obj.staircase.stimulusMin:1:obj.staircase.stimulusMax;
+            PFLine = Staircases.PsychometricFunctions.plotPsychometricFunction(psychometricFunction,PFParams,contrastLevels,...
+                'ax',ax,...
+                'color',parser.Results.color,...
+                varargin{:});
+            PFLine.DisplayName = sprintf('%s psychometric function fit',obj.name);
+            
+           
+            % Annotate
+            title('Weibull function, fitted');
+            xlabel('LMS contrast (ratio)');
+            ylabel('Percent correct');
+            hold off;
+        end
+        
+        function threshold = plotPFThreshold(obj, varargin)
+            % Parse input
+            parser = inputParser();
+            parser.addRequired('obj');
+            parser.addParameter('ax',gca,@(x) isgraphics(x) && strcmp(x.Type,'axes'));
+            parser.KeepUnmatched = true;
+            parser.parse(obj,varargin{:});
+            ax = parser.Results.ax;
+            parser.addParameter('color',ax.ColorOrder(ax.ColorOrderIndex,:));
+            parser.parse(obj,varargin{:});
+            axes(ax); hold on;
+            
+            % Fit psychometric function
+            psychometricFunction = @PAL_Weibull;
+            PFParams = obj.fitPsychometricFunction();
+            
+            % PF-based threshold
+            criterion = 0.7071;
+            threshold = Staircases.PsychometricFunctions.plotPFThreshold(psychometricFunction,PFParams,criterion,...
+                'ax',ax,...
+                'color',parser.Results.color);
+            threshold.DisplayName = sprintf('%s %s',obj.name,threshold.Children(1).DisplayName);
+            
+            % Annotate
+            title('Threshold from pyschometric function');
+            xlabel('LMS contrast (ratio)');
+            ylabel('Percent correct');
+            hold off;
         end
     end
 end

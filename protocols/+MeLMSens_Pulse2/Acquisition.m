@@ -195,7 +195,7 @@ classdef Acquisition < handle
                 'FontWeight','bold');
             
             % Finish up
-            ylabel('LMS contrast (ratio)');
+            ylabel('delta RGB');
             ylim([0,0.05]);
             title('Staircase trials');
             hold off;
@@ -223,7 +223,7 @@ classdef Acquisition < handle
 
             % Annotate
             title('Detection performance');
-            xlabel('LMS contrast (ratio)');
+            xlabel('delta RGB');
             ylabel('Percent correct');
             hold off;
         end
@@ -258,7 +258,7 @@ classdef Acquisition < handle
            
             % Annotate
             title('Weibull function, fitted');
-            xlabel('LMS contrast (ratio)');
+            xlabel('delta RGB');
             ylabel('Percent correct');
             hold off;
         end
@@ -288,7 +288,7 @@ classdef Acquisition < handle
             
             % Annotate
             title('Threshold from pyschometric function');
-            xlabel('LMS contrast (ratio)');
+            xlabel('delta RGB');
             ylabel('Percent correct');
             hold off;
         end

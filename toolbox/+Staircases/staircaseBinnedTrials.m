@@ -40,8 +40,8 @@ edges = 0:0.001:0.05;
 binIdx(binIdx==0)=1; % binIdx as returned from histcounts is [0,N], which won't do for indexing.
 
 % bin stimulus values
-binStimVals = Staircases.binMatToCell(values,binIdx);
+binStimVals = Staircases.binMatToCell(values,binIdx,length(binN));
 
 % bin responses
-binResponses = Staircases.binMatToCell(responses,binIdx);
+binResponses = Staircases.binMatToCell(responses,binIdx,length(binN));
 end

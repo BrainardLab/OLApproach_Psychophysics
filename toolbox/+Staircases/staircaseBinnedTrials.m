@@ -37,13 +37,7 @@ values = round(values,8); % round stim values to 8 decimals
 % Get bin edges, indices
 edges = 0:0.001:0.05;
 [binN, binEdges, binIdx] = histcounts(values,edges); % bin the stim values
-
-% Deal with 0th bin
-if min(binEdges > 0)
-    binEdges = [0 binEdges];
-    binN = [sum(binIdx == 0) binN];
-    binIdx = binIdx+1;
-end
+binIdx(binIdx==0)=1; % binIdx as returned from histcounts is [0,N], which won't do for indexing.
 
 % bin stimulus values
 binStimVals = Staircases.binMatToCell(values,binIdx);

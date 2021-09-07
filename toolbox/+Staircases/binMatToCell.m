@@ -14,7 +14,9 @@ binnedCell = cell(50,size(X,2));
 for i = 1:numel(X) % loop over every entry of array
     binIdx = binIdc(i); % what bin should this array entry go in?
     val = X(i);       % what is the value that should go into that bin?
-    
+    if binIdx == 0
+        binIdx = 1;
+    end
     binnedCell{binIdx} = [binnedCell{binIdx}, val]; % append value to whatever is in bin
 end
 end

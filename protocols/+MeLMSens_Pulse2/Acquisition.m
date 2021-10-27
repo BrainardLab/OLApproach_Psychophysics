@@ -134,14 +134,6 @@ classdef Acquisition < handle
         function NTrialsTotal = get.NTrialsTotal(obj)
             NTrialsTotal = obj.staircase.NTrialsPerStaircase * obj.staircase.NInterleavedStaircases;
         end
-        function [threshold, PFParams] = fitPsychometricFunctionThreshold(obj)
-            % Fit psychometric function
-            PFParams = obj.fitPsychometricFunction(psychometricFunction,freeParams,paramsInitialGuess,guessRateLimits);
-                           
-            % PF-based threshold
-            criterion = 0.7071;
-            threshold = Staircases.PsychometricFunctions.thresholdFromPsychometricFunction(psychometricFunction,PFParams,criterion);
-        end
         function PFParams = fitPsychometricFunction(obj)
             % Fit psychometric function
             psychometricFunction = @PAL_Weibull;
@@ -150,7 +142,28 @@ classdef Acquisition < handle
             guessRateLimits = [0 .5];
             PFParams = obj.staircase.fitPsychometricFunction(psychometricFunction,freeParams,paramsInitialGuess,guessRateLimits);
         end
+        function [threshold, PFParams] = fitPsychometricFunctionThreshold(obj)
+            % Fit psychometric function
+            
+            %% Edit by GKA on October 27, 2021
+            % As written, this function call passed unused variables. Not
+            % sure how Joris was able to run this previously. I modified
+            % the line to remove all passed variables to the method. This
+            % allowed the routine to proceed. I compared the obtained JND
+            % threshold results for subject JXV to the values presented in
+            % the paper, and concluded that these were identical to the
+            % extent the I could judge from the figures.
+            
+            % PFParams = obj.fitPsychometricFunction(psychometricFunction,freeParams,paramsInitialGuess,guessRateLimits);
+            PFParams = obj.fitPsychometricFunction();
+                           
+            % PF-based threshold
+            psychometricFunction = @PAL_Weibull;
+            criterion = 0.7071;
+            threshold = Staircases.PsychometricFunctions.thresholdFromPsychometricFunction(psychometricFunction,PFParams,criterion);
+        end
     end
+    
     methods % Plotting
         function F = plot(obj, varargin)
             % Plot all trials of this acquisition

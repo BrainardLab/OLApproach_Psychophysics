@@ -36,7 +36,7 @@
 		"toolboxRoot": "",
 		"type": "webget",
 		"update": "",
-		"url": "https:\/\/www.mathworks.com\/matlabcentral\/mlc-downloads\/downloads\/submissions\/10064\/versions\/8\/download\/zip"
+		"url": "https://www.mathworks.com/matlabcentral/mlc-downloads/downloads/submissions/10064/versions/8/download\/zip"
 	},
 	{
 		"flavor": "",
@@ -62,7 +62,7 @@
         "toolboxRoot": "",
         "type": "git",
         "update": "",
-        "url": "https:\/\/github.com\/DavidBrainard\/OneLightDriver.git"
+        "url": "https://github.com/DavidBrainard/OneLightDriver.git"
     },
     {
 		"flavor": "",
@@ -114,7 +114,7 @@
 		"toolboxRoot": "",
 		"type": "git",
 		"update": "",
-		"url": "https:\/\/github.com\/gkaguirrelab\/PupilAnalysisToolbox.git"
+		"url": "https://github.com/gkaguirrelab/PupilAnalysisToolbox.git"
 	},
     {
 		"name": "Palamedes_1.8.2",
